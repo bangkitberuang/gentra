@@ -25,7 +25,8 @@ import {
   Headphones,
   Check,
   Building2,
-  X
+  X,
+  Activity
 } from 'lucide-react';
 
 const FULL_PERSONAS = [
@@ -334,6 +335,42 @@ export const LandingPage = ({ onOpenLogin }) => {
   const landingAudioRef = useRef(null);
   const landingAudioCache = useRef({});
 
+  // Studio Amplifier State & Interactive Controls
+  const [ampViewMode, setAmpViewMode] = useState('rack'); // 'rack' | 'studio'
+  const [isAmpPlaying, setIsAmpPlaying] = useState(false);
+  const [isTubeBypass, setIsTubeBypass] = useState(false);
+  const [ampKnobs, setAmpKnobs] = useState({
+    gain: 6,
+    warmth: 8,
+    presence: 7,
+    output: 8
+  });
+  const ampAudioRef = useRef(null);
+
+  const handleToggleAmpAudio = () => {
+    if (isAmpPlaying) {
+      if (ampAudioRef.current) {
+        ampAudioRef.current.pause();
+        ampAudioRef.current.currentTime = 0;
+      }
+      setIsAmpPlaying(false);
+    } else {
+      if (ampAudioRef.current) {
+        ampAudioRef.current.pause();
+      }
+      const audio = new Audio('/audio/previews/kang_asep.mp3');
+      ampAudioRef.current = audio;
+      audio.onended = () => setIsAmpPlaying(false);
+      audio.onerror = () => setIsAmpPlaying(false);
+      audio.play().then(() => {
+        setIsAmpPlaying(true);
+      }).catch(err => {
+        console.warn('Amp audio play failed:', err);
+        setIsAmpPlaying(false);
+      });
+    }
+  };
+
   const filteredPersonas = FULL_PERSONAS.filter(p => {
     if (personaFilter === 'Semua') return true;
     if (personaFilter === 'Sunda') return p.category === 'Khas Sunda';
@@ -405,10 +442,11 @@ export const LandingPage = ({ onOpenLogin }) => {
           {/* Navigation Links */}
           <nav className="hidden lg:flex items-center space-x-7 text-xs font-bold text-zinc-600">
             <a href="#fitur" className="hover:text-[#0C4E34] transition-colors">Fitur Unggulan</a>
-            <a href="#ekosistem" className="hover:text-[#0C4E34] text-[#0C4E34] flex items-center gap-1 transition-colors">
-              <span className="w-2 h-2 rounded-full bg-[#F59E0B]"></span>
-              Bagan Ekosistem
+            <a href="#amplifier" className="hover:text-[#0C4E34] text-[#0C4E34] flex items-center gap-1 transition-colors">
+              <span className="w-2 h-2 rounded-full bg-[#F59E0B] animate-pulse"></span>
+              Studio Amplifier
             </a>
+            <a href="#ekosistem" className="hover:text-[#0C4E34] transition-colors">Bagan Ekosistem</a>
             <a href="#persona" className="hover:text-[#0C4E34] transition-colors">22 Karakter Vokal</a>
             <a href="#ilm" className="hover:text-[#0C4E34] transition-colors">Mode ILM</a>
           </nav>
@@ -498,6 +536,289 @@ export const LandingPage = ({ onOpenLogin }) => {
               <span className="text-2xl sm:text-3xl font-black text-[#0C4E34] block">Gemini Audio</span>
               <span className="text-xs sm:text-[13px] text-zinc-700 font-semibold mt-0.5 block">Transkripsi Naskah Otomatis</span>
             </div>
+          </div>
+
+        </div>
+      </section>
+
+      {/* 2.5. STUDIO ANALOG AMPLIFIER & BROADCAST TUBE PROCESSING */}
+      <section id="amplifier" className="py-12 sm:py-16 md:py-20 bg-gradient-to-b from-[#09110d] via-[#0d1712] to-[#070d0a] text-white border-y border-emerald-950/80 relative overflow-hidden">
+        {/* Subtle decorative glow & studio grid */}
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[350px] bg-gradient-to-b from-emerald-500/10 via-[#F59E0B]/5 to-transparent blur-3xl pointer-events-none" />
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(12,78,52,0.15),transparent_70%)] pointer-events-none" />
+
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+          
+          {/* Section Header */}
+          <div className="text-center max-w-3xl mx-auto mb-10 sm:mb-12 space-y-3">
+            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-emerald-950/90 border border-emerald-500/30 text-emerald-400 text-xs font-bold shadow-xs">
+              <Activity className="w-3.5 h-3.5 text-[#F59E0B]" />
+              <span>PENGUAT SINYAL AUDIO & PREAMP TABUNG ANALOG</span>
+            </div>
+            <h2 className="text-3xl sm:text-4xl md:text-5xl font-black tracking-tight text-white">
+              Studio Amplifier & Analog Mastering
+            </h2>
+            <p className="text-xs sm:text-sm md:text-base text-zinc-400 leading-relaxed max-w-2xl mx-auto">
+              Meniru karakter akustik <strong className="text-amber-400">kompresor tabung analog & equalizer rackmount legendaris</strong> untuk memberikan vokal yang tebal, hangat, dan berwibawa khas siaran radio dan televisi profesional.
+            </p>
+          </div>
+
+          {/* Master 19-inch Rack Cabinet Chassis */}
+          <div className="max-w-5xl mx-auto bg-gradient-to-b from-zinc-900 to-black rounded-3xl p-3 sm:p-5 md:p-6 border-2 border-zinc-700/80 shadow-[0_20px_60px_rgba(0,0,0,0.9)] relative">
+            
+            {/* Rack Mounting Screws Left & Right Ears */}
+            <div className="hidden sm:flex absolute left-2 top-0 bottom-0 flex-col justify-between py-6 pointer-events-none">
+              <div className="w-3 h-3 rounded-full bg-zinc-600 border border-zinc-400 shadow-inner" />
+              <div className="w-3 h-3 rounded-full bg-zinc-600 border border-zinc-400 shadow-inner" />
+              <div className="w-3 h-3 rounded-full bg-zinc-600 border border-zinc-400 shadow-inner" />
+            </div>
+            <div className="hidden sm:flex absolute right-2 top-0 bottom-0 flex-col justify-between py-6 pointer-events-none">
+              <div className="w-3 h-3 rounded-full bg-zinc-600 border border-zinc-400 shadow-inner" />
+              <div className="w-3 h-3 rounded-full bg-zinc-600 border border-zinc-400 shadow-inner" />
+              <div className="w-3 h-3 rounded-full bg-zinc-600 border border-zinc-400 shadow-inner" />
+            </div>
+
+            {/* Inner Top Rack Header Bar */}
+            <div className="flex flex-col sm:flex-row items-center justify-between gap-3 pb-4 mb-4 border-b border-zinc-800 px-2 sm:px-6">
+              <div className="flex items-center gap-3">
+                <div className="w-3 h-3 rounded-full bg-rose-500 shadow-[0_0_12px_rgba(244,63,94,1)] animate-pulse" />
+                <div>
+                  <span className="text-xs font-black tracking-widest uppercase text-zinc-300">
+                    GENTRA NEURAL AMPLIFIER UNIT • MODEL GS-48K
+                  </span>
+                  <span className="text-[10px] text-zinc-500 block">Class-A Discrete Variable-Mu Tube Circuit Simulation</span>
+                </div>
+              </div>
+
+              {/* View Switcher: Rack View vs Studio Tube View */}
+              <div className="flex items-center gap-1.5 p-1 rounded-xl bg-zinc-800/90 border border-zinc-700 text-xs">
+                <button
+                  type="button"
+                  onClick={() => setAmpViewMode('rack')}
+                  className={`px-3 py-1.5 rounded-lg font-bold transition-all ${
+                    ampViewMode === 'rack'
+                      ? 'bg-[#0C4E34] text-white shadow-xs'
+                      : 'text-zinc-400 hover:text-white'
+                  }`}
+                >
+                  Panel Rak (Heritage)
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setAmpViewMode('studio')}
+                  className={`px-3 py-1.5 rounded-lg font-bold transition-all ${
+                    ampViewMode === 'studio'
+                      ? 'bg-[#0C4E34] text-white shadow-xs'
+                      : 'text-zinc-400 hover:text-white'
+                  }`}
+                >
+                  Studio & Tabung Vakum
+                </button>
+              </div>
+            </div>
+
+            {/* The Main Amplifier Visual Display */}
+            <div className="relative rounded-2xl overflow-hidden border border-zinc-700/80 shadow-2xl bg-zinc-950">
+              {ampViewMode === 'rack' ? (
+                <div className="relative group p-2 sm:p-4 bg-gradient-to-b from-[#182026] via-[#10171d] to-[#0a0f13] flex items-center justify-center">
+                  <img
+                    src="/images/amplifier-rack.png"
+                    alt="Heritage Audio Tubesoxor Analog Rack Amplifier & Equalizer"
+                    className="w-full h-auto object-contain select-none rounded-xl border border-zinc-800/90 shadow-2xl"
+                  />
+                  {/* Subtle Interactive Overlay Glow for Analog Tubes */}
+                  <div className={`absolute inset-0 pointer-events-none transition-opacity duration-300 ${
+                    isAmpPlaying ? 'opacity-100' : 'opacity-0'
+                  }`} style={{ background: 'radial-gradient(circle at 75% 30%, rgba(245, 158, 11, 0.25), transparent 50%)' }} />
+                </div>
+              ) : (
+                <div className="relative group">
+                  <img
+                    src="/images/studio-amplifier-tubes.jpg"
+                    alt="Analog Tube Mastering Amplifier in Recording Studio"
+                    className="w-full h-auto object-cover select-none transition-transform duration-500 max-h-[500px]"
+                  />
+                  <div className="absolute bottom-4 left-4 right-4 p-3 rounded-xl bg-black/70 backdrop-blur-md border border-white/10 flex items-center justify-between text-xs text-zinc-300">
+                    <span className="font-mono text-amber-400 font-bold">12AX7 & 6BA6 Vacuum Tubes Active</span>
+                    <span className="text-zinc-400">Total Harmonic Distortion (THD): 0.04% Warmth</span>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* Interactive Control Console with Working Animated VU Meter & Knobs */}
+            <div className="mt-5 p-4 sm:p-5 rounded-2xl bg-zinc-950/90 border border-zinc-800 grid grid-cols-1 md:grid-cols-12 gap-5 items-center">
+              
+              {/* Working Analog VU Meter Display */}
+              <div className="md:col-span-5 flex flex-col items-center justify-center p-3 sm:p-4 rounded-xl bg-[#141209] border-2 border-amber-900/60 shadow-inner relative overflow-hidden">
+                <div className="absolute top-1 left-2 text-[9px] font-mono font-bold text-amber-500/80">VU METER (dB)</div>
+                <div className="absolute top-1 right-2 text-[9px] font-mono text-amber-400/60">BROADCAST 48kHz</div>
+                
+                {/* Vintage Meter Face with Warm Glowing Scale */}
+                <div className="w-full h-24 sm:h-28 relative flex items-center justify-center mt-2 bg-gradient-to-b from-[#ffd166]/20 via-[#ffb703]/10 to-transparent rounded-lg border border-amber-600/30 overflow-hidden">
+                  {/* Scale markings SVG */}
+                  <svg className="w-full h-full" viewBox="0 0 200 100">
+                    <path d="M 30 80 A 80 80 0 0 1 170 80" fill="none" stroke="#f59e0b" strokeWidth="1.5" strokeOpacity="0.4" />
+                    <text x="35" y="72" fontSize="7" fill="#fbbf24" fontFamily="monospace">-20</text>
+                    <text x="60" y="52" fontSize="7" fill="#fbbf24" fontFamily="monospace">-10</text>
+                    <text x="95" y="42" fontSize="7" fill="#fbbf24" fontFamily="monospace">-3</text>
+                    <text x="110" y="42" fontSize="7" fill="#f59e0b" fontFamily="monospace" fontWeight="bold">0</text>
+                    <text x="135" y="52" fontSize="7" fill="#ef4444" fontFamily="monospace" fontWeight="bold">+1</text>
+                    <text x="160" y="72" fontSize="7" fill="#ef4444" fontFamily="monospace" fontWeight="bold">+3</text>
+
+                    {/* Animated Needle */}
+                    <line
+                      x1="100"
+                      y1="95"
+                      x2="100"
+                      y2="30"
+                      stroke="#ef4444"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      className="transition-transform duration-150 origin-bottom"
+                      style={{
+                        transformOrigin: '100px 95px',
+                        transform: isAmpPlaying 
+                          ? 'rotate(18deg)' 
+                          : 'rotate(-32deg)'
+                      }}
+                    />
+                    <circle cx="100" cy="95" r="4" fill="#71717a" stroke="#27272a" />
+                  </svg>
+
+                  {/* Warm Amber Halo Lighting */}
+                  <div className="absolute inset-0 pointer-events-none" style={{ background: 'radial-gradient(circle at center, rgba(251, 191, 36, 0.25), transparent 70%)' }} />
+                </div>
+
+                <div className="w-full flex items-center justify-between text-[10px] font-mono text-zinc-400 mt-2 px-1">
+                  <span className="flex items-center gap-1">
+                    <span className={`w-2 h-2 rounded-full ${isAmpPlaying ? 'bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,1)]' : 'bg-zinc-600'}`} />
+                    {isAmpPlaying ? 'SIGNAL ACTIVE' : 'STANDBY'}
+                  </span>
+                  <span className="text-amber-400 font-bold">SATURATION: {isTubeBypass ? 'BYPASS' : 'ACTIVE (+4.5 dB)'}</span>
+                </div>
+              </div>
+
+              {/* Knobs & Player Controls */}
+              <div className="md:col-span-7 flex flex-col justify-between gap-4">
+                
+                {/* 4 Knurled Analog Rotary Knobs */}
+                <div className="grid grid-cols-4 gap-2 text-center">
+                  {/* Knob 1: Tube Gain */}
+                  <div 
+                    onClick={() => setAmpKnobs(k => ({ ...k, gain: (k.gain % 10) + 1 }))}
+                    className="flex flex-col items-center gap-1 cursor-pointer group"
+                  >
+                    <div className="w-11 h-11 sm:w-12 sm:h-12 rounded-full bg-gradient-to-b from-zinc-700 via-zinc-800 to-zinc-900 border-2 border-zinc-600 group-hover:border-amber-400 shadow-md relative flex items-center justify-center transition-transform group-active:scale-95">
+                      <div 
+                        className="w-1 h-3.5 bg-amber-400 rounded-full absolute top-1 transition-transform duration-200"
+                        style={{ transformOrigin: 'bottom center', transform: `rotate(${(ampKnobs.gain - 5) * 24}deg)` }}
+                      />
+                    </div>
+                    <span className="text-[10px] font-bold text-zinc-300">GAIN</span>
+                    <span className="text-[9px] font-mono text-amber-400">+{ampKnobs.gain * 1.2} dB</span>
+                  </div>
+
+                  {/* Knob 2: Tube Warmth */}
+                  <div 
+                    onClick={() => setAmpKnobs(k => ({ ...k, warmth: (k.warmth % 10) + 1 }))}
+                    className="flex flex-col items-center gap-1 cursor-pointer group"
+                  >
+                    <div className="w-11 h-11 sm:w-12 sm:h-12 rounded-full bg-gradient-to-b from-zinc-700 via-zinc-800 to-zinc-900 border-2 border-zinc-600 group-hover:border-amber-400 shadow-md relative flex items-center justify-center transition-transform group-active:scale-95">
+                      <div 
+                        className="w-1 h-3.5 bg-amber-400 rounded-full absolute top-1 transition-transform duration-200"
+                        style={{ transformOrigin: 'bottom center', transform: `rotate(${(ampKnobs.warmth - 5) * 24}deg)` }}
+                      />
+                    </div>
+                    <span className="text-[10px] font-bold text-zinc-300">WARMTH</span>
+                    <span className="text-[9px] font-mono text-amber-400">{ampKnobs.warmth * 10}%</span>
+                  </div>
+
+                  {/* Knob 3: Presence EQ */}
+                  <div 
+                    onClick={() => setAmpKnobs(k => ({ ...k, presence: (k.presence % 10) + 1 }))}
+                    className="flex flex-col items-center gap-1 cursor-pointer group"
+                  >
+                    <div className="w-11 h-11 sm:w-12 sm:h-12 rounded-full bg-gradient-to-b from-zinc-700 via-zinc-800 to-zinc-900 border-2 border-zinc-600 group-hover:border-amber-400 shadow-md relative flex items-center justify-center transition-transform group-active:scale-95">
+                      <div 
+                        className="w-1 h-3.5 bg-amber-400 rounded-full absolute top-1 transition-transform duration-200"
+                        style={{ transformOrigin: 'bottom center', transform: `rotate(${(ampKnobs.presence - 5) * 24}deg)` }}
+                      />
+                    </div>
+                    <span className="text-[10px] font-bold text-zinc-300">PRESENCE</span>
+                    <span className="text-[9px] font-mono text-amber-400">+{ampKnobs.presence * 0.8} dB</span>
+                  </div>
+
+                  {/* Knob 4: Output Master */}
+                  <div 
+                    onClick={() => setAmpKnobs(k => ({ ...k, output: (k.output % 10) + 1 }))}
+                    className="flex flex-col items-center gap-1 cursor-pointer group"
+                  >
+                    <div className="w-11 h-11 sm:w-12 sm:h-12 rounded-full bg-gradient-to-b from-zinc-700 via-zinc-800 to-zinc-900 border-2 border-zinc-600 group-hover:border-amber-400 shadow-md relative flex items-center justify-center transition-transform group-active:scale-95">
+                      <div 
+                        className="w-1 h-3.5 bg-amber-400 rounded-full absolute top-1 transition-transform duration-200"
+                        style={{ transformOrigin: 'bottom center', transform: `rotate(${(ampKnobs.output - 5) * 24}deg)` }}
+                      />
+                    </div>
+                    <span className="text-[10px] font-bold text-zinc-300">OUTPUT</span>
+                    <span className="text-[9px] font-mono text-amber-400">0.0 dB</span>
+                  </div>
+                </div>
+
+                {/* Player Bar & Bypass Switch */}
+                <div className="flex flex-wrap items-center justify-between gap-3 pt-2 border-t border-zinc-800">
+                  <button
+                    type="button"
+                    onClick={handleToggleAmpAudio}
+                    className={`px-5 py-2.5 rounded-xl font-bold text-xs flex items-center gap-2 transition-all shadow-md ${
+                      isAmpPlaying
+                        ? 'bg-amber-500 hover:bg-amber-600 text-zinc-950 ring-2 ring-amber-400/50'
+                        : 'bg-[#0C4E34] hover:bg-[#0e5c3e] text-white ring-2 ring-emerald-500/30'
+                    }`}
+                  >
+                    {isAmpPlaying ? <Pause className="w-4 h-4 fill-current" /> : <Play className="w-4 h-4 fill-current" />}
+                    <span>{isAmpPlaying ? 'Hentikan Uji Audio' : 'Dengarkan Output Amplifier'}</span>
+                  </button>
+
+                  {/* Bypass Switch */}
+                  <button
+                    type="button"
+                    onClick={() => setIsTubeBypass(!isTubeBypass)}
+                    className={`px-3 py-1.5 rounded-lg border text-xs font-bold transition-all flex items-center gap-1.5 ${
+                      isTubeBypass 
+                        ? 'bg-zinc-800 border-zinc-600 text-zinc-400' 
+                        : 'bg-emerald-950/80 border-emerald-500/60 text-emerald-300'
+                    }`}
+                  >
+                    <span className={`w-2 h-2 rounded-full ${isTubeBypass ? 'bg-zinc-500' : 'bg-emerald-400'}`} />
+                    <span>Mode: {isTubeBypass ? 'Bypass (Suara Kering)' : 'Tube Warmth (Aktif)'}</span>
+                  </button>
+                </div>
+
+              </div>
+
+            </div>
+
+            {/* Technical Highlights Footer */}
+            <div className="mt-5 grid grid-cols-2 md:grid-cols-4 gap-3 text-left">
+              <div className="p-3 rounded-xl bg-zinc-900/60 border border-zinc-800">
+                <span className="text-[11px] font-bold text-amber-400 block">Vacuum Tube Warmth</span>
+                <span className="text-[10px] text-zinc-400">Harmonik genap & ganjil alami tabung 12AX7.</span>
+              </div>
+              <div className="p-3 rounded-xl bg-zinc-900/60 border border-zinc-800">
+                <span className="text-[11px] font-bold text-emerald-400 block">Broadcast 48kHz Master</span>
+                <span className="text-[10px] text-zinc-400">Zero-drift clock untuk timeline video editing.</span>
+              </div>
+              <div className="p-3 rounded-xl bg-zinc-900/60 border border-zinc-800">
+                <span className="text-[11px] font-bold text-amber-400 block">-23 LUFS Compliance</span>
+                <span className="text-[10px] text-zinc-400">Standar volume seragam EBU R128 siaran TV/web.</span>
+              </div>
+              <div className="p-3 rounded-xl bg-zinc-900/60 border border-zinc-800">
+                <span className="text-[11px] font-bold text-emerald-400 block">Peak Limiting Anti-Clip</span>
+                <span className="text-[10px] text-zinc-400">Menjamin audio jernih tanpa distorsi digital.</span>
+              </div>
+            </div>
+
           </div>
 
         </div>
