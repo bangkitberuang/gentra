@@ -46,10 +46,10 @@ import {
   EyeOff
 } from 'lucide-react';
 
-// --- Konfigurasi Model ---
-const TTS_MODEL = "gemini-3.8-flash-tts";
-const TTS_FALLBACK_MODEL = "gemini-3.8-flash-lite-tts";
-const TEXT_MODEL = "gemini-3.8-flash";
+// --- Konfigurasi Model (Sama Persis dengan Nusa Voice Bawaan) ---
+const TTS_MODEL = "gemini-2.5-flash-preview-tts";
+const TTS_FALLBACK_MODEL = "gemini-2.0-flash";
+const TEXT_MODEL = "gemini-2.5-flash-preview-09-2025";
 
 // --- Karakter Suara Bawaan GENTRA (14 Persona Awal + 8 Persona Khas Sunda) ---
 const INITIAL_VOICES = [
