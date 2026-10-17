@@ -115,6 +115,8 @@ Proyek ini sudah dikonfigurasi penuh dengan **Vercel Serverless Functions** (`ve
    - `AZURE_SPEECH_KEY` & `AZURE_SPEECH_REGION` (jika menggunakan Azure)
 4. Klik **Deploy**. Web langsung aktif dengan domain HTTPS gratis!
 
+> 📘 **Catatan Arsitektur:** Logika backend di folder `server/` kini memiliki adapter Serverless di folder `api/tts/` agar dapat berjalan otomatis di cloud Vercel. Rincian perubahan lengkap dapat dibaca pada [**CHANGELOG.md**](./CHANGELOG.md).
+
 
 ---
 
