@@ -2123,96 +2123,81 @@ ABSOLUTE MANDATORY RULES:
                       {voices.filter(v => v.category === 'Nasional').map(v => {
                         const isSelected = selectedVoice.name === v.name;
                         const hasAudio = checkVoiceHasPreview(v, previewAudioCache.current);
+                        const isPlaying = previewingVoice === v.name;
                         return (
                           <div
                             key={`${v.id}-${v.name}`}
-                            onClick={() => {
-                              if (!hasAudio) {
-                                setPreviewUnavailableVoice(v.name);
-                                setTimeout(() => setPreviewUnavailableVoice(null), 4000);
-                                return;
-                              }
+                            onClick={(e) => {
                               setSelectedVoice(v);
+                              if (hasAudio) {
+                                handlePreviewVoice(v, e);
+                              }
                             }}
-                            className={`text-left p-3.5 rounded-2xl border transition-all duration-200 relative flex flex-col justify-between gap-3 group select-none cursor-pointer ${
-                              !hasAudio
-                                ? isDarkTheme ? 'bg-[#0a100d]/60 border-dashed border-zinc-800 text-zinc-400 opacity-60' : 'bg-zinc-100/70 border-dashed border-zinc-300 text-zinc-400 opacity-65'
-                                : isSelected 
-                                  ? isDarkTheme
-                                    ? 'bg-gradient-to-br from-[#0C4E34] via-[#093d28] to-[#041d13] border-2 border-emerald-400 shadow-xl shadow-emerald-950 ring-2 ring-emerald-400/50 -translate-y-0.5 text-white'
-                                    : 'bg-gradient-to-br from-emerald-50 via-white to-emerald-100/70 border-2 border-[#0C4E34] shadow-md shadow-emerald-900/15 ring-2 ring-[#0C4E34]/25 -translate-y-0.5 text-zinc-900'
-                                  : isDarkTheme
-                                    ? 'bg-[#121c17] border-zinc-800/80 hover:border-emerald-500/70 hover:-translate-y-0.5 hover:bg-[#16251e] text-zinc-200'
-                                    : 'bg-white border-zinc-200 shadow-xs hover:border-emerald-500/70 hover:-translate-y-0.5 hover:bg-emerald-50/20 text-zinc-800'
+                            className={`text-left p-3.5 sm:p-4 rounded-2xl border transition-all duration-200 relative flex items-center gap-3.5 group select-none cursor-pointer ${
+                              isSelected 
+                                ? isDarkTheme
+                                  ? 'border-[#10b981] bg-[#10b981]/10 ring-1 ring-[#10b981] shadow-[0_0_15px_rgba(16,185,129,0.15)] text-white'
+                                  : 'border-[#0C4E34] bg-[#0C4E34]/10 ring-1 ring-[#0C4E34] shadow-md text-zinc-900'
+                                : isDarkTheme
+                                  ? 'bg-[#121c17] border-zinc-800/80 hover:border-emerald-500/60 hover:bg-[#16251e] text-zinc-200'
+                                  : 'bg-white border-zinc-200 shadow-xs hover:border-emerald-500/60 hover:bg-emerald-50/20 text-zinc-800'
                             }`}
                           >
-                            <div className="flex items-center gap-3">
-                              <div className={`w-11 h-11 rounded-xl flex items-center justify-center shrink-0 border transition-transform group-hover:scale-105 ${
-                                isSelected 
-                                  ? 'bg-emerald-500/20 border-emerald-400/50 text-white' 
-                                  : isDarkTheme ? 'bg-zinc-800/90 border-zinc-700/60 text-zinc-300' : 'bg-zinc-100 border-zinc-200 text-zinc-600'
-                              }`}>
-                                <User className="w-5 h-5" />
-                              </div>
-                              <div className="flex-1 min-w-0">
-                                <div className="flex items-center justify-between gap-1">
-                                  <h4 className={`font-black text-sm tracking-tight truncate ${
-                                    isSelected ? (isDarkTheme ? 'text-white' : 'text-[#0C4E34]') : isDarkTheme ? 'text-zinc-100' : 'text-zinc-900'
-                                  }`}>
-                                    {v.name}
-                                  </h4>
-                                  {isSelected && (
-                                    <div className="w-4 h-4 rounded-full bg-[#F59E0B] flex items-center justify-center text-zinc-950 shrink-0">
-                                      <Check className="w-3 h-3 stroke-[3]" />
-                                    </div>
-                                  )}
+                            {/* Avatar Icon Box */}
+                            <div className={`w-10 h-10 sm:w-11 sm:h-11 rounded-xl flex items-center justify-center shrink-0 border transition-transform group-hover:scale-105 ${
+                              isSelected 
+                                ? isDarkTheme ? 'bg-[#10b981] text-black border-[#10b981]' : 'bg-[#0C4E34] text-white border-[#0C4E34]'
+                                : isDarkTheme ? 'bg-zinc-800/90 border-zinc-700/60 text-zinc-300' : 'bg-zinc-100 border-zinc-200 text-zinc-600'
+                            }`}>
+                              {isPlaying ? (
+                                <div className="flex items-center gap-0.5 h-3">
+                                  <span className="w-0.5 h-2 bg-current rounded-full animate-bounce" />
+                                  <span className="w-0.5 h-3 bg-current rounded-full animate-bounce [animation-delay:0.15s]" />
+                                  <span className="w-0.5 h-2.5 bg-current rounded-full animate-bounce [animation-delay:0.3s]" />
                                 </div>
-                                <p className={`text-xs truncate font-medium mt-0.5 ${
-                                  isSelected ? (isDarkTheme ? 'text-emerald-200' : 'text-emerald-800') : isDarkTheme ? 'text-zinc-400' : 'text-zinc-500'
-                                }`}>
-                                  {v.desc}
-                                </p>
-                              </div>
+                              ) : (
+                                <User className="w-5 h-5" />
+                              )}
                             </div>
 
-                            <div className={`pt-2 border-t flex items-center justify-between gap-2 text-xs ${
-                              isSelected 
-                                ? isDarkTheme ? 'border-emerald-600/40' : 'border-emerald-200' 
-                                : isDarkTheme ? 'border-zinc-800/70' : 'border-zinc-100'
-                            }`}>
-                              <span className={`text-[10px] font-mono truncate ${
-                                isSelected ? (isDarkTheme ? 'text-emerald-300' : 'text-emerald-800') : isDarkTheme ? 'text-zinc-400' : 'text-zinc-500'
+                            {/* Center Name & Description (Persis Nusa Voice) */}
+                            <div className="flex-1 min-w-0">
+                              <h4 className={`font-black text-sm tracking-tight truncate ${
+                                isSelected ? (isDarkTheme ? 'text-[#10b981]' : 'text-[#0C4E34]') : isDarkTheme ? 'text-zinc-100' : 'text-zinc-900'
                               }`}>
-                                {v.accent || 'Nasional'}
-                              </span>
+                                {v.name}
+                              </h4>
+                              <p className={`text-xs truncate font-medium mt-0.5 ${
+                                isSelected ? (isDarkTheme ? 'text-zinc-300' : 'text-zinc-700') : isDarkTheme ? 'text-zinc-400' : 'text-zinc-500'
+                              }`}>
+                                {v.desc}
+                              </p>
+                            </div>
 
-                              <button
-                                type="button"
-                                onClick={(e) => handlePreviewVoice(v, e)}
-                                className={`px-2.5 py-1 rounded-xl text-[11px] font-bold flex items-center gap-1.5 transition-all shadow-xs shrink-0 ${
-                                  previewingVoice === v.name
-                                    ? 'bg-[#F59E0B] text-zinc-950 scale-105 shadow-sm'
-                                    : isSelected
-                                      ? isDarkTheme 
-                                        ? 'bg-white/20 hover:bg-white/30 text-white border border-white/20' 
-                                        : 'bg-[#0C4E34] text-white hover:bg-[#093d28]'
-                                      : isDarkTheme
-                                        ? 'bg-[#15271e] hover:bg-emerald-900/60 text-emerald-300 border border-emerald-800/60'
-                                        : 'bg-zinc-100 hover:bg-[#0C4E34] hover:text-white text-zinc-700 border border-zinc-200'
-                                }`}
-                                title="Dengarkan Contoh Sampel Suara"
-                              >
-                                {previewingVoice === v.name ? (
-                                  <div className="flex items-center gap-0.5 h-3">
-                                    <span className="w-0.5 h-2 bg-zinc-950 rounded-full animate-bounce" />
-                                    <span className="w-0.5 h-3 bg-zinc-950 rounded-full animate-bounce [animation-delay:0.15s]" />
-                                    <span className="w-0.5 h-2.5 bg-zinc-950 rounded-full animate-bounce [animation-delay:0.3s]" />
-                                  </div>
-                                ) : (
-                                  <Play className="w-3 h-3 fill-current text-[#F59E0B]" />
-                                )}
-                                <span>{previewingVoice === v.name ? 'Memutar' : 'Dengar'}</span>
-                              </button>
+                            {/* Right Audio Play Indicator & Checkmark (Persis Nusa Voice) */}
+                            <div className="flex items-center gap-1.5 shrink-0">
+                              {isPlaying ? (
+                                <span className="text-[10px] font-bold text-emerald-400 bg-emerald-950/60 border border-emerald-800/80 px-2 py-0.5 rounded-full animate-pulse">
+                                  Memutar
+                                </span>
+                              ) : hasAudio && (
+                                <button
+                                  type="button"
+                                  onClick={(e) => handlePreviewVoice(v, e)}
+                                  className={`p-1.5 rounded-lg opacity-60 hover:opacity-100 transition-opacity ${
+                                    isSelected 
+                                      ? isDarkTheme ? 'text-emerald-300 hover:bg-emerald-900/40' : 'text-[#0C4E34] hover:bg-[#0C4E34]/10'
+                                      : 'text-zinc-400 hover:text-[#F59E0B]'
+                                  }`}
+                                  title="Dengar Sampel Suara Google"
+                                >
+                                  <Play className="w-3.5 h-3.5 fill-current" />
+                                </button>
+                              )}
+
+                              {isSelected && (
+                                <CheckCircle className={`w-5 h-5 shrink-0 ${isDarkTheme ? 'text-[#10b981]' : 'text-[#0C4E34]'}`} />
+                              )}
                             </div>
                           </div>
                         );
