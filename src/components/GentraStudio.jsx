@@ -768,6 +768,16 @@ export const GentraStudio = ({
       localStorage.setItem('gentra_studio_theme', nextTheme ? 'dark' : 'light');
     } catch (e) {}
   };
+
+  useEffect(() => {
+    try {
+      if (isDarkTheme) {
+        document.documentElement.classList.add('dark');
+      } else {
+        document.documentElement.classList.remove('dark');
+      }
+    } catch (e) {}
+  }, [isDarkTheme]);
   // Pool 8 Kunci API Google Gemini (Fail-Safe Key Pool)
   const [geminiKeys, setGeminiKeys] = useState(() => {
     try {
@@ -1914,17 +1924,14 @@ PENTING: Langsung bacakan naskah berikut dari kata pertama persis menjiwai usia,
                   <button 
                     type="button"
                     onClick={() => setIsServerDropdownOpen(prev => !prev)}
-                    className={`h-9 px-3 sm:px-3.5 rounded-full text-xs font-bold transition-all flex items-center gap-1.5 whitespace-nowrap shrink-0 border shadow-xs ${
+                    className={`h-9 px-2.5 rounded-full text-xs font-bold transition-all flex items-center gap-1 shrink-0 border shadow-xs ${
                       isDarkTheme 
                         ? 'bg-[#14231b] border-emerald-900/80 text-emerald-300 hover:border-emerald-500 hover:text-white' 
                         : 'bg-zinc-100 hover:bg-zinc-200/70 border-zinc-200 text-zinc-700 hover:text-[#0C4E34]'
                     }`}
-                    title="Pilihan Server Engine Suara (Klik untuk ganti server)"
+                    title={`Pilihan Server Engine: ${activeEngine === 'azure' ? 'Kian Santang (Azure)' : activeEngine === 'elevenlabs' ? 'Pajajaran (ElevenLabs)' : 'Gatot Kaca (Gemini)'} (Klik untuk ganti server)`}
                   >
-                    <Server className="w-3.5 h-3.5 text-[#F59E0B] shrink-0" />
-                    <span className="font-bold">
-                      {activeEngine === 'azure' ? 'Kian Santang' : activeEngine === 'elevenlabs' ? 'Pajajaran' : 'Gatot Kaca'}
-                    </span>
+                    <Server className="w-4 h-4 text-[#F59E0B] shrink-0" />
                     <ChevronDown className={`w-3.5 h-3.5 text-zinc-400 transition-transform duration-200 shrink-0 ${
                       isServerDropdownOpen ? 'rotate-180 text-emerald-400' : ''
                     }`} />
@@ -2583,13 +2590,17 @@ PENTING: Langsung bacakan naskah berikut dari kata pertama persis menjiwai usia,
                 </div>
               )}
 
-              {/* Toolbar Tag Emosi Paralinguistik Suara Alami (Standar Voicebox - 100% Bahasa Indonesia) */}
-              <div className={`p-3 rounded-2xl border space-y-2 ${isDarkTheme ? 'bg-[#0f1d16] border-emerald-950/80' : 'bg-emerald-50/60 border-emerald-100'}`}>
+              {/* Toolbar Tag Emosi Paralinguistik Suara Alami (100% Bahasa Indonesia) */}
+              <div className={`p-3 rounded-2xl border space-y-2.5 transition-colors ${
+                isDarkTheme ? 'bg-[#0f1d16] border-emerald-950/80' : 'bg-zinc-50/90 border-zinc-200 shadow-2xs'
+              }`}>
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-1.5">
                     <Sparkles className="w-3.5 h-3.5 text-[#F59E0B]" />
-                    <span className="text-[11px] font-black uppercase tracking-wider text-[#0C4E34] dark:text-emerald-300">
-                      Tag Emosi Paralinguistik (Voicebox)
+                    <span className={`text-[11px] font-black uppercase tracking-wider ${
+                      isDarkTheme ? 'text-emerald-400' : 'text-zinc-800'
+                    }`}>
+                      Tag Emosi & Gaya Bicara
                     </span>
                   </div>
                   <span className="text-[10px] text-zinc-500 font-medium hidden sm:inline">
@@ -2606,7 +2617,7 @@ PENTING: Langsung bacakan naskah berikut dari kata pertama persis menjiwai usia,
                       className={`px-2.5 py-1 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 border shadow-2xs hover:scale-105 active:scale-95 group ${
                         isDarkTheme 
                           ? 'bg-[#15271e] hover:bg-[#1e382b] border-emerald-900/60 text-emerald-200' 
-                          : 'bg-white hover:bg-emerald-50 border-emerald-200/90 text-[#0C4E34]'
+                          : 'bg-white hover:bg-zinc-100 border-zinc-200/90 hover:border-zinc-300 text-zinc-800'
                       }`}
                       title={`${item.label} — ${item.desc}`}
                     >
@@ -2627,8 +2638,8 @@ PENTING: Langsung bacakan naskah berikut dari kata pertama persis menjiwai usia,
 
               <div className={`flex justify-between items-center text-xs font-medium ${subTextColor}`}>
                 <span>{text.length} Karakter | Estimasi: ~{Math.ceil(text.split(/\s+/).filter(Boolean).length / 2.5)} Detik Suara</span>
-                <span className="font-bold flex items-center gap-1.5 text-emerald-400">
-                  <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                <span className={`font-bold flex items-center gap-1.5 ${isDarkTheme ? 'text-emerald-400' : 'text-[#0C4E34]'}`}>
+                  <span className={`w-2 h-2 rounded-full animate-pulse ${isDarkTheme ? 'bg-emerald-400' : 'bg-[#0C4E34]'}`}></span>
                   Engine: Google Gemini Flash Neural (24 kHz Native Lossless)
                 </span>
               </div>
@@ -2650,8 +2661,18 @@ PENTING: Langsung bacakan naskah berikut dari kata pertama persis menjiwai usia,
                     </p>
                   </div>
                   <div className="flex items-center gap-2">
-                    <span className="text-xs font-bold px-3 py-1 rounded-xl bg-[#0C4E34]/20 border border-emerald-500/30 text-emerald-300">
-                      Vokal Terpilih: <strong className="text-white">{selectedVoice.name}</strong> ({selectedVoice.gender === 'Male' ? 'Pria' : 'Wanita'})
+                    <span className={`text-xs font-bold px-3.5 py-1.5 rounded-xl border shadow-2xs transition-colors flex items-center gap-1.5 ${
+                      isDarkTheme 
+                        ? 'bg-emerald-950/60 border-emerald-800/60 text-emerald-300' 
+                        : 'bg-emerald-50 border-emerald-200 text-emerald-900'
+                    }`}>
+                      <span>Vokal Terpilih:</span>
+                      <strong className={`font-black ${isDarkTheme ? 'text-white' : 'text-[#0C4E34]'}`}>
+                        {selectedVoice.name}
+                      </strong>
+                      <span className={isDarkTheme ? 'text-emerald-400/80' : 'text-emerald-700'}>
+                        ({selectedVoice.gender === 'Male' ? 'Pria' : 'Wanita'})
+                      </span>
                     </span>
                   </div>
                 </div>
@@ -2676,7 +2697,9 @@ PENTING: Langsung bacakan naskah berikut dari kata pertama persis menjiwai usia,
                         <h3 className={`text-base font-black ${isDarkTheme ? 'text-white' : 'text-zinc-900'}`}>
                           BLOK 1 — NUSA VOICE (Karakter Suara Nasional)
                         </h3>
-                        <span className="text-[10px] px-2 py-0.5 rounded-full font-bold bg-blue-500/15 text-blue-300 border border-blue-400/30 shrink-0">
+                        <span className={`text-[10px] px-2 py-0.5 rounded-full font-bold border shrink-0 ${
+                          isDarkTheme ? 'bg-blue-500/15 text-blue-300 border-blue-400/30' : 'bg-blue-50 text-blue-800 border-blue-200'
+                        }`}>
                           {voices.filter(v => v.category === 'Nasional').length} Karakter
                         </span>
                       </div>
@@ -2802,7 +2825,9 @@ PENTING: Langsung bacakan naskah berikut dari kata pertama persis menjiwai usia,
                         <h3 className={`text-base font-black ${isDarkTheme ? 'text-white' : 'text-zinc-900'}`}>
                           BLOK 2 — PASUNDAN VOICE (Karakter Suara Sunda)
                         </h3>
-                        <span className="text-[10px] px-2 py-0.5 rounded-full font-bold bg-emerald-500/15 text-emerald-300 border border-emerald-400/30 shrink-0">
+                        <span className={`text-[10px] px-2 py-0.5 rounded-full font-bold border shrink-0 ${
+                          isDarkTheme ? 'bg-emerald-500/15 text-emerald-300 border-emerald-400/30' : 'bg-emerald-50 text-emerald-800 border-emerald-200'
+                        }`}>
                           {voices.filter(v => v.category === 'Sunda').length} Karakter
                         </span>
                       </div>
@@ -3048,11 +3073,11 @@ PENTING: Langsung bacakan naskah berikut dari kata pertama persis menjiwai usia,
                   <div className="flex items-center justify-between gap-3 text-xs">
                     <div className="flex items-center gap-2.5 truncate">
                       <Loader2 className="w-4 h-4 animate-spin text-[#F59E0B] shrink-0" />
-                      <span className="font-bold text-[#0C4E34] dark:text-emerald-300 truncate">
+                      <span className={`font-bold truncate ${isDarkTheme ? 'text-emerald-300' : 'text-[#0C4E34]'}`}>
                         {progressStatus || "Menyintesis suara dengan Gemini Neural..."}
                       </span>
                     </div>
-                    <span className="font-mono font-black text-sm text-[#0C4E34] dark:text-emerald-400 shrink-0">
+                    <span className={`font-mono font-black text-sm shrink-0 ${isDarkTheme ? 'text-emerald-400' : 'text-[#0C4E34]'}`}>
                       {generationProgress}%
                     </span>
                   </div>
