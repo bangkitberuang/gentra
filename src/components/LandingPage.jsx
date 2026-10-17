@@ -26,7 +26,8 @@ import {
   Check,
   Building2,
   X,
-  Activity
+  Activity,
+  Download
 } from 'lucide-react';
 
 const FULL_PERSONAS = [
@@ -445,8 +446,8 @@ export const LandingPage = ({ onOpenLogin }) => {
           
           {/* Typography - Balanced, Impactful & Wide */}
           <div className="space-y-3.5 flex flex-col items-center max-w-4xl mx-auto">
-            <h1 className="text-4xl sm:text-6xl md:text-7xl font-black tracking-tight text-zinc-950 leading-[1.1] drop-shadow-sm">
-              Ti Téks Jadi Sora.
+            <h1 className="text-4xl sm:text-6xl md:text-7xl font-black tracking-tight text-zinc-950 leading-[1.08] drop-shadow-sm">
+              Ti Téks <span className="font-serif italic font-normal text-[#0C4E34]">Jadi Sora.</span>
             </h1>
             <div className="inline-flex items-center gap-2.5 px-5 py-2 rounded-full bg-white/90 backdrop-blur-md border border-amber-300/70 shadow-sm">
               <span className="w-2.5 h-2.5 rounded-full bg-[#D97706] animate-pulse" />
@@ -481,19 +482,19 @@ export const LandingPage = ({ onOpenLogin }) => {
           {/* Quick Metrics in Frosted Glass - Expansive Wide Layout */}
           <div className="pt-4 sm:pt-6 grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5 max-w-5xl lg:max-w-6xl mx-auto w-full text-left">
             <div className="bg-white/90 backdrop-blur-md p-4 sm:p-5 rounded-2xl border border-white/95 shadow-sm hover:shadow-md transition-all hover:-translate-y-0.5">
-              <span className="text-2xl sm:text-3xl font-black text-[#0C4E34] block">22 Karakter</span>
+              <span className="text-2xl sm:text-3xl font-black font-mono tabular-nums text-[#0C4E34] block">22 Karakter</span>
               <span className="text-xs sm:text-[13px] text-zinc-700 font-semibold mt-0.5 block">14 Nasional + 8 Khas Sunda</span>
             </div>
             <div className="bg-white/90 backdrop-blur-md p-4 sm:p-5 rounded-2xl border border-white/95 shadow-sm hover:shadow-md transition-all hover:-translate-y-0.5">
-              <span className="text-2xl sm:text-3xl font-black text-[#0C4E34] block">48 & 44.1 kHz</span>
+              <span className="text-2xl sm:text-3xl font-black font-mono tabular-nums text-[#0C4E34] block">48 & 44.1 kHz</span>
               <span className="text-xs sm:text-[13px] text-zinc-700 font-semibold mt-0.5 block">Standar DAW & Broadcast WAV</span>
             </div>
             <div className="bg-white/90 backdrop-blur-md p-4 sm:p-5 rounded-2xl border border-white/95 shadow-sm hover:shadow-md transition-all hover:-translate-y-0.5">
-              <span className="text-2xl sm:text-3xl font-black text-[#F59E0B] block">Mode ILM</span>
+              <span className="text-2xl sm:text-3xl font-black font-mono text-[#F59E0B] block">Mode ILM</span>
               <span className="text-xs sm:text-[13px] text-zinc-700 font-semibold mt-0.5 block">Generator Kampanye 30s & 60s</span>
             </div>
             <div className="bg-white/90 backdrop-blur-md p-4 sm:p-5 rounded-2xl border border-white/95 shadow-sm hover:shadow-md transition-all hover:-translate-y-0.5">
-              <span className="text-2xl sm:text-3xl font-black text-[#0C4E34] block">Gemini Audio</span>
+              <span className="text-2xl sm:text-3xl font-black font-mono text-[#0C4E34] block">Gemini Audio</span>
               <span className="text-xs sm:text-[13px] text-zinc-700 font-semibold mt-0.5 block">Transkripsi Naskah Otomatis</span>
             </div>
           </div>

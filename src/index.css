@@ -4,31 +4,111 @@
 
 :root {
   font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  font-feature-settings: "cv02", "cv03", "cv04", "cv11";
 }
 
 html, body {
   margin: 0;
-  background-color: #FBFBFA;
+  background-color: #FAF8F5;
   color: #18181b;
   overflow-x: hidden;
   max-width: 100vw;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
-/* Custom Scrollbar */
+/* Tabular Numerals for Metering, Latency, and Currency */
+.font-tabular {
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum";
+}
+
+/* Custom Studio Scrollbar */
 ::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
+  width: 7px;
+  height: 7px;
 }
 
 ::-webkit-scrollbar-track {
-  background: #f4f4f5;
+  background: rgba(12, 78, 52, 0.04);
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #d4d4d8;
-  border-radius: 4px;
+  background: rgba(12, 78, 52, 0.25);
+  border-radius: 9999px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #a1a1aa;
+  background: rgba(12, 78, 52, 0.45);
+}
+
+.dark ::-webkit-scrollbar-track {
+  background: #08110c;
+}
+
+.dark ::-webkit-scrollbar-thumb {
+  background: #173827;
+  border-radius: 9999px;
+}
+
+.dark ::-webkit-scrollbar-thumb:hover {
+  background: #23543b;
+}
+
+/* Tactile Analog Broadcast Range Slider */
+input[type="range"].studio-fader {
+  -webkit-appearance: none;
+  appearance: none;
+  height: 6px;
+  border-radius: 9999px;
+  background: rgba(12, 78, 52, 0.15);
+  outline: none;
+  transition: all 0.2s ease;
+}
+
+.dark input[type="range"].studio-fader {
+  background: #13241b;
+}
+
+input[type="range"].studio-fader::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #F59E0B 0%, #D97706 100%);
+  cursor: grab;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.3), inset 0 1px 1px rgba(255, 255, 255, 0.4);
+  border: 2px solid #ffffff;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.dark input[type="range"].studio-fader::-webkit-slider-thumb {
+  border-color: #071710;
+  box-shadow: 0 0 8px rgba(245, 158, 11, 0.5), inset 0 1px 1px rgba(255, 255, 255, 0.5);
+}
+
+input[type="range"].studio-fader:active::-webkit-slider-thumb {
+  transform: scale(1.18);
+  cursor: grabbing;
+}
+
+input[type="range"].studio-fader::-moz-range-thumb {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #F59E0B 0%, #D97706 100%);
+  cursor: grab;
+  border: 2px solid #ffffff;
+}
+
+/* Studio Precision LED pulse */
+@keyframes studio-meter-pulse {
+  0%, 100% { opacity: 0.85; transform: scaleY(1); }
+  50% { opacity: 1; transform: scaleY(1.3); }
+}
+
+.animate-meter {
+  animation: studio-meter-pulse 0.8s ease-in-out infinite alternate;
 }

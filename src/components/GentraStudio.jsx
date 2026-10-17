@@ -47,7 +47,8 @@ import {
   RefreshCw,
   Activity,
   FlaskConical,
-  Coins
+  Coins,
+  RotateCcw
 } from 'lucide-react';
 import { VoiceLabModal } from './VoiceLabModal.jsx';
 
@@ -1071,16 +1072,23 @@ export const GentraStudio = ({
   const [voices, setVoices] = useState(() => {
     try {
       const saved = localStorage.getItem('gentra_voices_v3');
+      const customPrompts = JSON.parse(localStorage.getItem('gentra_custom_voice_prompts') || '{}');
       if (saved) {
         const parsed = JSON.parse(saved);
         const clonedVoices = parsed.filter(v => v.isCloned);
         const merged = INITIAL_VOICES.map(iv => {
-          const found = parsed.find(p => p.id === iv.id);
-          return found ? { ...iv, ...found } : iv;
+          const found = parsed.find(p => (p.originalName || p.name) === iv.name) || parsed.find(p => p.name === iv.name);
+          const customPrompt = customPrompts[iv.name] || (found && found.personaPrompt);
+          return found 
+            ? { ...iv, ...found, personaPrompt: customPrompt || found.personaPrompt || iv.personaPrompt } 
+            : { ...iv, personaPrompt: customPrompt || iv.personaPrompt };
         });
         return [...merged, ...clonedVoices];
       }
-      return INITIAL_VOICES;
+      return INITIAL_VOICES.map(iv => ({
+        ...iv,
+        personaPrompt: customPrompts[iv.name] || iv.personaPrompt
+      }));
     } catch (e) {
       return INITIAL_VOICES;
     }
@@ -1099,11 +1107,23 @@ export const GentraStudio = ({
 
   // Auto-fallback jika karakter terpilih di-hide oleh admin lab
   useEffect(() => {
-    if (selectedVoice?.isHidden) {
-      const firstActive = voices.find(v => !v.isHidden) || voices[0];
-      if (firstActive) setSelectedVoice(firstActive);
+    if (selectedVoice) {
+      const activeInList = voices.find(v => v.name === selectedVoice.name || (v.originalName && v.originalName === (selectedVoice.originalName || selectedVoice.name)));
+      if (activeInList) {
+        if (activeInList.isHidden) {
+          const firstActive = voices.find(v => !v.isHidden) || voices[0];
+          if (firstActive) setSelectedVoice(firstActive);
+        } else if (
+          activeInList.personaPrompt !== selectedVoice.personaPrompt || 
+          activeInList.desc !== selectedVoice.desc || 
+          activeInList.name !== selectedVoice.name ||
+          activeInList.accent !== selectedVoice.accent
+        ) {
+          setSelectedVoice(activeInList);
+        }
+      }
     }
-  }, [voices, selectedVoice]);
+  }, [voices]);
 
   // Edit Persona Modal State
   const [editingVoice, setEditingVoice] = useState(null);
@@ -1144,6 +1164,7 @@ export const GentraStudio = ({
   const [currentChunkIndex, setCurrentChunkIndex] = useState(0);
   const [totalChunksCount, setTotalChunksCount] = useState(0);
   const [audioUrl, setAudioUrl] = useState(null);
+  const [isMainAudioPlaying, setIsMainAudioPlaying] = useState(false);
   const [history, setHistory] = useState([]);
 
   // Studio Audio Resampling State (Standar Studio Broadcast 48kHz & 44.1kHz, default 24kHz Native Vocoder)
@@ -2455,32 +2476,82 @@ ATURAN MUTLAK: Langsung bacakan teks naskah dari kata pertama tanpa intro, tanpa
         {(view === 'studio' || view === 'ads') && (
           <div className="flex flex-col gap-6 animate-in fade-in duration-300">
             
-            {/* 3-STEP STUDIO WORKFLOW INDICATOR */}
-            <div className={`rounded-2xl p-3.5 sm:p-4 border transition-colors flex flex-col sm:flex-row items-center justify-between gap-3 shadow-xs ${
-              isDarkTheme ? 'bg-[#0b1611]/90 border-emerald-950 text-zinc-200' : 'bg-white border-emerald-100 text-zinc-800'
+            {/* MASTER BROADCAST WORKFLOW RACK CONSOLE */}
+            <div className={`rounded-2xl p-4 border transition-colors flex flex-col md:flex-row items-stretch md:items-center justify-between gap-3 shadow-sm ${
+              isDarkTheme ? 'bg-[#0b1611]/95 border-emerald-950 text-zinc-200' : 'bg-white border-zinc-200/90 text-zinc-800'
             }`}>
-              <div className="flex items-center gap-2">
-                <span className="text-[10px] font-black tracking-widest uppercase px-2.5 py-1 rounded-full bg-[#0C4E34] text-white">
-                  ALUR PRODUKSI
-                </span>
-                <span className="text-xs font-bold text-zinc-500 hidden md:inline">
-                  3 langkah mudah produksi siaran suara GENTRA:
-                </span>
+              <div className="flex items-center gap-3">
+                <div className="w-8 h-8 rounded-xl bg-[#0C4E34] text-[#F59E0B] flex items-center justify-center font-black text-xs shadow-xs shrink-0">
+                  <Activity className="w-4 h-4 text-[#F59E0B]" />
+                </div>
+                <div>
+                  <div className="flex items-center gap-2">
+                    <span className="text-[10px] font-mono font-bold tracking-widest uppercase text-[#F59E0B]">
+                      WORKFLOW PRODUKSI
+                    </span>
+                    <span className="text-[9px] px-1.5 py-0.2 rounded font-mono font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+                      ON-AIR READY
+                    </span>
+                  </div>
+                  <h3 className="text-xs font-black tracking-tight mt-0.5">
+                    Konsol 3 Langkah Standar Penyiaran
+                  </h3>
+                </div>
               </div>
-              <div className="flex items-center gap-2 text-xs font-bold overflow-x-auto w-full sm:w-auto justify-start sm:justify-end">
-                <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-emerald-500/10 text-emerald-600 border border-emerald-500/20 shrink-0">
-                  <span className="w-4 h-4 rounded-full bg-emerald-600 text-white flex items-center justify-center text-[10px] font-black">1</span>
-                  <span>Masukan Naskah</span>
+
+              {/* 3 Step Interactive Navigation */}
+              <div className="grid grid-cols-3 gap-2 text-xs font-bold w-full md:w-auto">
+                {/* Step 1 */}
+                <div className={`p-2 sm:px-3 sm:py-2 rounded-xl border transition-all flex items-center gap-2 ${
+                  text.trim().length > 0 
+                    ? isDarkTheme ? 'bg-emerald-950/60 border-emerald-600/80 text-emerald-300' : 'bg-emerald-50/90 border-emerald-300 text-[#0C4E34]' 
+                    : isDarkTheme ? 'bg-[#121f18] border-zinc-800 text-zinc-400' : 'bg-zinc-50 border-zinc-200 text-zinc-500'
+                }`}>
+                  <span className={`w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-black shrink-0 ${
+                    text.trim().length > 0 ? 'bg-[#0C4E34] text-[#F59E0B]' : 'bg-zinc-700 text-zinc-300'
+                  }`}>
+                    {text.trim().length > 0 ? '✓' : '1'}
+                  </span>
+                  <div className="min-w-0">
+                    <div className="text-[11px] font-black truncate">1. Naskah</div>
+                    <div className="text-[9px] font-mono opacity-80 truncate font-tabular">
+                      {text.trim().length > 0 ? `${text.trim().length} Chars` : 'Siapkan Teks'}
+                    </div>
+                  </div>
                 </div>
-                <span className="text-zinc-400">➔</span>
-                <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-emerald-500/10 text-emerald-600 border border-emerald-500/20 shrink-0">
-                  <span className="w-4 h-4 rounded-full bg-emerald-600 text-white flex items-center justify-center text-[10px] font-black">2</span>
-                  <span>Pilih Karakter Suara</span>
+
+                {/* Step 2 */}
+                <div className={`p-2 sm:px-3 sm:py-2 rounded-xl border transition-all flex items-center gap-2 ${
+                  selectedVoice 
+                    ? isDarkTheme ? 'bg-emerald-950/60 border-emerald-600/80 text-emerald-300' : 'bg-emerald-50/90 border-emerald-300 text-[#0C4E34]' 
+                    : isDarkTheme ? 'bg-[#121f18] border-zinc-800 text-zinc-400' : 'bg-zinc-50 border-zinc-200 text-zinc-500'
+                }`}>
+                  <span className={`w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-black shrink-0 ${
+                    selectedVoice ? 'bg-[#0C4E34] text-[#F59E0B]' : 'bg-zinc-700 text-zinc-300'
+                  }`}>
+                    {selectedVoice ? '✓' : '2'}
+                  </span>
+                  <div className="min-w-0">
+                    <div className="text-[11px] font-black truncate">2. Karakter</div>
+                    <div className="text-[9px] font-mono opacity-80 truncate">
+                      {selectedVoice?.name || 'Pilih Suara'}
+                    </div>
+                  </div>
                 </div>
-                <span className="text-zinc-400">➔</span>
-                <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-amber-500/10 text-amber-600 border border-amber-500/20 shrink-0">
-                  <span className="w-4 h-4 rounded-full bg-amber-600 text-white flex items-center justify-center text-[10px] font-black">3</span>
-                  <span>Pilih Gaya Bicara</span>
+
+                {/* Step 3 */}
+                <div className={`p-2 sm:px-3 sm:py-2 rounded-xl border transition-all flex items-center gap-2 ${
+                  isDarkTheme ? 'bg-amber-950/30 border-amber-600/60 text-amber-300' : 'bg-amber-50/90 border-amber-300 text-amber-800'
+                }`}>
+                  <span className="w-5 h-5 rounded-full bg-amber-500 text-black flex items-center justify-center text-[10px] font-black shrink-0">
+                    3
+                  </span>
+                  <div className="min-w-0">
+                    <div className="text-[11px] font-black truncate">3. Gaya Bicara</div>
+                    <div className="text-[9px] font-mono opacity-80 truncate font-tabular">
+                      {emotion} • {speed.toFixed(1)}x
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
@@ -2761,20 +2832,60 @@ ATURAN MUTLAK: Langsung bacakan teks naskah dari kata pertama tanpa intro, tanpa
                 </div>
               </div>
 
+              {/* Quick Script Preset Templates */}
+              <div className="flex items-center gap-1.5 flex-wrap pt-1">
+                <span className={`text-[10px] font-bold uppercase tracking-wider ${subTextColor}`}>Naskah Siap Uji:</span>
+                <button
+                  type="button"
+                  onClick={() => setText("Sampurasun wargi Jawa Barat! Wilujeng sumping di layanan informasi publik terpadu GENTRA. Ti téks jadi sora, mugia dinten ieu pinuh ku kasehatan, kabagjaan, sareng kalancaran dina sagala urusan.")}
+                  className={`px-2.5 py-1 rounded-lg text-[11px] font-bold border transition-all ${
+                    isDarkTheme ? 'bg-[#0f1d16] hover:bg-[#183024] border-emerald-900/60 text-emerald-300' : 'bg-white hover:bg-emerald-50 border-zinc-200 text-[#0C4E34]'
+                  }`}
+                >
+                  🍃 Sapa Warga (Basa Sunda)
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setText("Pemerintah Provinsi Jawa Barat menghimbau seluruh masyarakat untuk senantiasa menjaga kebersihan lingkungan, meningkatkan kewaspadaan, dan saling menjaga kerukunan bersama menuju Jabar Juara.")}
+                  className={`px-2.5 py-1 rounded-lg text-[11px] font-bold border transition-all ${
+                    isDarkTheme ? 'bg-[#0f1d16] hover:bg-[#183024] border-emerald-900/60 text-emerald-300' : 'bg-white hover:bg-emerald-50 border-zinc-200 text-[#0C4E34]'
+                  }`}
+                >
+                  🇮🇩 Himbauan Resmi (Nasional)
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setText("Dari bentang pegunungan Parahyangan hingga debur ombak pesisir selatan, kekayaan tradisi dan modernitas teknologi kini berpadu dalam keharmonisan suara tanah Pasundan.")}
+                  className={`px-2.5 py-1 rounded-lg text-[11px] font-bold border transition-all ${
+                    isDarkTheme ? 'bg-[#0f1d16] hover:bg-[#183024] border-emerald-900/60 text-emerald-300' : 'bg-white hover:bg-emerald-50 border-zinc-200 text-[#0C4E34]'
+                  }`}
+                >
+                  🎙️ Narasi Dokumenter
+                </button>
+              </div>
+
               <textarea
                 ref={textareaRef}
-                className={`w-full h-52 p-4 rounded-2xl outline-none transition-all resize-none font-medium text-base leading-relaxed ${inputBg}`}
+                className={`w-full h-48 p-4 rounded-2xl outline-none transition-all resize-none font-medium text-base leading-relaxed ${inputBg}`}
                 placeholder={dialect === 'sunda' ? "Tuliskan naskah berbahasa Sunda di sini... (Contoh: Sampurasun wargi sadayana! Wilujeng sumping di Gentra...)" : "Tuliskan naskah berbahasa Indonesia di sini..."}
                 value={text}
                 onChange={(e) => setText(e.target.value)}
               ></textarea>
 
-              <div className={`flex justify-between items-center text-xs font-medium ${subTextColor}`}>
-                <span>{text.length} Karakter | Estimasi: ~{Math.ceil(text.split(/\s+/).filter(Boolean).length / 2.5)} Detik Suara</span>
-                <span className={`font-bold flex items-center gap-1.5 ${isDarkTheme ? 'text-emerald-400' : 'text-[#0C4E34]'}`}>
-                  <span className={`w-2 h-2 rounded-full animate-pulse ${isDarkTheme ? 'bg-emerald-400' : 'bg-[#0C4E34]'}`}></span>
-                  Engine: Google Gemini Flash Neural (24 kHz Native Lossless)
-                </span>
+              <div className={`flex flex-col sm:flex-row sm:items-center justify-between text-xs font-medium gap-2 pt-1 ${subTextColor}`}>
+                <div className="flex items-center gap-3 font-mono text-[11px] font-tabular">
+                  <span><strong>{text.length}</strong> Karakter</span>
+                  <span>•</span>
+                  <span><strong>{text.split(/\s+/).filter(Boolean).length}</strong> Kata</span>
+                  <span>•</span>
+                  <span>Estimasi: <strong className="text-amber-500 font-bold">~{Math.ceil(text.split(/\s+/).filter(Boolean).length / 2.5)}s</strong> Durasi Siaran</span>
+                </div>
+                <div className="flex items-center gap-2 font-mono text-[11px]">
+                  <span className={`w-2 h-2 rounded-full animate-pulse ${isDarkTheme ? 'bg-emerald-400 shadow-[0_0_8px_#34d399]' : 'bg-[#0C4E34]'}`}></span>
+                  <span className={`font-bold ${isDarkTheme ? 'text-emerald-400' : 'text-[#0C4E34]'}`}>
+                    Google Gemini Flash Neural • 24 kHz Lossless
+                  </span>
+                </div>
               </div>
             </div>
 
@@ -2992,13 +3103,11 @@ ATURAN MUTLAK: Langsung bacakan teks naskah dari kata pertama tanpa intro, tanpa
                         return (
                           <div
                             key={`${v.id}-${v.name}`}
-                            onClick={() => {
-                              if (!hasAudio) {
-                                setPreviewUnavailableVoice(v.name);
-                                setTimeout(() => setPreviewUnavailableVoice(null), 4000);
-                                return;
-                              }
+                            onClick={(e) => {
                               setSelectedVoice(v);
+                              if (hasAudio) {
+                                handlePreviewVoice(v, e);
+                              }
                             }}
                             className={`text-left p-3.5 rounded-2xl border transition-all duration-200 relative flex flex-col justify-between gap-3 group select-none cursor-pointer ${
                               !hasAudio
@@ -3112,12 +3221,18 @@ ATURAN MUTLAK: Langsung bacakan teks naskah dari kata pertama tanpa intro, tanpa
               </h2>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div className={`space-y-5 p-5 rounded-2xl border transition-colors ${subCardBg}`}>
-                  <div>
-                    <div className="flex justify-between mb-2">
-                      <label className={`text-xs font-bold ${isDarkTheme ? 'text-zinc-300' : 'text-zinc-700'}`}>Kecepatan Bicara</label>
-                      <span className={`text-xs font-bold px-2 py-0.5 rounded-lg ${
-                        isDarkTheme ? 'text-emerald-300 bg-emerald-950/80 border border-emerald-800/60' : 'text-[#0C4E34] bg-[#0C4E34]/10'
+                <div className={`space-y-6 p-6 rounded-2xl border transition-colors ${subCardBg}`}>
+                  {/* Speed Fader */}
+                  <div className="space-y-2">
+                    <div className="flex justify-between items-center">
+                      <div>
+                        <label className={`text-xs font-black uppercase tracking-wider block ${isDarkTheme ? 'text-zinc-200' : 'text-zinc-800'}`}>
+                          Kecepatan Bicara (Speed)
+                        </label>
+                        <span className="text-[10px] text-zinc-400 font-medium">Laju artikulasi tempo pembacaan</span>
+                      </div>
+                      <span className={`text-xs font-mono tabular-nums font-bold px-2.5 py-1 rounded-lg border ${
+                        isDarkTheme ? 'text-amber-300 bg-amber-950/40 border-amber-500/30' : 'text-amber-800 bg-amber-50 border-amber-200'
                       }`}>
                         {speed.toFixed(1)}x
                       </span>
@@ -3129,22 +3244,28 @@ ATURAN MUTLAK: Langsung bacakan teks naskah dari kata pertama tanpa intro, tanpa
                       step="0.1" 
                       value={speed} 
                       onChange={(e) => setSpeed(parseFloat(e.target.value))} 
-                      className={`w-full h-2 rounded-lg appearance-none cursor-pointer accent-[#10b981] ${isDarkTheme ? 'bg-zinc-800' : 'bg-zinc-200'}`} 
+                      className="w-full studio-fader cursor-pointer" 
                     />
-                    <div className={`flex justify-between text-[10px] mt-1 ${isDarkTheme ? 'text-zinc-500' : 'text-zinc-400'}`}>
-                      <span>Lambat (0.6x)</span>
-                      <span>Normal (1.0x)</span>
-                      <span>Cepat (1.6x)</span>
+                    <div className={`flex justify-between text-[10px] font-mono font-medium ${isDarkTheme ? 'text-zinc-500' : 'text-zinc-400'}`}>
+                      <span>0.6x (Khidmat/Santai)</span>
+                      <span className="font-bold text-amber-500/80">1.0x (Normal)</span>
+                      <span>1.6x (Cepat/Komersial)</span>
                     </div>
                   </div>
 
-                  <div>
-                    <div className="flex justify-between mb-2">
-                      <label className={`text-xs font-bold ${isDarkTheme ? 'text-zinc-300' : 'text-zinc-700'}`}>Tinggi Nada (Pitch)</label>
-                      <span className={`text-xs font-bold px-2 py-0.5 rounded-lg ${
-                        isDarkTheme ? 'text-emerald-300 bg-emerald-950/80 border border-emerald-800/60' : 'text-[#0C4E34] bg-[#0C4E34]/10'
+                  {/* Pitch Fader */}
+                  <div className="space-y-2 pt-2 border-t border-zinc-200/50 dark:border-emerald-950/60">
+                    <div className="flex justify-between items-center">
+                      <div>
+                        <label className={`text-xs font-black uppercase tracking-wider block ${isDarkTheme ? 'text-zinc-200' : 'text-zinc-800'}`}>
+                          Tinggi Nada (Pitch Shift)
+                        </label>
+                        <span className="text-[10px] text-zinc-400 font-medium">Resonansi timbre vokal (-6st s/d +6st)</span>
+                      </div>
+                      <span className={`text-xs font-mono tabular-nums font-bold px-2.5 py-1 rounded-lg border ${
+                        isDarkTheme ? 'text-amber-300 bg-amber-950/40 border-amber-500/30' : 'text-amber-800 bg-amber-50 border-amber-200'
                       }`}>
-                        {pitch > 0 ? `+${pitch}` : pitch}
+                        {pitch > 0 ? `+${pitch}` : pitch} st
                       </span>
                     </div>
                     <input 
@@ -3154,12 +3275,12 @@ ATURAN MUTLAK: Langsung bacakan teks naskah dari kata pertama tanpa intro, tanpa
                       step="1" 
                       value={pitch} 
                       onChange={(e) => setPitch(parseInt(e.target.value))} 
-                      className={`w-full h-2 rounded-lg appearance-none cursor-pointer accent-[#10b981] ${isDarkTheme ? 'bg-zinc-800' : 'bg-zinc-200'}`} 
+                      className="w-full studio-fader cursor-pointer" 
                     />
-                    <div className={`flex justify-between text-[10px] mt-1 ${isDarkTheme ? 'text-zinc-500' : 'text-zinc-400'}`}>
-                      <span>Berat / Rendah (-6)</span>
-                      <span>Standar (0)</span>
-                      <span>Tinggi / Nyaring (+6)</span>
+                    <div className={`flex justify-between text-[10px] font-mono font-medium ${isDarkTheme ? 'text-zinc-500' : 'text-zinc-400'}`}>
+                      <span>-6st (Deep Maskulin)</span>
+                      <span className="font-bold text-amber-500/80">0 (Kalibrasi Asli)</span>
+                      <span>+6st (Cerah Melengking)</span>
                     </div>
                   </div>
                 </div>
@@ -3335,8 +3456,97 @@ ATURAN MUTLAK: Langsung bacakan teks naskah dari kata pertama tanpa intro, tanpa
                     </div>
                   </div>
 
+                  {/* TACTILE ANALOG BROADCAST EQUALIZER & STEREO VU METERS */}
+                  <div className={`p-4 rounded-2xl border space-y-3 transition-colors ${
+                    isDarkTheme ? 'bg-[#08120d] border-emerald-950/80 text-zinc-100' : 'bg-zinc-950 border-zinc-800 text-white'
+                  }`}>
+                    {/* Top Console Bar */}
+                    <div className="flex items-center justify-between text-[11px] font-mono border-b border-white/10 pb-2">
+                      <div className="flex items-center gap-2">
+                        <span className={`w-2.5 h-2.5 rounded-full ${isMainAudioPlaying ? 'bg-emerald-400 animate-ping' : 'bg-zinc-600'}`} />
+                        <span className="font-bold tracking-wider text-emerald-400 uppercase text-[10px]">
+                          {isMainAudioPlaying ? '● ON-AIR PLAYBACK' : '○ STANDBY MONITOR'}
+                        </span>
+                      </div>
+                      <div className="flex items-center gap-2 text-zinc-400 font-tabular text-[10px]">
+                        <span>{audioSampleRate / 1000} kHz • LINEAR PCM</span>
+                        <span>•</span>
+                        <span className="text-amber-400 font-bold">{audioSampleRate === 48000 ? '768 kbps' : audioSampleRate === 44100 ? '705.6 kbps' : '384 kbps'}</span>
+                      </div>
+                    </div>
+
+                    {/* 28-Band Spectrum Analyzer */}
+                    <div className="h-12 flex items-end justify-between gap-1 pt-1 pb-1 px-1">
+                      {[40, 65, 80, 55, 90, 75, 60, 85, 95, 70, 80, 60, 90, 100, 85, 70, 60, 75, 90, 65, 50, 70, 85, 60, 45, 55, 40, 30].map((h, bIdx) => {
+                        const dynamicHeight = isMainAudioPlaying 
+                          ? Math.max(15, Math.min(100, h * 0.9))
+                          : Math.max(8, h * 0.15);
+                        return (
+                          <div key={bIdx} className="flex-1 flex flex-col justify-end h-full">
+                            <div 
+                              className={`w-full rounded-t-sm transition-all duration-150 ${
+                                isMainAudioPlaying
+                                  ? bIdx > 22 
+                                    ? 'bg-rose-500 shadow-[0_0_6px_rgba(244,63,94,0.8)] animate-meter' 
+                                    : bIdx > 16 
+                                    ? 'bg-amber-400 shadow-[0_0_6px_rgba(245,158,11,0.8)] animate-meter' 
+                                    : 'bg-emerald-400 shadow-[0_0_6px_rgba(52,211,153,0.8)] animate-meter'
+                                  : 'bg-emerald-950/70'
+                              }`}
+                              style={{ 
+                                height: `${dynamicHeight}%`,
+                                animationDelay: `${(bIdx % 5) * 0.15}s`
+                              }}
+                            />
+                          </div>
+                        );
+                      })}
+                    </div>
+
+                    {/* Analog Stereo VU Peak Bar */}
+                    <div className="space-y-1.5 pt-1.5 border-t border-white/10 font-mono text-[9px] text-zinc-400">
+                      <div className="flex items-center gap-2">
+                        <span className="w-3 font-bold text-zinc-300">L</span>
+                        <div className="flex-1 h-2 rounded bg-black/70 p-0.5 flex gap-0.5 overflow-hidden border border-white/5">
+                          {Array.from({ length: 24 }).map((_, i) => (
+                            <div 
+                              key={i} 
+                              className={`flex-1 rounded-[1px] transition-opacity duration-75 ${
+                                i > 20 ? 'bg-rose-500' : i > 15 ? 'bg-amber-400' : 'bg-emerald-500'
+                              } ${isMainAudioPlaying && i < 19 ? 'opacity-100 shadow-[0_0_3px_currentColor]' : 'opacity-20'}`} 
+                            />
+                          ))}
+                        </div>
+                        <span className="w-9 text-right font-tabular text-emerald-400 font-bold">{isMainAudioPlaying ? '-3.2 dB' : '-inf'}</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <span className="w-3 font-bold text-zinc-300">R</span>
+                        <div className="flex-1 h-2 rounded bg-black/70 p-0.5 flex gap-0.5 overflow-hidden border border-white/5">
+                          {Array.from({ length: 24 }).map((_, i) => (
+                            <div 
+                              key={i} 
+                              className={`flex-1 rounded-[1px] transition-opacity duration-75 ${
+                                i > 20 ? 'bg-rose-500' : i > 15 ? 'bg-amber-400' : 'bg-emerald-500'
+                              } ${isMainAudioPlaying && i < 18 ? 'opacity-100 shadow-[0_0_3px_currentColor]' : 'opacity-20'}`} 
+                            />
+                          ))}
+                        </div>
+                        <span className="w-9 text-right font-tabular text-emerald-400 font-bold">{isMainAudioPlaying ? '-3.8 dB' : '-inf'}</span>
+                      </div>
+                    </div>
+                  </div>
+
                   <div className={`rounded-2xl p-2 border transition-colors ${subCardBg}`}>
-                    <audio ref={audioRef} controls src={audioUrl} className="w-full" autoPlay />
+                    <audio 
+                      ref={audioRef} 
+                      controls 
+                      src={audioUrl} 
+                      className="w-full" 
+                      autoPlay 
+                      onPlay={() => setIsMainAudioPlaying(true)}
+                      onPause={() => setIsMainAudioPlaying(false)}
+                      onEnded={() => setIsMainAudioPlaying(false)}
+                    />
                   </div>
                 </div>
               )}
