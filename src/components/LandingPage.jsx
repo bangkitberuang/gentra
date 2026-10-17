@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { 
   Mic, 
   Sparkles, 
@@ -299,6 +299,8 @@ const FULL_PERSONAS = [
 export const LandingPage = ({ onOpenLogin }) => {
   const [playingVoice, setPlayingVoice] = useState(null);
   const [personaFilter, setPersonaFilter] = useState('Semua');
+  const landingAudioRef = useRef(null);
+  const landingAudioCache = useRef({});
 
   const filteredPersonas = FULL_PERSONAS.filter(p => {
     if (personaFilter === 'Semua') return true;
@@ -309,31 +311,111 @@ export const LandingPage = ({ onOpenLogin }) => {
     return true;
   });
 
-  const handlePlayVoicePreview = (persona) => {
+  const handlePlayVoicePreview = async (persona) => {
     if (playingVoice === persona.name) {
-      if (typeof window !== 'undefined' && window.speechSynthesis) {
-        window.speechSynthesis.cancel();
+      if (landingAudioRef.current) {
+        landingAudioRef.current.pause();
+        landingAudioRef.current.currentTime = 0;
       }
       setPlayingVoice(null);
       return;
     }
 
-    if (typeof window !== 'undefined' && window.speechSynthesis) {
-      window.speechSynthesis.cancel();
-      const utterance = new SpeechSynthesisUtterance(persona.sampleText);
-      utterance.lang = 'id-ID';
-      utterance.rate = 0.95;
-      utterance.pitch = persona.gender === 'Wanita' ? 1.15 : 0.9;
-      
-      utterance.onend = () => setPlayingVoice(null);
-      utterance.onerror = () => setPlayingVoice(null);
-
-      setPlayingVoice(persona.name);
-      window.speechSynthesis.speak(utterance);
-    } else {
-      setPlayingVoice(persona.name);
-      setTimeout(() => setPlayingVoice(null), 3000);
+    if (landingAudioRef.current) {
+      landingAudioRef.current.pause();
+      landingAudioRef.current.currentTime = 0;
     }
+
+    setPlayingVoice(persona.name);
+
+    // 1. Cek file preview audio berkualitas tinggi bawaan
+    const staticAudioMap = {
+      'Anita': '/audio/previews/anita.wav',
+      'Agus': '/audio/previews/agus.wav',
+      'Siti': '/audio/previews/siti.wav',
+      'Abah': '/audio/previews/abah.wav',
+      'Teh Neng': '/audio/previews/teh_neng.wav'
+    };
+
+    const targetUrl = landingAudioCache.current[persona.name] || staticAudioMap[persona.name];
+    if (targetUrl) {
+      const audio = new Audio(targetUrl);
+      landingAudioRef.current = audio;
+      audio.onended = () => setPlayingVoice(null);
+      audio.onerror = () => setPlayingVoice(null);
+      try {
+        await audio.play();
+        return;
+      } catch (err) {
+        console.warn('Gagal memutar audio landing preview langsung:', err);
+      }
+    }
+
+    // 2. Jika belum ada di static map, panggil Gemini TTS
+    const activeKey = (typeof import.meta !== 'undefined' && import.meta.env?.VITE_GEMINI_API_KEY) || "";
+    if (activeKey) {
+      try {
+        const fullPrompt = `Sebagai pengisi suara ${persona.name} (${persona.desc}). Ucapkan kalimat ini dengan intonasi manusiawi yang sangat alami, ramah, dan artikulatif: "${persona.sampleText}"`;
+        const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-3.8-flash-tts:generateContent?key=${activeKey}`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            contents: [{ parts: [{ text: fullPrompt }] }],
+            generationConfig: {
+              responseModalities: ["AUDIO"],
+              speechConfig: {
+                voiceConfig: {
+                  prebuiltVoiceConfig: { voiceName: persona.id && !persona.id.startsWith('sunda_') ? persona.id : 'Aoede' }
+                }
+              }
+            }
+          })
+        });
+        const data = await res.json();
+        const b64 = data?.candidates?.[0]?.content?.parts?.[0]?.inlineData?.data;
+        if (b64) {
+          const binary = atob(b64);
+          const bytes = new Uint8Array(binary.length);
+          for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
+          const pcm16 = new Int16Array(bytes.buffer);
+          
+          const wavBuffer = new ArrayBuffer(44 + pcm16.length * 2);
+          const view = new DataView(wavBuffer);
+          const writeStr = (v, offset, str) => {
+            for (let i = 0; i < str.length; i++) v.setUint8(offset + i, str.charCodeAt(i));
+          };
+          writeStr(view, 0, 'RIFF');
+          view.setUint32(4, 36 + pcm16.length * 2, true);
+          writeStr(view, 8, 'WAVE');
+          writeStr(view, 12, 'fmt ');
+          view.setUint32(16, 16, true);
+          view.setUint16(20, 1, true);
+          view.setUint16(22, 1, true);
+          view.setUint32(24, 24000, true);
+          view.setUint32(28, 24000 * 2, true);
+          view.setUint16(32, 2, true);
+          view.setUint16(34, 16, true);
+          writeStr(view, 36, 'data');
+          view.setUint32(40, pcm16.length * 2, true);
+          new Int16Array(wavBuffer, 44).set(pcm16);
+
+          const blob = new Blob([wavBuffer], { type: 'audio/wav' });
+          const url = URL.createObjectURL(blob);
+          landingAudioCache.current[persona.name] = url;
+
+          const audio = new Audio(url);
+          landingAudioRef.current = audio;
+          audio.onended = () => setPlayingVoice(null);
+          audio.onerror = () => setPlayingVoice(null);
+          await audio.play();
+          return;
+        }
+      } catch (e) {
+        console.warn('Gagal memanggil Gemini TTS di landing page:', e);
+      }
+    }
+
+    setTimeout(() => setPlayingVoice(null), 1000);
   };
 
   return (

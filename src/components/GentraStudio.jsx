@@ -41,7 +41,8 @@ import {
 } from 'lucide-react';
 
 // --- Konfigurasi Model ---
-const TTS_MODEL = "gemini-2.5-flash-preview-tts";
+const TTS_MODEL = "gemini-3.8-flash-tts";
+const TTS_FALLBACK_MODEL = "gemini-3.8-flash-lite-tts";
 const TEXT_MODEL = "gemini-3.8-flash";
 
 // --- Karakter Suara Bawaan GENTRA (14 Persona Awal + 8 Persona Khas Sunda) ---
@@ -329,8 +330,8 @@ const getVoiceAvatarMeta = (v) => {
   };
 };
 
-// Smart Sentence Chunking (Mencegah Penurunan Kualitas Audio)
-const splitTextIntoNaturalChunks = (text, maxChars = 160) => {
+// Smart Sentence Chunking (Mencegah Penurunan Kualitas Audio & Hemat Kuota API)
+const splitTextIntoNaturalChunks = (text, maxChars = 800) => {
   if (!text || !text.trim()) return [];
   const rawSentences = text
     .replace(/([.!?])\s*(?=[A-Z0-9\u00C0-\u017F])/g, "$1|")
@@ -677,6 +678,8 @@ export const GentraStudio = ({ user, onLogout }) => {
   const mediaRecorderRef = useRef(null);
   const audioChunksRef = useRef([]);
   const timerRef = useRef(null);
+  const previewAudioCache = useRef({});
+  const currentAudioRef = useRef(null);
 
   useEffect(() => {
     try {
@@ -695,9 +698,15 @@ export const GentraStudio = ({ user, onLogout }) => {
     setIsMenuOpen(false);
   };
 
-  const handlePreviewVoice = (v, e) => {
+  const handlePreviewVoice = async (v, e) => {
     if (e) e.stopPropagation();
+
+    // 1. Jika sedang memutar suara karakter ini, hentikan
     if (previewingVoice === v.name) {
+      if (currentAudioRef.current) {
+        currentAudioRef.current.pause();
+        currentAudioRef.current.currentTime = 0;
+      }
       if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
         window.speechSynthesis.cancel();
       }
@@ -705,25 +714,110 @@ export const GentraStudio = ({ user, onLogout }) => {
       return;
     }
 
+    // Hentikan pemutaran audio sebelumnya jika ada
+    if (currentAudioRef.current) {
+      currentAudioRef.current.pause();
+      currentAudioRef.current.currentTime = 0;
+    }
     if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
       window.speechSynthesis.cancel();
-      setPreviewingVoice(v.name);
-
-      const samplePhrase = v.category === 'Sunda'
-        ? `Sampurasun! Abdi ${v.name}, sora alami siap dianggo.`
-        : `Halo, saya ${v.name}, siap untuk produksi audio Anda.`;
-
-      const utterance = new SpeechSynthesisUtterance(samplePhrase);
-      utterance.lang = 'id-ID';
-      utterance.rate = v.gender === 'Female' ? 1.05 : 0.92;
-      utterance.pitch = v.gender === 'Female' ? 1.15 : 0.85;
-      utterance.onend = () => setPreviewingVoice(null);
-      utterance.onerror = () => setPreviewingVoice(null);
-      window.speechSynthesis.speak(utterance);
-    } else {
-      setPreviewingVoice(v.name);
-      setTimeout(() => setPreviewingVoice(null), 2200);
     }
+
+    setPreviewingVoice(v.name);
+
+    // 2. Cek apakah ada file audio preview berkualitas tinggi atau sudah di cache
+    const staticAudioMap = {
+      'Anita': '/audio/previews/anita.wav',
+      'Agus': '/audio/previews/agus.wav',
+      'Siti': '/audio/previews/siti.wav',
+      'Abah': '/audio/previews/abah.wav',
+      'Teh Neng': '/audio/previews/teh_neng.wav'
+    };
+
+    const cachedOrStaticUrl = previewAudioCache.current[v.name] || staticAudioMap[v.name];
+    if (cachedOrStaticUrl) {
+      const audio = new Audio(cachedOrStaticUrl);
+      currentAudioRef.current = audio;
+      audio.onended = () => setPreviewingVoice(null);
+      audio.onerror = () => setPreviewingVoice(null);
+      try {
+        await audio.play();
+        return;
+      } catch (err) {
+        console.warn('Gagal memutar audio preview langsung:', err);
+      }
+    }
+
+    // 3. Ambil Kunci Gemini API (Prioritas: state -> localStorage -> .env)
+    const activeKey = apiKey || (typeof import.meta !== 'undefined' && import.meta.env?.VITE_GEMINI_API_KEY) || "";
+
+    if (activeKey) {
+      try {
+        const sampleText = v.category === 'Sunda'
+          ? `Sampurasun wargi Jabar! Abdi ${v.name}, sora alami siap kanggo produksi audio anjeun.`
+          : `Halo! Saya ${v.name}, pengisi suara alami berstandar studio untuk produksi Anda.`;
+
+        const personaInstruction = v.personaPrompt ? `${v.personaPrompt} ` : "";
+        const fullPrompt = `Sebagai pengisi suara ${v.name} (${v.desc}). ${personaInstruction}Ucapkan kalimat ini dengan intonasi manusiawi yang sangat alami, hangat, dan artikulatif: "${sampleText}"`;
+
+        let res;
+        try {
+          res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${TTS_MODEL}:generateContent?key=${activeKey}`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              contents: [{ parts: [{ text: fullPrompt }] }],
+              generationConfig: {
+                responseModalities: ["AUDIO"],
+                speechConfig: {
+                  voiceConfig: {
+                    prebuiltVoiceConfig: { voiceName: v.id || 'Aoede' }
+                  }
+                }
+              }
+            })
+          });
+        } catch (mErr) {
+          res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${TTS_FALLBACK_MODEL}:generateContent?key=${activeKey}`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              contents: [{ parts: [{ text: fullPrompt }] }],
+              generationConfig: {
+                responseModalities: ["AUDIO"],
+                speechConfig: {
+                  voiceConfig: {
+                    prebuiltVoiceConfig: { voiceName: v.id || 'Aoede' }
+                  }
+                }
+              }
+            })
+          });
+        }
+
+        const data = await res.json();
+        const inlineData = data?.candidates?.[0]?.content?.parts?.[0]?.inlineData;
+
+        if (inlineData?.data) {
+          const pcm16 = base64ToPCM16(inlineData.data);
+          const wavBlob = buildWavBlobFromPCM(pcm16, 24000);
+          const audioUrl = URL.createObjectURL(wavBlob);
+          previewAudioCache.current[v.name] = audioUrl;
+
+          const audio = new Audio(audioUrl);
+          currentAudioRef.current = audio;
+          audio.onended = () => setPreviewingVoice(null);
+          audio.onerror = () => setPreviewingVoice(null);
+          await audio.play();
+          return;
+        }
+      } catch (apiErr) {
+        console.warn('Gagal memanggil Gemini TTS preview:', apiErr);
+      }
+    }
+
+    // Jika tidak ada koneksi/API, batalkan status preview dengan anggun tanpa robotik
+    setTimeout(() => setPreviewingVoice(null), 1000);
   };
 
   // Recording
@@ -1047,7 +1141,7 @@ PENTING:
     setAudioUrl(null);
     setProgressStatus('Memecah naskah menjadi segmen kalimat alami...');
 
-    const chunks = splitTextIntoNaturalChunks(text, 160);
+    const chunks = splitTextIntoNaturalChunks(text, 800);
     setTotalChunksCount(chunks.length);
 
     const speedText = speed > 1.2 ? "tempo cepat" : speed < 0.8 ? "tempo lambat/santai" : "tempo normal";
@@ -1074,7 +1168,7 @@ PENTING:
     try {
       for (let i = 0; i < chunks.length; i++) {
         setCurrentChunkIndex(i + 1);
-        setProgressStatus(`Memproses bagian ${i + 1} dari ${chunks.length} (Kualitas Konsisten)...`);
+        setProgressStatus(`Memproses bagian ${i + 1} dari ${chunks.length} dengan Engine Gemini Studio...`);
 
         const chunkText = chunks[i];
         const fullPrompt = `${baseStylePrefix} Teks: "${chunkText}"`;
@@ -1085,21 +1179,33 @@ PENTING:
             responseModalities: ["AUDIO"],
             speechConfig: { 
               voiceConfig: { 
-                prebuiltVoiceConfig: { voiceName: selectedVoice.id } 
+                prebuiltVoiceConfig: { voiceName: selectedVoice.id || 'Aoede' } 
               } 
             }
-          },
-          model: TTS_MODEL
+          }
         };
 
-        const response = await fetchWithRetry(
-          `https://generativelanguage.googleapis.com/v1beta/models/${TTS_MODEL}:generateContent?key=${activeKey}`,
-          {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(payload)
-          }
-        );
+        let response;
+        try {
+          response = await fetchWithRetry(
+            `https://generativelanguage.googleapis.com/v1beta/models/${TTS_MODEL}:generateContent?key=${activeKey}`,
+            {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify(payload)
+            }
+          );
+        } catch (priErr) {
+          console.warn(`Model ${TTS_MODEL} limit tercapai, mencoba fallback ke ${TTS_FALLBACK_MODEL}:`, priErr);
+          response = await fetchWithRetry(
+            `https://generativelanguage.googleapis.com/v1beta/models/${TTS_FALLBACK_MODEL}:generateContent?key=${activeKey}`,
+            {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify(payload)
+            }
+          );
+        }
 
         const inlineData = response?.candidates?.[0]?.content?.parts?.[0]?.inlineData;
         if (!inlineData || !inlineData.data) {
