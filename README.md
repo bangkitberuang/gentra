@@ -105,6 +105,17 @@ npm run build
 ```
 File siap saji akan dibuat di folder `dist/` dan siap di-deploy ke Web Server / Cloud CDN.
 
+### ☁️ Deployment Online ke Vercel (1-Click Ready)
+Proyek ini sudah dikonfigurasi penuh dengan **Vercel Serverless Functions** (`vercel.json` dan folder `api/`).
+1. Buka [vercel.com](https://vercel.com) dan masuk dengan akun GitHub Anda.
+2. Klik **Add New Project** -> **Import Repository** -> pilih `gentra`.
+3. Di bagian **Environment Variables**, tambahkan (opsional untuk Cloud AI):
+   - `GEMINI_API_KEY` (atau `VITE_GEMINI_API_KEY`)
+   - `ELEVENLABS_API_KEY` (jika menggunakan ElevenLabs)
+   - `AZURE_SPEECH_KEY` & `AZURE_SPEECH_REGION` (jika menggunakan Azure)
+4. Klik **Deploy**. Web langsung aktif dengan domain HTTPS gratis!
+
+
 ---
 
 ## 📋 SOP Alur Kerja Produksi Voice Over
