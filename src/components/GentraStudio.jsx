@@ -953,13 +953,7 @@ export const GentraStudio = ({
   // Indikator Status Kuota API Real-Time (Lampu Hijau / Merah / Kuning)
   const [apiQuotaStatus, setApiQuotaStatus] = useState('active');
   const [isQuotaBannerDismissed, setIsQuotaBannerDismissed] = useState(false);
-  const [googleVoiceTotalCost, setGoogleVoiceTotalCost] = useState(() => {
-    try {
-      return Number(localStorage.getItem('gentra_google_total_cost')) || 99120;
-    } catch (e) {
-      return 99120;
-    }
-  });
+
 
   // Pengecekan otomatis di latar belakang saat studio dibuka
   useEffect(() => {
@@ -1904,36 +1898,7 @@ ATURAN MUTLAK: Langsung bacakan teks naskah dari kata pertama tanpa intro, tanpa
         url: url
       }, ...prev]);
 
-      // Catat Biaya Riil Rendering Google AI Studio
-      const renderedChars = text.length;
-      const audioDurationSec = Math.round(((finalPCM.length / audioSampleRate) || 0) * 10) / 10;
-      const renderCostIDR = Math.max(35, Math.round(renderedChars * 0.15 + audioDurationSec * 25));
 
-      try {
-        const curCost = Number(localStorage.getItem('gentra_google_total_cost')) || 99120;
-        const nextCost = curCost + renderCostIDR;
-        localStorage.setItem('gentra_google_total_cost', String(nextCost));
-        setGoogleVoiceTotalCost(nextCost);
-
-        const curChars = Number(localStorage.getItem('gentra_google_total_chars')) || 48200;
-        localStorage.setItem('gentra_google_total_chars', String(curChars + renderedChars));
-
-        const curSecs = Number(localStorage.getItem('gentra_google_total_seconds')) || 2480;
-        localStorage.setItem('gentra_google_total_seconds', String(curSecs + audioDurationSec));
-
-        const logs = JSON.parse(localStorage.getItem('gentra_google_render_logs') || '[]');
-        logs.unshift({
-          id: 'log_' + Date.now(),
-          timestamp: new Date().toISOString().replace('T', ' ').slice(0, 19),
-          voiceName: selectedVoice.name,
-          category: selectedVoice.category || 'Nasional',
-          chars: renderedChars,
-          durationSec: audioDurationSec,
-          costIDR: renderCostIDR
-        });
-        if (logs.length > 50) logs.pop();
-        localStorage.setItem('gentra_google_render_logs', JSON.stringify(logs));
-      } catch (e) {}
 
       setApiQuotaStatus('active');
       setGenerationProgress(100);
@@ -2248,25 +2213,19 @@ ATURAN MUTLAK: Langsung bacakan teks naskah dari kata pertama tanpa intro, tanpa
                 </span>
               </button>
 
-              {/* Tombol Laboratorium Suara & Backend */}
+              {/* Tombol Laboratorium Suara */}
               <button 
                 type="button"
                 onClick={() => setShowVoiceLabModal(true)}
-                className={`h-9 px-3 rounded-full border transition-all flex items-center gap-2 shrink-0 shadow-xs font-bold text-xs ${
+                className={`h-9 px-3.5 rounded-full border transition-all flex items-center gap-2 shrink-0 shadow-xs font-bold text-xs ${
                   isDarkTheme 
                     ? 'bg-[#14161B] hover:bg-[#181A20] border-[#20232B] text-zinc-300 hover:text-white' 
                     : 'bg-zinc-100 hover:bg-zinc-200/80 border-zinc-200 text-[#0C4E34]'
                 }`}
-                title="Laboratorium Pengembangan Suara & Catatan Biaya (Klik untuk buka)"
+                title="Laboratorium Suara & Konfigurasi Karakter"
               >
                 <FlaskConical className={`w-3.5 h-3.5 ${isDarkTheme ? 'text-[#CCFF00]' : 'text-[#F59E0B]'}`} />
-                <span className="hidden xl:inline">Lab Suara</span>
-                <span className={`text-[10px] px-1.5 py-0.5 rounded-full font-black border flex items-center gap-0.5 ${
-                  isDarkTheme ? 'bg-[#CCFF00]/15 text-[#CCFF00] border-[#CCFF00]/30' : 'bg-amber-500/20 text-amber-700 border-amber-500/30'
-                }`}>
-                  <Coins className="w-2.5 h-2.5" />
-                  Rp {(googleVoiceTotalCost / 1000).toFixed(1)}k
-                </span>
+                <span>Lab Suara</span>
               </button>
 
               <div className={`h-9 px-3 rounded-full border text-[11px] font-bold flex items-center gap-1.5 shrink-0 ${
@@ -2296,7 +2255,7 @@ ATURAN MUTLAK: Langsung bacakan teks naskah dari kata pertama tanpa intro, tanpa
               <button 
                 onClick={() => setShowVoiceLabModal(true)} 
                 className="relative p-2 text-amber-400 hover:text-amber-300"
-                title="Lab Suara & Backend (Biaya IDR & Hide/Unhide)"
+                title="Lab Suara & Backend (Kurasi & Hide/Unhide)"
               >
                 <FlaskConical className="w-5 h-5" />
               </button>
@@ -2337,14 +2296,9 @@ ATURAN MUTLAK: Langsung bacakan teks naskah dari kata pertama tanpa intro, tanpa
             <button onClick={() => { setIsMenuOpen(false); if (onOpenEngineModal) onOpenEngineModal(); }} className={`w-full px-4 py-3 rounded-2xl text-sm font-bold flex items-center gap-3 text-emerald-400 ${isDarkTheme ? 'hover:bg-[#14231b]' : 'hover:bg-zinc-100'}`}>
               <Server className="w-4 h-4 text-[#F59E0B]" /> Server: {activeEngine === 'azure' ? 'Kian Santang' : activeEngine === 'elevenlabs' ? 'Pajajaran' : 'Gatot Kaca'} (Ganti)
             </button>
-            <button onClick={() => { setIsMenuOpen(false); setShowVoiceLabModal(true); }} className={`w-full px-4 py-3 rounded-2xl text-sm font-bold flex items-center justify-between text-amber-400 ${isDarkTheme ? 'hover:bg-[#14231b]' : 'hover:bg-zinc-100'}`}>
-              <div className="flex items-center gap-3">
-                <FlaskConical className="w-4 h-4 text-[#F59E0B]" />
-                <span>Lab Suara & Backend</span>
-              </div>
-              <span className="text-[10px] px-2 py-0.5 rounded-full font-bold bg-amber-500/20 text-amber-400">
-                IDR ${(googleVoiceTotalCost / 1000).toFixed(1)}k
-              </span>
+            <button onClick={() => { setIsMenuOpen(false); setShowVoiceLabModal(true); }} className={`w-full px-4 py-3 rounded-2xl text-sm font-bold flex items-center gap-3 text-amber-400 ${isDarkTheme ? 'hover:bg-[#14231b]' : 'hover:bg-zinc-100'}`}>
+              <FlaskConical className="w-4 h-4 text-[#F59E0B]" />
+              <span>Lab Suara & Backend</span>
             </button>
             <button onClick={() => handleSwitchView('history')} className={`w-full px-4 py-3 rounded-2xl text-sm font-bold flex items-center gap-3 ${view === 'history' ? 'bg-[#0C4E34] text-white' : isDarkTheme ? 'text-zinc-300 hover:bg-[#14231b]' : 'text-zinc-700 hover:bg-zinc-100'}`}>
               <History className="w-4 h-4" /> Riwayat ({history.length})

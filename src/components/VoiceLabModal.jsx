@@ -212,153 +212,7 @@ export const VoiceLabModal = ({
   const [newMasterKeyInput, setNewMasterKeyInput] = useState('');
   const [masterKeySuccess, setMasterKeySuccess] = useState('');
 
-  // --- COST RUPIAH & PENGELUARAN STATE ---
-  const [costConfig, setCostConfig] = useState(() => {
-    try {
-      const saved = localStorage.getItem('gentra_cost_config');
-      return saved ? JSON.parse(saved) : {
-        budgetLimit: 5000000, // Rp 5.000.000 (Pagu Plafon Default)
-        costPer1kChars: 200,  // Rp 200 per 1.000 karakter naskah
-        costPerMinute: 500    // Rp 500 per menit siaran audio
-      };
-    } catch (e) {
-      return { budgetLimit: 5000000, costPer1kChars: 200, costPerMinute: 500 };
-    }
-  });
 
-  const [expenses, setExpenses] = useState(() => {
-    try {
-      const saved = localStorage.getItem('gentra_expense_logs');
-      if (saved) return JSON.parse(saved);
-      // Data inisial bawaan contoh
-      return [
-        {
-          id: 'exp_init_1',
-          date: new Date(Date.now() - 86400000 * 3).toISOString().slice(0, 16).replace('T', ' '),
-          category: 'Top-up API Gemini',
-          amount: 150000,
-          description: 'Aktivasi Billing Google AI Studio Gemini API Proyek Gentra 1',
-          receiptNumber: 'SPJ-GTR-001'
-        },
-        {
-          id: 'exp_init_2',
-          date: new Date(Date.now() - 86400000).toISOString().slice(0, 16).replace('T', ' '),
-          category: 'Server & Cloud',
-          amount: 75000,
-          description: 'Hosting Domain gentra.kitt.lt & Edge CDN Vercel',
-          receiptNumber: 'SPJ-GTR-002'
-        }
-      ];
-    } catch (e) {
-      return [];
-    }
-  });
-
-  // Form Entri Pengeluaran Baru
-  const [newExpenseForm, setNewExpenseForm] = useState({
-    category: 'Top-up API Gemini',
-    amount: '',
-    description: '',
-    receiptNumber: ''
-  });
-  const [isEditingBudget, setIsEditingBudget] = useState(false);
-  const [budgetInput, setBudgetInput] = useState(() => String(costConfig.budgetLimit || 5000000));
-  const [expenseFilterCategory, setExpenseFilterCategory] = useState('all');
-
-  // Simpan expenses ke localStorage setiap kali berubah
-  useEffect(() => {
-    try {
-      localStorage.setItem('gentra_expense_logs', JSON.stringify(expenses));
-    } catch (e) {}
-  }, [expenses]);
-
-  // Simpan costConfig ke localStorage setiap kali berubah
-  useEffect(() => {
-    try {
-      localStorage.setItem('gentra_cost_config', JSON.stringify(costConfig));
-    } catch (e) {}
-  }, [costConfig]);
-
-  // Total Pengeluaran Terakumulasi (Rupiah)
-  const totalExpensesAmount = expenses.reduce((sum, item) => sum + (Number(item.amount) || 0), 0);
-  const remainingBudget = (costConfig.budgetLimit || 0) - totalExpensesAmount;
-  const budgetUsagePercent = costConfig.budgetLimit > 0 
-    ? Math.min(100, Math.round((totalExpensesAmount / costConfig.budgetLimit) * 100)) 
-    : 0;
-
-  // Handler Tambah Pengeluaran
-  const handleAddExpense = (e) => {
-    e.preventDefault();
-    const nominal = Number(newExpenseForm.amount);
-    if (!nominal || nominal <= 0) {
-      alert("Masukkan nominal pengeluaran dalam Rupiah yang valid.");
-      return;
-    }
-    if (!newExpenseForm.description.trim()) {
-      alert("Masukkan keterangan pengeluaran.");
-      return;
-    }
-
-    const newEntry = {
-      id: 'exp_' + Date.now(),
-      date: new Date().toISOString().slice(0, 16).replace('T', ' '),
-      category: newExpenseForm.category,
-      amount: nominal,
-      description: newExpenseForm.description.trim(),
-      receiptNumber: newExpenseForm.receiptNumber.trim() || `SPJ-${new Date().getFullYear()}-${Math.floor(100 + Math.random() * 900)}`
-    };
-
-    setExpenses([newEntry, ...expenses]);
-    setNewExpenseForm({
-      category: 'Top-up API Gemini',
-      amount: '',
-      description: '',
-      receiptNumber: ''
-    });
-  };
-
-  // Handler Hapus Pengeluaran
-  const handleDeleteExpense = (id) => {
-    if (window.confirm("Hapus catatan pengeluaran ini?")) {
-      setExpenses(expenses.filter(item => item.id !== id));
-    }
-  };
-
-  // Handler Simpan Pagu Anggaran Baru
-  const handleSaveBudget = () => {
-    const val = Number(budgetInput);
-    if (isNaN(val) || val < 0) {
-      alert("Masukkan angka pagu anggaran yang valid.");
-      return;
-    }
-    setCostConfig(prev => ({ ...prev, budgetLimit: val }));
-    setIsEditingBudget(false);
-  };
-
-  // Handler Ekspor Laporan Pengeluaran CSV
-  const handleExportExpenseCSV = () => {
-    let csv = "No,Tanggal,Kategori,Deskripsi,No Bukti SPJ,Jumlah Pengeluaran (Rp)\n";
-    expenses.forEach((item, idx) => {
-      csv += `"${idx + 1}","${item.date}","${item.category}","${item.description.replace(/"/g, '""')}","${item.receiptNumber || '-'}","${item.amount}"\n`;
-    });
-    csv += `\n"","","","TOTAL PENGELUARAN","","${totalExpensesAmount}"\n`;
-    csv += `"","","","PAGU ANGGARAN","","${costConfig.budgetLimit}"\n`;
-    csv += `"","","","SISA ANGGARAN","","${remainingBudget}"\n`;
-
-    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-    const link = document.createElement("a");
-    link.href = URL.createObjectURL(blob);
-    link.setAttribute("download", `laporan_pengeluaran_gentra_${new Date().toISOString().slice(0, 10)}.csv`);
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-  };
-
-  // Filter Pengeluaran
-  const filteredExpenses = expenses.filter(item => {
-    if (expenseFilterCategory === 'all') return true;
-    return item.category === expenseFilterCategory;
-  });
 
   // Styles helpers
   const bgCard = isDarkTheme ? 'bg-[#0f1713] border-emerald-950 text-zinc-100' : 'bg-white border-zinc-200 text-zinc-900';
@@ -726,7 +580,7 @@ export const VoiceLabModal = ({
                 )}
               </div>
               <p className={`text-xs mt-0.5 truncate ${subText}`}>
-                Pusat kurasi vokal: Uji suara langsung, filter hide/unhide, ganti nama persona, serta pencatatan pengeluaran (Cost Rupiah).
+                Pusat kurasi vokal: Uji suara langsung, filter visibilitas, ganti nama persona, dan manajemen pool kunci API.
               </p>
             </div>
           </div>
@@ -819,22 +673,6 @@ export const VoiceLabModal = ({
                   </span>
                 </button>
 
-                {/* TAB BARU: BIAYA & PENGELUARAN (COST RUPIAH) */}
-                <button
-                  type="button"
-                  onClick={() => setActiveTab('cost')}
-                  className={`px-3.5 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-2 ${
-                    activeTab === 'cost'
-                      ? 'bg-[#0C4E34] text-white shadow-xs'
-                      : isDarkTheme ? 'text-zinc-400 hover:text-white hover:bg-zinc-800/60' : 'text-zinc-600 hover:text-black hover:bg-zinc-200/60'
-                  }`}
-                >
-                  <Coins className="w-3.5 h-3.5 text-[#F59E0B]" />
-                  <span>Biaya Rendering Google (Rp)</span>
-                  <span className="text-[10px] px-1.5 py-0.2 rounded-full bg-emerald-500/20 text-emerald-300 font-mono">
-                    {expenses.length}
-                  </span>
-                </button>
 
                 <button
                   type="button"
@@ -1719,192 +1557,7 @@ export const VoiceLabModal = ({
                 </div>
               )}
 
-              {/* TAB 2: BIAYA RENDERING GOOGLE AI (REAL-TIME IDR) */}
-              {activeTab === 'cost' && (() => {
-                const totalCost = Number(localStorage.getItem('gentra_google_total_cost')) || 99120;
-                const totalChars = Number(localStorage.getItem('gentra_google_total_chars')) || 48200;
-                const totalSecs = Number(localStorage.getItem('gentra_google_total_seconds')) || 2480;
-                const renderLogs = JSON.parse(localStorage.getItem('gentra_google_render_logs') || '[]');
 
-                const handleClearLogs = () => {
-                  if (confirm('Reset riwayat log rendering Google suara?')) {
-                    localStorage.setItem('gentra_google_render_logs', '[]');
-                    localStorage.setItem('gentra_google_total_cost', '0');
-                    localStorage.setItem('gentra_google_total_chars', '0');
-                    localStorage.setItem('gentra_google_total_seconds', '0');
-                    window.location.reload();
-                  }
-                };
-
-                const handleExportGoogleCSV = () => {
-                  const headers = 'ID,Waktu,Karakter,Kategori,Karakter Teks,Durasi Detik,Biaya IDR\n';
-                  const rows = renderLogs.map(l => `"${l.id}","${l.timestamp}","${l.voiceName}","${l.category}",${l.chars},${l.durationSec},${l.costIDR}`).join('\n');
-                  const blob = new Blob([headers + rows], { type: 'text/csv;charset=utf-8;' });
-                  const url = URL.createObjectURL(blob);
-                  const a = document.createElement('a');
-                  a.href = url;
-                  a.download = `riwayat_biaya_google_gentra_${new Date().toISOString().slice(0,10)}.csv`;
-                  a.click();
-                };
-
-                return (
-                  <div className="space-y-6 animate-in fade-in duration-150">
-                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b pb-3 border-zinc-800/40">
-                      <div>
-                        <div className="flex items-center gap-2">
-                          <Coins className="w-4 h-4 text-[#F59E0B]" />
-                          <h3 className="text-sm font-black uppercase tracking-wider">
-                            Total Pengeluaran Rendering Voice Google AI
-                          </h3>
-                          <span className="text-[10px] px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-400 font-bold border border-emerald-500/30">
-                            Real-time Neural Engine
-                          </span>
-                        </div>
-                        <p className={`text-xs mt-0.5 ${subText}`}>
-                          Akumulasi biaya riil pemrosesan vokal Neural TTS berdasarkan volume karakter dan durasi audio siaran.
-                        </p>
-                      </div>
-
-                      <div className="flex items-center gap-2">
-                        <button
-                          type="button"
-                          onClick={handleExportGoogleCSV}
-                          className="px-3 py-1.5 rounded-xl text-xs font-bold bg-[#0C4E34] hover:bg-[#0e5c3e] text-white flex items-center gap-1.5 transition-all shadow-xs"
-                        >
-                          <FileSpreadsheet className="w-3.5 h-3.5 text-[#F59E0B]" />
-                          <span>Ekspor CSV</span>
-                        </button>
-                        <button
-                          type="button"
-                          onClick={handleClearLogs}
-                          className="px-3 py-1.5 rounded-xl text-xs font-bold bg-zinc-800 hover:bg-rose-950/70 hover:text-rose-300 text-zinc-300 flex items-center gap-1.5 transition-all border border-zinc-700/60"
-                        >
-                          <RotateCcw className="w-3.5 h-3.5" />
-                          <span>Reset Biaya</span>
-                        </button>
-                      </div>
-                    </div>
-
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5">
-                      <div className={`p-4 rounded-2xl border ${isDarkTheme ? 'bg-[#121c17] border-emerald-900/60' : 'bg-emerald-50/70 border-emerald-200'}`}>
-                        <div className="flex items-center justify-between mb-1">
-                          <span className={`text-[10px] font-bold uppercase tracking-wider ${subText}`}>Total Biaya Rendering</span>
-                          <Wallet className="w-4 h-4 text-[#F59E0B]" />
-                        </div>
-                        <div className="text-2xl font-black text-emerald-400">
-                          {formatIDR(totalCost)}
-                        </div>
-                        <span className={`text-[10px] mt-1 block ${subText}`}>
-                          {renderLogs.length} Kali Sintesis Berhasil
-                        </span>
-                      </div>
-
-                      <div className={`p-4 rounded-2xl border ${subBg}`}>
-                        <div className="flex items-center justify-between mb-1">
-                          <span className={`text-[10px] font-bold uppercase tracking-wider ${subText}`}>Total Karakter Diproses</span>
-                          <Activity className="w-4 h-4 text-blue-400" />
-                        </div>
-                        <div className="text-2xl font-black">
-                          {totalChars.toLocaleString('id-ID')}
-                        </div>
-                        <span className={`text-[10px] mt-1 block ${subText}`}>
-                          ~{(totalChars / 1000).toFixed(1)}k Karakter Teks
-                        </span>
-                      </div>
-
-                      <div className={`p-4 rounded-2xl border ${subBg}`}>
-                        <div className="flex items-center justify-between mb-1">
-                          <span className={`text-[10px] font-bold uppercase tracking-wider ${subText}`}>Total Durasi Audio</span>
-                          <Volume2 className="w-4 h-4 text-amber-400" />
-                        </div>
-                        <div className="text-2xl font-black text-amber-400">
-                          {Math.floor(totalSecs / 60)}m {Math.round(totalSecs % 60)}s
-                        </div>
-                        <span className={`text-[10px] mt-1 block ${subText}`}>
-                          {Math.round(totalSecs)} Detik Audio Siaran
-                        </span>
-                      </div>
-
-                      <div className={`p-4 rounded-2xl border ${subBg}`}>
-                        <div className="flex items-center justify-between mb-1">
-                          <span className={`text-[10px] font-bold uppercase tracking-wider ${subText}`}>Model Engine Aktif</span>
-                          <Zap className="w-4 h-4 text-emerald-400" />
-                        </div>
-                        <div className="text-lg font-black truncate">
-                          Neural High-Fidelity
-                        </div>
-                        <span className={`text-[10px] mt-1 block ${subText}`}>
-                          Tarif Studio: Rp 0.15/char
-                        </span>
-                      </div>
-                    </div>
-
-                    <div className="space-y-3">
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-2">
-                          <Receipt className="w-4 h-4 text-[#F59E0B]" />
-                          <h4 className="text-xs font-black uppercase tracking-wider">
-                            Riwayat Transaksi Rendering Suara Google ({renderLogs.length} Sesi)
-                          </h4>
-                        </div>
-                      </div>
-
-                      <div className={`rounded-2xl border overflow-hidden ${isDarkTheme ? 'border-emerald-950 bg-[#0a120e]' : 'border-zinc-200 bg-white'}`}>
-                        <div className="overflow-x-auto">
-                          <table className="w-full text-left text-xs">
-                            <thead className={`text-[10px] font-bold uppercase tracking-wider border-b ${
-                              isDarkTheme ? 'bg-[#070e0a] border-emerald-950 text-zinc-400' : 'bg-zinc-100 border-zinc-200 text-zinc-600'
-                            }`}>
-                              <tr>
-                                <th className="py-3 px-4">Waktu</th>
-                                <th className="py-3 px-3">Karakter Suara</th>
-                                <th className="py-3 px-3">Kategori</th>
-                                <th className="py-3 px-3">Panjang Naskah</th>
-                                <th className="py-3 px-3">Durasi Audio</th>
-                                <th className="py-3 px-3 text-right">Biaya Google (Rp)</th>
-                              </tr>
-                            </thead>
-                            <tbody className="divide-y divide-zinc-800/30">
-                              {renderLogs.length === 0 ? (
-                                <tr>
-                                  <td colSpan={6} className="py-8 text-center text-xs text-zinc-500 font-medium">
-                                    Belum ada transaksi rendering baru. Hasilkan suara di Studio untuk melihat pencatatan real-time!
-                                  </td>
-                                </tr>
-                              ) : (
-                                renderLogs.map((item, idx) => (
-                                  <tr key={item.id || idx} className="hover:bg-white/5 transition-colors">
-                                    <td className="py-3 px-4 font-mono text-[11px] whitespace-nowrap text-zinc-400">
-                                      {item.timestamp}
-                                    </td>
-                                    <td className="py-3 px-3 font-bold whitespace-nowrap text-emerald-400">
-                                      {item.voiceName}
-                                    </td>
-                                    <td className="py-3 px-3 whitespace-nowrap">
-                                      <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-500/15 text-emerald-300 border border-emerald-500/30">
-                                        {item.category}
-                                      </span>
-                                    </td>
-                                    <td className="py-3 px-3 font-mono text-[11px] whitespace-nowrap">
-                                      {item.chars} Karakter
-                                    </td>
-                                    <td className="py-3 px-3 font-mono text-[11px] whitespace-nowrap text-amber-300">
-                                      {item.durationSec}s
-                                    </td>
-                                    <td className="py-3 px-3 text-right font-mono font-bold text-emerald-400 whitespace-nowrap">
-                                      {formatIDR(item.costIDR)}
-                                    </td>
-                                  </tr>
-                                ))
-                              )}
-                            </tbody>
-                          </table>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                );
-              })()}
 
               {/* TAB 3: POOL KUNCI API (FAIL-SAFE 8 SLOT) */}
               {activeTab === 'api' && (
@@ -2184,7 +1837,7 @@ export const VoiceLabModal = ({
             {/* MODAL FOOTER */}
             <div className={`p-4 sm:p-5 border-t flex items-center justify-between gap-3 ${isDarkTheme ? 'border-emerald-950 bg-[#09110d]' : 'border-zinc-200 bg-white'}`}>
               <div className={`text-[11px] font-mono ${subText}`}>
-                {activeVoicesCount} Karakter Aktif • Total Pengeluaran: <strong className="text-emerald-400">{formatIDR(totalExpensesAmount)}</strong>
+                {activeVoicesCount} Karakter Suara Aktif
               </div>
 
               <div className="flex items-center gap-2">
