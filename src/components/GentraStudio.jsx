@@ -48,10 +48,11 @@ import {
   Activity
 } from 'lucide-react';
 
-// --- Konfigurasi Model (Sama Persis dengan Nusa Voice Bawaan) ---
+// --- Konfigurasi Model (Google Gemini AI v1beta) ---
 const TTS_MODEL = "gemini-2.5-flash-preview-tts";
 const TTS_FALLBACK_MODEL = "gemini-2.0-flash";
-const TEXT_MODEL = "gemini-2.5-flash-preview-09-2025";
+const TEXT_MODEL = "gemini-2.0-flash";
+const TEXT_FALLBACK_MODEL = "gemini-1.5-flash";
 
 // --- Karakter Suara Bawaan GENTRA (14 Persona Awal + 8 Persona Khas Sunda) ---
 const INITIAL_VOICES = [
@@ -1402,21 +1403,47 @@ export const GentraStudio = ({
           ? "Dengarkan rekaman audio ini. Transkripsikan seluruh isi percakapan kata demi kata ke dalam teks bahasa Sunda atau Indonesia secara rapi dan akurat. Hanya berikan teks transkripsi saja tanpa tambahan kata pengantar atau penutup."
           : "Dengarkan rekaman audio ini. Transkripsikan seluruh isi percakapan kata demi kata ke dalam teks secara akurat dengan ejaan dan tanda baca yang tepat. Hanya berikan teks transkripsi saja tanpa komentar apapun.";
 
-        const result = await fetchWithRetry(
-          `https://generativelanguage.googleapis.com/v1beta/models/${TEXT_MODEL}:generateContent?key=${activeKey}`,
-          {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              contents: [{
-                parts: [
-                  { inlineData: { mimeType: mimeType, data: base64Data } },
-                  { text: promptText }
-                ]
-              }]
-            })
-          }
-        );
+        let result;
+        try {
+          result = await fetchWithRetry(
+            `https://generativelanguage.googleapis.com/v1beta/models/${TEXT_MODEL}:generateContent?key=${activeKey}`,
+            {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                contents: [{
+                  parts: [
+                    { inlineData: { mimeType: mimeType, data: base64Data } },
+                    { text: promptText }
+                  ]
+                }]
+              })
+            },
+            3,
+            1000,
+            activeKeyPool
+          );
+        } catch (transErr) {
+          console.warn(`Model ${TEXT_MODEL} transkripsi gagal, mencoba fallback ke ${TEXT_FALLBACK_MODEL}:`, transErr);
+          result = await fetchWithRetry(
+            `https://generativelanguage.googleapis.com/v1beta/models/${TEXT_FALLBACK_MODEL}:generateContent?key=${activeKey}`,
+            {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                contents: [{
+                  parts: [
+                    { inlineData: { mimeType: mimeType, data: base64Data } },
+                    { text: promptText }
+                  ]
+                }]
+              })
+            },
+            3,
+            1000,
+            activeKeyPool
+          );
+        }
 
         const textOutput = result.candidates?.[0]?.content?.parts?.[0]?.text || "";
         setTranscribedText(textOutput.trim());
@@ -1461,17 +1488,39 @@ PENTING:
 
     try {
       const activeKey = apiKey || (typeof import.meta !== 'undefined' && import.meta.env?.VITE_GEMINI_API_KEY) || "";
-      const result = await fetchWithRetry(
-        `https://generativelanguage.googleapis.com/v1beta/models/${TEXT_MODEL}:generateContent?key=${activeKey}`,
-        {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            contents: [{ parts: [{ text: prompt }] }],
-            systemInstruction: { parts: [{ text: "Pakar komunikasi publik dan naskah Iklan Layanan Masyarakat (ILM)." }] }
-          })
-        }
-      );
+      let result;
+      try {
+        result = await fetchWithRetry(
+          `https://generativelanguage.googleapis.com/v1beta/models/${TEXT_MODEL}:generateContent?key=${activeKey}`,
+          {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              contents: [{ parts: [{ text: prompt }] }],
+              systemInstruction: { parts: [{ text: "Pakar komunikasi publik dan naskah Iklan Layanan Masyarakat (ILM)." }] }
+            })
+          },
+          3,
+          1000,
+          activeKeyPool
+        );
+      } catch (err1) {
+        console.warn(`Model ${TEXT_MODEL} gagal, mencoba fallback ke ${TEXT_FALLBACK_MODEL}:`, err1);
+        result = await fetchWithRetry(
+          `https://generativelanguage.googleapis.com/v1beta/models/${TEXT_FALLBACK_MODEL}:generateContent?key=${activeKey}`,
+          {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              contents: [{ parts: [{ text: prompt }] }],
+              systemInstruction: { parts: [{ text: "Pakar komunikasi publik dan naskah Iklan Layanan Masyarakat (ILM)." }] }
+            })
+          },
+          3,
+          1000,
+          activeKeyPool
+        );
+      }
       const textResult = result.candidates?.[0]?.content?.parts?.[0]?.text || "";
       setText(textResult.trim());
     } catch (err) {
