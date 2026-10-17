@@ -751,6 +751,10 @@ export const GentraStudio = ({
       );
 
       if (res.ok) {
+        if (index === 0) {
+          setApiQuotaStatus('active');
+          try { localStorage.setItem('gentra_api_quota_status', 'active'); } catch(e){}
+        }
         setKeyTestStatuses(prev => {
           const next = [...prev];
           next[index] = { status: 'active', message: '🟢 Kuota Aktif & Siap Pakai' };
@@ -761,12 +765,20 @@ export const GentraStudio = ({
         const code = res.status;
         const errMsg = errJson?.error?.message || '';
         if (code === 429 || errMsg.toLowerCase().includes('quota') || errMsg.toLowerCase().includes('exceeded')) {
+          if (index === 0) {
+            setApiQuotaStatus('limited');
+            try { localStorage.setItem('gentra_api_quota_status', 'limited'); } catch(e){}
+          }
           setKeyTestStatuses(prev => {
             const next = [...prev];
             next[index] = { status: 'quota_limit', message: '🔴 Kuota Habis (HTTP 429 Limit)' };
             return next;
           });
         } else if (code === 400 || code === 403 || errMsg.toLowerCase().includes('api key') || errMsg.toLowerCase().includes('not valid')) {
+          if (index === 0) {
+            setApiQuotaStatus('invalid');
+            try { localStorage.setItem('gentra_api_quota_status', 'invalid'); } catch(e){}
+          }
           setKeyTestStatuses(prev => {
             const next = [...prev];
             next[index] = { status: 'invalid', message: '🟡 Kunci Tidak Valid / Salah' };
@@ -824,6 +836,56 @@ export const GentraStudio = ({
 
   const [showApiKeyModal, setShowApiKeyModal] = useState(false);
   const [generationError, setGenerationError] = useState(null);
+
+  // Indikator Status Kuota API Real-Time (Lampu Hijau / Merah / Kuning)
+  const [apiQuotaStatus, setApiQuotaStatus] = useState(() => {
+    try {
+      return localStorage.getItem('gentra_api_quota_status') || 'checking';
+    } catch (e) {
+      return 'checking';
+    }
+  });
+
+  // Pengecekan otomatis di latar belakang saat studio dibuka
+  useEffect(() => {
+    if (activeKeyPool.length === 0) {
+      setApiQuotaStatus('unconfigured');
+      return;
+    }
+    const checkQuota = async () => {
+      try {
+        const res = await fetch(
+          `https://generativelanguage.googleapis.com/v1beta/models/${TTS_MODEL}:generateContent?key=${activeKeyPool[0]}`,
+          {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              contents: [{ parts: [{ text: 'tes' }] }],
+              generationConfig: {
+                responseModalities: ["AUDIO"],
+                speechConfig: { voiceConfig: { prebuiltVoiceConfig: { voiceName: 'Aoede' } } }
+              }
+            })
+          }
+        );
+        if (res.ok) {
+          setApiQuotaStatus('active');
+          try { localStorage.setItem('gentra_api_quota_status', 'active'); } catch (e) {}
+        } else {
+          const errJson = await res.json().catch(() => ({}));
+          const errMsg = errJson?.error?.message || '';
+          if (res.status === 429 || errMsg.toLowerCase().includes('quota') || errMsg.toLowerCase().includes('exceeded')) {
+            setApiQuotaStatus('limited');
+            try { localStorage.setItem('gentra_api_quota_status', 'limited'); } catch (e) {}
+          } else if (res.status === 400 || res.status === 403) {
+            setApiQuotaStatus('invalid');
+            try { localStorage.setItem('gentra_api_quota_status', 'invalid'); } catch (e) {}
+          }
+        }
+      } catch (e) {}
+    };
+    checkQuota();
+  }, [activeKeyPool.length, activeKeyPool[0]]);
 
   // State 3 Blok Pemisah Karakter Studio (Expand & Collapse)
   const [isBlock1Open, setIsBlock1Open] = useState(true); // NUSA VOICE (Nasional - 14)
@@ -1068,8 +1130,72 @@ export const GentraStudio = ({
 
     setPreviewingVoice(v.name);
 
-    // 3. Putar audio preview terkonfirmasi dari cache atau file statis
-    const cachedOrStaticUrl = previewAudioCache.current[v.name] || STATIC_AUDIO_PREVIEWS[v.name];
+    // 1. Putar langsung jika sudah ada di cache live
+    if (previewAudioCache.current[v.name]) {
+      const audio = new Audio(previewAudioCache.current[v.name]);
+      currentAudioRef.current = audio;
+      audio.onended = () => setPreviewingVoice(null);
+      audio.onerror = () => setPreviewingVoice(null);
+      try {
+        await audio.play();
+        return;
+      } catch (err) {
+        setPreviewingVoice(null);
+        return;
+      }
+    }
+
+    // 2. Jika ada API Key Gemini aktif dan karakter Blok 1 (Nasional), buat preview vokal ASLI Gemini Neural secara instan!
+    if (activeKey && v.category === 'Nasional') {
+      try {
+        const previewPrompt = `Sebagai pengisi suara ${v.gender === 'Male' ? 'Pria' : 'Wanita'} Indonesia bernama ${v.name}, langsung bacakan kalimat ini dari kata pertama tanpa kata pengantar apa pun. Suara terdengar sangat alami, hidup, hangat, seperti ${v.desc}:\n\n"Halo, saya ${v.name}. Senang bisa mengisi suara untuk Anda."`;
+        
+        const payload = {
+          contents: [{ parts: [{ text: previewPrompt }] }],
+          generationConfig: {
+            responseModalities: ["AUDIO"],
+            speechConfig: {
+              voiceConfig: {
+                prebuiltVoiceConfig: { voiceName: v.id || 'Autonoe' }
+              }
+            }
+          },
+          model: TTS_MODEL
+        };
+
+        const res = await fetch(
+          `https://generativelanguage.googleapis.com/v1beta/models/${TTS_MODEL}:generateContent?key=${activeKey}`,
+          {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+          }
+        );
+
+        if (res.ok) {
+          const data = await res.json();
+          const inlineData = data?.candidates?.[0]?.content?.parts?.[0]?.inlineData;
+          if (inlineData?.data) {
+            const pcm16 = base64ToPCM16(inlineData.data);
+            const wavBlob = buildWavBlobFromPCM(pcm16, 24000);
+            const liveUrl = URL.createObjectURL(wavBlob);
+            previewAudioCache.current[v.name] = liveUrl;
+
+            const audio = new Audio(liveUrl);
+            currentAudioRef.current = audio;
+            audio.onended = () => setPreviewingVoice(null);
+            audio.onerror = () => setPreviewingVoice(null);
+            await audio.play();
+            return;
+          }
+        }
+      } catch (liveErr) {
+        console.warn('Fallback ke file preview statis:', liveErr);
+      }
+    }
+
+    // 3. Fallback jika offline / belum ada API Key: Putar audio preview statis
+    const cachedOrStaticUrl = STATIC_AUDIO_PREVIEWS[v.name];
     if (cachedOrStaticUrl) {
       const audio = new Audio(cachedOrStaticUrl);
       currentAudioRef.current = audio;
@@ -1525,11 +1651,16 @@ ATURAN WAJIB & MUTLAK:
         url: url
       }, ...prev]);
 
+      setApiQuotaStatus('active');
+      try { localStorage.setItem('gentra_api_quota_status', 'active'); } catch (e) {}
+
       setGenerationProgress(100);
       setProgressStatus('Selesai! Audio siap diputar.');
     } catch (err) {
       console.error(err);
       if (err.message.includes('429') || err.message.toLowerCase().includes('quota')) {
+        setApiQuotaStatus('limited');
+        try { localStorage.setItem('gentra_api_quota_status', 'limited'); } catch (e) {}
         setGenerationError('Kuota harian Google AI Studio gratis (limit 10 request/hari) pada Kunci Aktif telah habis. Silakan buka menu Pengaturan Kunci API (Master Admin) untuk memasukkan Kunci Cadangan pada Slot 2-8 agar produksi suara berjalan lancar tanpa henti!');
       } else {
         setGenerationError(`Terjadi kendala sintesis: ${err.message}`);
@@ -1667,10 +1798,46 @@ ATURAN WAJIB & MUTLAK:
                   <span className="hidden sm:inline">{isDarkTheme ? 'Studio Gelap' : 'Terang'}</span>
                 </button>
 
+                {/* Indikator Lampu Status Kuota API Real-Time (Hijau / Merah) */}
+                <button
+                  onClick={() => setShowApiKeyModal(true)}
+                  className={`h-9 px-3 rounded-full border text-[11px] font-bold flex items-center gap-2 transition-all shadow-sm shrink-0 ${
+                    apiQuotaStatus === 'limited'
+                      ? 'bg-rose-950/80 border-rose-500 text-rose-200 hover:bg-rose-900 animate-pulse'
+                      : apiQuotaStatus === 'active'
+                      ? isDarkTheme ? 'bg-emerald-950/60 border-emerald-500/70 text-emerald-300 hover:bg-emerald-900/60' : 'bg-emerald-50 border-emerald-400 text-emerald-800 hover:bg-emerald-100'
+                      : apiQuotaStatus === 'unconfigured'
+                      ? 'bg-amber-950/40 border-amber-500/60 text-amber-300'
+                      : 'bg-zinc-800 border-zinc-700 text-zinc-400'
+                  }`}
+                  title={apiQuotaStatus === 'limited' ? "PERINGATAN: Kuota API Limit (Klik untuk ganti kunci di Slot 2-8)" : "Status API Key (Klik untuk buka pengaturan)"}
+                >
+                  <span className="relative flex h-2.5 w-2.5">
+                    {apiQuotaStatus === 'limited' && (
+                      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-rose-400 opacity-75"></span>
+                    )}
+                    {apiQuotaStatus === 'active' && (
+                      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                    )}
+                    <span className={`relative inline-flex rounded-full h-2.5 w-2.5 ${
+                      apiQuotaStatus === 'limited' ? 'bg-rose-500 shadow-[0_0_8px_rgba(244,63,94,0.9)]' :
+                      apiQuotaStatus === 'active' ? 'bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.9)]' :
+                      apiQuotaStatus === 'unconfigured' ? 'bg-amber-400' : 'bg-zinc-400'
+                    }`}></span>
+                  </span>
+                  <span className="hidden sm:inline">
+                    {apiQuotaStatus === 'limited' ? 'Lampu Merah: API Limit' :
+                     apiQuotaStatus === 'active' ? 'Lampu Hijau: API Siap' :
+                     apiQuotaStatus === 'unconfigured' ? 'Kunci Kosong' : 'Cek Kuota...'}
+                  </span>
+                </button>
+
                 <button 
                   onClick={() => setShowApiKeyModal(true)}
                   className={`h-9 w-9 rounded-full border transition-all flex items-center justify-center shrink-0 ${
-                    isDarkTheme 
+                    apiQuotaStatus === 'limited'
+                      ? 'bg-rose-950/60 border-rose-500 text-rose-300 hover:bg-rose-900 animate-bounce'
+                      : isDarkTheme 
                       ? 'bg-[#14231b] hover:bg-[#1b2f24] border-emerald-900/80 text-zinc-300 hover:text-white' 
                       : 'bg-zinc-100 hover:bg-zinc-200/80 border-zinc-200 text-zinc-600 hover:text-[#0C4E34]'
                   }`}
@@ -1704,8 +1871,20 @@ ATURAN WAJIB & MUTLAK:
 
             {/* Mobile Toggle */}
             <div className="flex md:hidden items-center gap-2">
-              <button onClick={() => setShowApiKeyModal(true)} className="p-2 text-zinc-600">
+              <button 
+                onClick={() => setShowApiKeyModal(true)} 
+                className="relative p-2 text-zinc-400 hover:text-white"
+                title="Pengaturan API"
+              >
                 <Key className="w-5 h-5" />
+                <span className={`absolute top-1 right-1 w-2.5 h-2.5 rounded-full ${
+                  apiQuotaStatus === 'limited' ? 'bg-rose-500 animate-ping' :
+                  apiQuotaStatus === 'active' ? 'bg-emerald-400' : 'bg-amber-400'
+                }`}></span>
+                <span className={`absolute top-1 right-1 w-2.5 h-2.5 rounded-full ${
+                  apiQuotaStatus === 'limited' ? 'bg-rose-500' :
+                  apiQuotaStatus === 'active' ? 'bg-emerald-400' : 'bg-amber-400'
+                }`}></span>
               </button>
               <button onClick={() => setIsMenuOpen(!isMenuOpen)} className="p-2 text-zinc-600">
                 {isMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
@@ -2063,6 +2242,36 @@ ATURAN WAJIB & MUTLAK:
                 </div>
               </div>
 
+              {/* Indikator Lampu Merah: Kuota API Limit (HTTP 429) */}
+              {apiQuotaStatus === 'limited' && (
+                <div className="p-4 rounded-2xl bg-rose-950/70 border border-rose-500/80 text-rose-200 text-xs flex flex-col sm:flex-row sm:items-center justify-between gap-3 animate-in fade-in duration-200 shadow-lg">
+                  <div className="flex items-start gap-3">
+                    <span className="relative flex h-3.5 w-3.5 shrink-0 mt-0.5">
+                      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-rose-400 opacity-80"></span>
+                      <span className="relative inline-flex rounded-full h-3.5 w-3.5 bg-rose-500 shadow-[0_0_10px_rgba(244,63,94,1)]"></span>
+                    </span>
+                    <div>
+                      <div className="flex items-center gap-2">
+                        <span className="font-black text-rose-100 uppercase tracking-wide text-xs">Indikator Lampu Merah: Kuota API Limit</span>
+                        <span className="px-1.5 py-0.5 rounded bg-rose-900/60 text-rose-300 font-mono text-[10px] font-bold">HTTP 429</span>
+                      </div>
+                      <p className="leading-relaxed opacity-90 mt-0.5">
+                        Kuota harian gratis pada Kunci Utama (Slot 1) telah mencapai batas harian Google AI Studio. Silakan buka Pengaturan API untuk beralih ke Kunci Cadangan di Slot 2-8 agar proses pembacaan naskah tetap berjalan!
+                      </p>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-2 shrink-0">
+                    <button
+                      onClick={() => setShowApiKeyModal(true)}
+                      className="px-3.5 py-2 bg-rose-500 hover:bg-rose-600 text-white font-bold text-xs rounded-xl transition-all shadow-md flex items-center gap-1.5"
+                    >
+                      <Key className="w-3.5 h-3.5" />
+                      Ganti Kunci Cadangan (Slot 2-8)
+                    </button>
+                  </div>
+                </div>
+              )}
+
               {/* Alert Kuota / Generation Error Banner */}
               {generationError && (
                 <div className="p-4 rounded-2xl bg-amber-950/40 border border-amber-500/50 text-amber-200 text-xs flex flex-col sm:flex-row sm:items-center justify-between gap-3 animate-in fade-in duration-200">
@@ -2148,8 +2357,9 @@ ATURAN WAJIB & MUTLAK:
 
               <div className={`flex justify-between items-center text-xs font-medium ${subTextColor}`}>
                 <span>{text.length} Karakter | Estimasi: ~{Math.ceil(text.split(/\s+/).filter(Boolean).length / 2.5)} Detik Suara</span>
-                <span className={`font-bold flex items-center gap-1 ${headingColor}`}>
-                  <Shield className="w-4 h-4 inline text-[#F59E0B]" /> Engine Zero-Drift Aktif
+                <span className="font-bold flex items-center gap-1.5 text-emerald-400">
+                  <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                  Engine: Google Gemini Flash Neural (24 kHz Native Lossless)
                 </span>
               </div>
             </div>
