@@ -99,7 +99,7 @@ export async function synthesizeGemini({ text, voice = 'Aoede', personaPrompt = 
 }
 
 // 2. ENGINE ELEVENLABS NEURAL TTS
-export async function synthesizeElevenLabs({ text, voiceId = '21m00Tcm4TlvDq8ikWAM', apiKey = '', modelId = 'eleven_multilingual_v2' }) {
+export async function synthesizeElevenLabs({ text, voiceId = 'EXAVITQu4vr4xnSDxMaL', apiKey = '', modelId = 'eleven_multilingual_v2' }) {
   const t0 = Date.now();
   if (!apiKey) {
     return {
@@ -368,7 +368,7 @@ export async function benchmarkAllEngines({ text, voiceConfig = {}, envKeys = {}
     // Engine 2: ElevenLabs Multilingual
     synthesizeElevenLabs({
       text,
-      voiceId: voiceConfig.elevenVoiceId || '21m00Tcm4TlvDq8ikWAM', // Rachel
+      voiceId: voiceConfig.elevenVoiceId || 'EXAVITQu4vr4xnSDxMaL', // Sarah
       apiKey: envKeys.ELEVENLABS_API_KEY
     }),
 

@@ -34,11 +34,27 @@ export const ENGINE_CATALOG = [
       { id: 'anita', name: 'Anita', region: 'Nasional', gender: 'Wanita', baseVoice: 'Aoede', desc: 'Ramah & Ceria, presenter berita dan narasi umum.', speechPrompt: 'Berbicara dengan suara wanita ramah, ceria, dan artikulatif layaknya penyiar berita profesional.', isHidden: false },
       { id: 'agus', name: 'Agus', region: 'Nasional', gender: 'Pria', baseVoice: 'Charon', desc: 'Deep & Naratif, vokal berwibawa dokumenter.', speechPrompt: 'Berbicara dengan suara pria berat berwibawa, intonasi tenang untuk dokumenter.', isHidden: false },
       { id: 'siti', name: 'Siti', region: 'Nasional', gender: 'Wanita', baseVoice: 'Leda', desc: 'Lembut & Santun, pelayanan publik dan edukasi.', speechPrompt: 'Berbicara dengan intonasi lembut, penuh empati dan santun.', isHidden: false },
-      { id: 'abah', name: 'Abah', region: 'Sunda', gender: 'Pria', baseVoice: 'Fenrir', desc: 'Sesepuh Sunda bijaksana, hangat dan menentramkan.', speechPrompt: 'Berbicara layaknya sesepuh Sunda yang bijaksana, suara berat berwibawa dan penuh kasih sayang.', isHidden: false },
+      { id: 'dewi', name: 'Dewi', region: 'Nasional', gender: 'Wanita', baseVoice: 'Despina', desc: 'Energik & Lugas, vokal siaran radio aktif.', speechPrompt: 'Berbicara dengan nada energik, ceria dan lugas.', isHidden: false },
+      { id: 'tina', name: 'Tina', region: 'Nasional', gender: 'Wanita', baseVoice: 'Callirrhoe', desc: 'Profesional & Jelas, instruksi dan narasi korporat.', speechPrompt: 'Berbicara dengan artikulasi jernih, formal dan profesional.', isHidden: false },
+      { id: 'maya', name: 'Maya', region: 'Nasional', gender: 'Wanita', baseVoice: 'Autonoe', desc: 'Inspiratif & Hangat, konten motivasi warga.', speechPrompt: 'Berbicara dengan nada inspiratif, hangat dan membangkitkan semangat.', isHidden: false },
+      { id: 'rian', name: 'Rian', region: 'Nasional', gender: 'Pria', baseVoice: 'Puck', desc: 'Muda & Bersemangat, podcast dan medsos.', speechPrompt: 'Berbicara dengan vokal pemuda bersemangat, gaul dan komunikatif.', isHidden: false },
+      { id: 'indah', name: 'Indah', region: 'Nasional', gender: 'Wanita', baseVoice: 'Erinome', desc: 'Halus & Menenangkan, meditatif dan panduan relaksasi.', speechPrompt: 'Berbicara dengan vokal sangat halus, menenangkan dan lembut.', isHidden: false },
+      { id: 'gading', name: 'Gading', region: 'Nasional', gender: 'Pria', baseVoice: 'Fenrir', desc: 'Berat & Maskulin, narasi trailer dan pengumuman tegas.', speechPrompt: 'Berbicara dengan vokal berat, dalam, maskulin dan tegas.', isHidden: false },
+      { id: 'shinta', name: 'Shinta', region: 'Nasional', gender: 'Wanita', baseVoice: 'Laomedeia', desc: 'Tegas & Berani, himbauan disiplin dan hukum.', speechPrompt: 'Berbicara dengan vokal tegas, lugas, percaya diri dan berani.', isHidden: false },
+      { id: 'bayu', name: 'Bayu', region: 'Nasional', gender: 'Pria', baseVoice: 'Orus', desc: 'Santai & Sejuk, dialog santai dan wisata.', speechPrompt: 'Berbicara dengan nada santai, sejuk, mengalir ramah.', isHidden: false },
+      { id: 'adi', name: 'Adi', region: 'Nasional', gender: 'Pria', baseVoice: 'Algenib', desc: 'Ceria & Bersemangat, program hiburan dan anak.', speechPrompt: 'Berbicara ceria, penuh senyum dan antusiasme.', isHidden: false },
+      { id: 'eko', name: 'Eko', region: 'Nasional', gender: 'Pria', baseVoice: 'Iapetus', desc: 'Serius & Edukatif, sains dan modul pelatihan.', speechPrompt: 'Berbicara dengan intonasi serius, edukatif dan kredibel.', isHidden: false },
+      { id: 'laras', name: 'Laras', region: 'Nasional', gender: 'Wanita', baseVoice: 'Achernar', desc: 'Anggun & Elegan, seremonial dan kebudayaan.', speechPrompt: 'Berbicara dengan intonasi anggun, elegan, bertutur kata santun mulia.', isHidden: false },
+
+      // Karakter Khas Sunda (Jawa Barat)
+      { id: 'abah', name: 'Abah', region: 'Sunda', gender: 'Pria', baseVoice: 'Fenrir', desc: 'Sesepuh Sunda bijaksana, hangat dan menentramkan.', speechPrompt: 'Berbicara layaknya kakek/sesepuh Sunda yang bijaksana, suara berat berwibawa, tempo tenang bersahaja, vokal hangat khas kakek Priangan.', isHidden: false },
+      { id: 'nini', name: 'Nini', region: 'Sunda', gender: 'Wanita', baseVoice: 'Erinome', desc: 'Nenek Sunda penuh kasih sayang, lembut & keibuan.', speechPrompt: 'Berbicara layaknya nenek Sunda yang penuh welas asih, suara lembut penuh kehangatan nenek sepuh, tutur kata mengayomi dan damai.', isHidden: false },
+      { id: 'ujang', name: 'Ujang', region: 'Sunda', gender: 'Pria', baseVoice: 'Puck', desc: 'Pemuda Sunda lincah, ceria dan energik.', speechPrompt: 'Berbicara dengan semangat anak muda Sunda yang gaul, ceria, dan positif khas anak muda tanah Pasundan.', isHidden: false },
+      { id: 'bibi_edah', name: 'Bibi (Ceu Edah)', region: 'Sunda', gender: 'Wanita', baseVoice: 'Despina', desc: 'Ibu-ibu Sunda heboh, guyub dan akrab.', speechPrompt: 'Berbicara layaknya ceu-ceu Sunda yang heboh, guyub, medok renyah dan penuh keakraban.', isHidden: false },
+      { id: 'budak_eneng', name: 'Budak Leutik (Eneng)', region: 'Sunda', gender: 'Wanita', baseVoice: 'Aoede', desc: 'Anak Perempuan Sunda lugu, riang & menggemaskan.', speechPrompt: 'Berbicara dengan nada anak perempuan Sunda nada tinggi yang imut, polos, riang dan menggemaskan.', isHidden: false },
+      { id: 'budak_ujang', name: 'Budak Leutik (Ujang Alit)', region: 'Sunda', gender: 'Pria', baseVoice: 'Algenib', desc: 'Anak Laki-laki Sunda aktif, riang & ceria.', speechPrompt: 'Berbicara dengan suara anak kecil laki-laki Sunda yang riang, polos, dan bersemangat.', isHidden: false },
       { id: 'teh_neng', name: 'Teh Neng', region: 'Sunda', gender: 'Wanita', baseVoice: 'Leda', desc: 'Mojang Priangan halus, santun dan merdu.', speechPrompt: 'Berbicara layaknya mojang Sunda dengan tutur kata halus, berayun lembut dan ramah.', isHidden: false },
-      { id: 'kang_asep', name: 'Kang Asep', region: 'Sunda', gender: 'Pria', baseVoice: 'Orus', desc: 'Pria dewasa Sunda komunikatif dan bersahabat.', speechPrompt: 'Berbicara santai dan luwes layaknya akang Sunda yang ramah dan komunikatif.', isHidden: false },
-      { id: 'ujang', name: 'Ujang', region: 'Sunda', gender: 'Pria', baseVoice: 'Puck', desc: 'Pemuda Sunda lincah, ceria dan energik.', speechPrompt: 'Berbicara dengan semangat anak muda Sunda yang gaul, ceria, dan positif.', isHidden: false },
-      { id: 'bibi_edah', name: 'Bibi (Ceu Edah)', region: 'Sunda', gender: 'Wanita', baseVoice: 'Despina', desc: 'Ibu-ibu Sunda heboh, guyub dan akrab.', speechPrompt: 'Berbicara layaknya ceu-ceu Sunda yang heboh, guyub, medok renyah dan penuh keakraban.', isHidden: false }
+      { id: 'kang_asep', name: 'Kang Asep', region: 'Sunda', gender: 'Pria', baseVoice: 'Orus', desc: 'Pria dewasa Sunda komunikatif dan bersahabat.', speechPrompt: 'Berbicara santai dan luwes layaknya akang Sunda yang ramah dan komunikatif.', isHidden: false }
     ]
   },
 
@@ -54,13 +70,17 @@ export const ENGINE_CATALOG = [
     isHidden: false,
     description: 'Generative AI audio berstandar studio rekaman global dengan dinamika napas dan vokal manusia paling realistis di dunia.',
     voices: [
-      { id: '21m00Tcm4TlvDq8ikWAM', name: 'Rachel', region: 'Studio Global', gender: 'Wanita', desc: 'Vokal wanita tenang, hangat, lembut, dan sangat manusiawi.', isHidden: false },
-      { id: 'pNInz6obpgDQGcFmaJgB', name: 'Adam', region: 'Studio Global', gender: 'Pria', desc: 'Vokal pria deep, maskulin, mantap untuk narasi video & profil.', isHidden: false },
-      { id: 'EXAVITQu4vr4xnSDxMaL', name: 'Sarah', region: 'Studio Global', gender: 'Wanita', desc: 'Vokal wanita profesional, artikulatif, elegan untuk berita resmi.', isHidden: false },
-      { id: 'JBFqnCBsd6RMkjVDRZzb', name: 'George', region: 'Studio Global', gender: 'Pria', desc: 'Vokal pria berwibawa, hangat, ramah kedinasan.', isHidden: false },
-      { id: 'N2lVS1w4EtoT3dr4eOWO', name: 'Callum', region: 'Studio Global', gender: 'Pria', desc: 'Vokal pria muda, berkarakter intens dan kreatif untuk media sosial.', isHidden: false },
-      { id: 'jsCqWAovK2LkecY7zXl4', name: 'Freya', region: 'Studio Global', gender: 'Wanita', desc: 'Vokal wanita ceria, ramah, dinamis untuk kampanye publik.', isHidden: false },
-      { id: 'IKne3meq5aSn9XLyUdCD', name: 'Charlie', region: 'Studio Global', gender: 'Pria', desc: 'Vokal pria kasual, bersahabat layaknya teman mengobrol.', isHidden: false }
+      { id: 'EXAVITQu4vr4xnSDxMaL', name: 'Sarah', region: 'Studio Global', gender: 'Wanita', desc: 'Vokal wanita profesional, dewasa, menenangkan, artikulasi sangat elegan.', isHidden: false },
+      { id: 'JBFqnCBsd6RMkjVDRZzb', name: 'George', region: 'Studio Global', gender: 'Pria', desc: 'Vokal pria hangat, narator memikat, wibawa penyiaran publik.', isHidden: false },
+      { id: 'IKne3meq5aSn9XLyUdCD', name: 'Charlie', region: 'Studio Global', gender: 'Pria', desc: 'Vokal pria deep, percaya diri, berenergi untuk narasi dokumenter.', isHidden: false },
+      { id: 'Xb7hH8MSUJpSbSDYk0k2', name: 'Alice', region: 'Studio Global', gender: 'Wanita', desc: 'Vokal wanita jernih, komunikatif, edukator ramah.', isHidden: false },
+      { id: 'N2lVS1w4EtoT3dr4eOWO', name: 'Callum', region: 'Studio Global', gender: 'Pria', desc: 'Vokal pria muda, berkarakter serak khas, dinamis untuk medsos.', isHidden: false },
+      { id: 'CwhRBWXzGAHq8TQ4Fs17', name: 'Roger', region: 'Studio Global', gender: 'Pria', desc: 'Vokal pria santai, kasual, resonansi dada alami.', isHidden: false },
+      { id: 'FGY2WhTYpPnrIDTdsKH5', name: 'Laura', region: 'Studio Global', gender: 'Wanita', desc: 'Vokal wanita antusias, ceria, sikap bersemangat.', isHidden: false },
+      { id: 'XrExE9yKIg1WjnnlVkGX', name: 'Matilda', region: 'Studio Global', gender: 'Wanita', desc: 'Vokal wanita profesional berbobot, cerdas dan informatif.', isHidden: false },
+      { id: 'cgSgspJ2msm6clMCkdW9', name: 'Jessica', region: 'Studio Global', gender: 'Wanita', desc: 'Vokal wanita hangat, ceria, bersahabat.', isHidden: false },
+      { id: 'cjVigY5qzO86Huf0OWal', name: 'Eric', region: 'Studio Global', gender: 'Pria', desc: 'Vokal pria halus, tenang, terpercaya.', isHidden: false },
+      { id: 'hpp4J3VqNfWAUOO0d1Us', name: 'Bella', region: 'Studio Global', gender: 'Wanita', desc: 'Vokal wanita cerah, ramah, artikulatif.', isHidden: false }
     ]
   },
 

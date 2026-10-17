@@ -37,7 +37,13 @@ import {
   Sliders,
   Radio,
   Headphones,
-  Cpu
+  Cpu,
+  VolumeX,
+  Server,
+  ChevronDown,
+  ChevronUp,
+  Eye,
+  EyeOff
 } from 'lucide-react';
 
 // --- Konfigurasi Model ---
@@ -144,7 +150,121 @@ const INITIAL_VOICES = [
     personaPrompt: 'Karakter Kang Asep (pria dewasa Sunda yang bersahabat, luwes, santai, gaya bicara akrab dan hangat).',
     isCustom: false 
   },
+
+  // --- 13 Persona Logat & Dialek Daerah Nusantara ---
+  { id: 'Kore', name: 'Teh Lilis (Sunda)', desc: 'Logat Sunda halus, ramah, berayun merdu', gender: 'Female', category: 'Dialek Nusantara', accent: 'Sunda Halus', personaPrompt: 'Berbicara dengan logat Sunda halus dan ramah. Nada lembut dan hangat. Kadang sisipkan kata "punten", "mangga", "nya".', isCustom: false },
+  { id: 'Fenrir', name: 'Mas Tejo (Jawa)', desc: 'Logat Jawa medok, santun, intonasi tenang berwibawa', gender: 'Male', category: 'Dialek Nusantara', accent: 'Jawa Medok', personaPrompt: 'Berbicara dengan logat Jawa medok. Intonasi tenang, kalimat sedikit ditarik di akhir. Gunakan nuansa bahasa Jawa seperti "nggih", "monggo", "nuwun".', isCustom: false },
+  { id: 'Charon', name: 'Abang Ucok (Batak)', desc: 'Logat Batak tegas, lantang, lugas dan bervolume mantap', gender: 'Male', category: 'Dialek Nusantara', accent: 'Batak Tegas', personaPrompt: 'Berbicara dengan logat Batak yang kuat dan tegas. Nada lantang dan penuh energi. Kadang gunakan kata seperti "bah", "lae".', isCustom: false },
+  { id: 'Puck', name: 'Daeng (Makassar)', desc: 'Logat Bugis/Makassar bersemangat, cepat dan dinamis', gender: 'Male', category: 'Dialek Nusantara', accent: 'Makassar Cepat', personaPrompt: 'Berbicara dengan logat Bugis atau Makassar yang khas. Intonasi cepat dan bersemangat. Kadang sisipkan kata "ji", "ki", atau "ta".', isCustom: false },
+  { id: 'Zephyr', name: 'Uda (Minang)', desc: 'Logat Minangkabau mengalun santai, bijak dan bersahabat', gender: 'Male', category: 'Dialek Nusantara', accent: 'Minang Mengalun', personaPrompt: 'Berbicara dengan logat Minangkabau yang jelas. Ritme cepat dan tegas. Kadang gunakan kata "lah", "wak", atau "iyo".', isCustom: false },
+  { id: 'Charon', name: 'Bli Wayan (Bali)', desc: 'Logat Bali tenang, damai, dan mengalir santun', gender: 'Male', category: 'Dialek Nusantara', accent: 'Bali Damai', personaPrompt: 'Berbicara dengan logat Bali yang lembut dan damai. Ritme pelan dan santun. Kadang gunakan kata seperti "nggih", "tiang".', isCustom: false },
+  { id: 'Fenrir', name: 'Betawi Babe (Jakarta)', desc: 'Logat Betawi ceplas-ceplos, akrab dan penuh kehangatan', gender: 'Male', category: 'Dialek Nusantara', accent: 'Betawi Ceplas-Ceplos', personaPrompt: 'Berbicara dengan logat Betawi asli Jakarta yang ceplas-ceplos, ramah, dan santai. Gunakan kata "nih", "deh", "babe".', isCustom: false },
+  { id: 'Charon', name: 'Papua Pace (Papua)', desc: 'Logat Indonesia Timur / Papua ceria dan berirama khas', gender: 'Male', category: 'Dialek Nusantara', accent: 'Papua Ceria', personaPrompt: 'Berbicara dengan logat Papua yang hangat, berirama naik turun bersahabat. Gunakan kata "kaka", "pace", "dong".', isCustom: false },
+  { id: 'Fenrir', name: 'Sanggam (Berau)', desc: 'Logat Berau Kaltim santai namun tegas bersahabat', gender: 'Male', category: 'Dialek Nusantara', accent: 'Berau Kaltim', personaPrompt: 'Berbicara dengan logat Kalimantan Timur khas Berau. Santai namun tegas. Kadang gunakan kata seperti "bah", "lah".', isCustom: false },
+  { id: 'Kore', name: 'Galuh (Banjar)', desc: 'Logat Banjar manis, ramah dan santun', gender: 'Female', category: 'Dialek Nusantara', accent: 'Banjar Manis', personaPrompt: 'Berbicara dengan logat Banjar yang manis dan mengalun ramah. Sisipkan kata "pian", "ulun", "lah".', isCustom: false },
+  { id: 'Fenrir', name: 'Cak Mad (Madura)', desc: 'Logat Madura bersemangat, tegas dan blak-blakan bersahabat', gender: 'Male', category: 'Dialek Nusantara', accent: 'Madura Tegas', personaPrompt: 'Berbicara dengan logat Madura yang tegas, bervolume mantap dan lugas bersahabat.', isCustom: false },
+  { id: 'Kore', name: 'Adek (Melayu)', desc: 'Logat Melayu pesisir santun, berirama mendayu elok', gender: 'Female', category: 'Dialek Nusantara', accent: 'Melayu Santun', personaPrompt: 'Berbicara dengan logat Melayu Riau yang santun, lemah lembut, dan bertutur kata elok bersahaja.', isCustom: false },
+  { id: 'Puck', name: 'Nyong (Ambon)', desc: 'Logat Maluku / Ambon merdu, manis dan penuh kekeluargaan', gender: 'Male', category: 'Dialek Nusantara', accent: 'Ambon Merdu', personaPrompt: 'Berbicara dengan logat Ambon Maluku yang ramah, manis berirama khas kepulauan. Gunakan kata "katong", "dong".', isCustom: false },
 ];
+
+// --- Karakter Suara Khusus ElevenLabs (Studio Hyper-Realistic) ---
+const ELEVENLABS_VOICES = [
+  { id: 'EXAVITQu4vr4xnSDxMaL', name: 'Sarah', desc: 'Dewasa, Menenangkan & Elegan (Wanita)', gender: 'Female', category: 'ElevenLabs', accent: 'Studio Global', isCustom: false },
+  { id: 'JBFqnCBsd6RMkjVDRZzb', name: 'George', desc: 'Hangat & Wibawa Narator (Pria)', gender: 'Male', category: 'ElevenLabs', accent: 'Studio Global', isCustom: false },
+  { id: 'IKne3meq5aSn9XLyUdCD', name: 'Charlie', desc: 'Deep, Percaya Diri & Enerjik (Pria)', gender: 'Male', category: 'ElevenLabs', accent: 'Studio Global', isCustom: false },
+  { id: 'Xb7hH8MSUJpSbSDYk0k2', name: 'Alice', desc: 'Jernih, Komunikatif & Edukator (Wanita)', gender: 'Female', category: 'ElevenLabs', accent: 'Studio Global', isCustom: false },
+  { id: 'N2lVS1w4EtoT3dr4eOWO', name: 'Callum', desc: 'Serak Khas Medsos & Kreatif (Pria)', gender: 'Male', category: 'ElevenLabs', accent: 'Studio Global', isCustom: false },
+  { id: 'CwhRBWXzGAHq8TQ4Fs17', name: 'Roger', desc: 'Santai, Kasual & Resonansi Alami (Pria)', gender: 'Male', category: 'ElevenLabs', accent: 'Studio Global', isCustom: false },
+  { id: 'FGY2WhTYpPnrIDTdsKH5', name: 'Laura', desc: 'Antusias, Ceria & Bersemangat (Wanita)', gender: 'Female', category: 'ElevenLabs', accent: 'Studio Global', isCustom: false },
+  { id: 'XrExE9yKIg1WjnnlVkGX', name: 'Matilda', desc: 'Profesional & Berpengetahuan (Wanita)', gender: 'Female', category: 'ElevenLabs', accent: 'Studio Global', isCustom: false },
+  { id: 'cgSgspJ2msm6clMCkdW9', name: 'Jessica', desc: 'Hangat, Ceria & Bersahabat (Wanita)', gender: 'Female', category: 'ElevenLabs', accent: 'Studio Global', isCustom: false },
+  { id: 'cjVigY5qzO86Huf0OWal', name: 'Eric', desc: 'Halus, Tenang & Terpercaya (Pria)', gender: 'Male', category: 'ElevenLabs', accent: 'Studio Global', isCustom: false },
+  { id: 'hpp4J3VqNfWAUOO0d1Us', name: 'Bella', desc: 'Cerah, Ramah & Artikulatif (Wanita)', gender: 'Female', category: 'ElevenLabs', accent: 'Studio Global', isCustom: false }
+];
+
+// --- Karakter Suara Khusus Microsoft Azure Neural ---
+const AZURE_VOICES = [
+  { id: 'id-ID-GadisNeural', name: 'Gadis (id-ID)', desc: 'Standar Siaran Berita & Protokoler Resmi (Wanita)', gender: 'Female', category: 'Azure', accent: 'Indonesia Resmi', isCustom: false },
+  { id: 'id-ID-ArdiNeural', name: 'Ardi (id-ID)', desc: 'Otoritatif Kedinasan, Tegas & Berwibawa (Pria)', gender: 'Male', category: 'Azure', accent: 'Indonesia Resmi', isCustom: false }
+];
+
+// --- Karakter Suara Khusus Google Cloud Neural2 ---
+const GOOGLE_CLOUD_VOICES = [
+  { id: 'id-ID-Neural2-A', name: 'Neural2-A', desc: 'Artikulasi Jernih & Santun Edukasi (Wanita)', gender: 'Female', category: 'Google Cloud', accent: 'Indonesia Nasional', isCustom: false },
+  { id: 'id-ID-Neural2-B', name: 'Neural2-B', desc: 'Netral & Stabil Panduan Layanan (Pria)', gender: 'Male', category: 'Google Cloud', accent: 'Indonesia Nasional', isCustom: false },
+  { id: 'id-ID-Wavenet-A', name: 'Wavenet-A', desc: 'Sintesis Wavenet Jernih & Halus (Wanita)', gender: 'Female', category: 'Google Cloud', accent: 'Indonesia Nasional', isCustom: false },
+  { id: 'id-ID-Wavenet-B', name: 'Wavenet-B', desc: 'Sintesis Wavenet Pria Bernada Hangat (Pria)', gender: 'Male', category: 'Google Cloud', accent: 'Indonesia Nasional', isCustom: false }
+];
+
+// --- Karakter Suara Khusus Voicebox Local Workstation ---
+const VOICEBOX_VOICES = [
+  { id: 'kokoro_female', name: 'Kokoro Wanita (Offline)', desc: 'Model 82M Lokal On-Premise', gender: 'Female', category: 'Voicebox Local', accent: 'Lokal Mandiri', isCustom: false },
+  { id: 'kokoro_male', name: 'Kokoro Pria (Offline)', desc: 'Model 82M Vokal Pria Lokal', gender: 'Male', category: 'Voicebox Local', accent: 'Lokal Mandiri', isCustom: false }
+];
+
+// --- Peta File Audio Preview Terkonfirmasi (35 Persona Lengkap Aktif) ---
+export const STATIC_AUDIO_PREVIEWS = {
+  // 8 Persona Khas Sunda (Blok 2)
+  'Abah': '/audio/previews/abah.wav',
+  'Nini': '/audio/previews/nini.wav',
+  'Ujang': '/audio/previews/ujang.wav',
+  'Bibi (Ceu Edah)': '/audio/previews/bibi.wav',
+  'Budak Leutik (Eneng)': '/audio/previews/budak_eneng.wav',
+  'Budak Leutik Eneng': '/audio/previews/budak_eneng.wav',
+  'Budak Leutik (Ujang Alit)': '/audio/previews/budak_ujang.mp3',
+  'Budak Leutik Ujang Alit': '/audio/previews/budak_ujang.mp3',
+  'Teh Neng': '/audio/previews/teh_neng.wav',
+  'Kang Asep': '/audio/previews/kang_asep.mp3',
+
+  // 14 Persona Nasional (Blok 1 - NUSA VOICE)
+  'Anita': '/audio/previews/anita.wav',
+  'Siti': '/audio/previews/siti.wav',
+  'Agus': '/audio/previews/agus.wav',
+  'Dewi': '/audio/previews/dewi.mp3',
+  'Tina': '/audio/previews/tina.mp3',
+  'Maya': '/audio/previews/maya.mp3',
+  'Rian': '/audio/previews/rian.mp3',
+  'Indah': '/audio/previews/indah.mp3',
+  'Gading': '/audio/previews/gading.mp3',
+  'Shinta': '/audio/previews/shinta.mp3',
+  'Bayu': '/audio/previews/bayu.mp3',
+  'Adi': '/audio/previews/adi.mp3',
+  'Eko': '/audio/previews/eko.mp3',
+  'Laras': '/audio/previews/laras.mp3',
+
+  // 13 Persona Dialek Nusantara (Blok 3 - LOGAT DAERAH)
+  'Teh Lilis (Sunda)': '/audio/previews/teh_lilis.mp3',
+  'Mas Tejo (Jawa)': '/audio/previews/mas_tejo.mp3',
+  'Abang Ucok (Batak)': '/audio/previews/abang_ucok.mp3',
+  'Daeng (Makassar)': '/audio/previews/daeng.mp3',
+  'Uda (Minang)': '/audio/previews/uda.mp3',
+  'Bli Wayan (Bali)': '/audio/previews/bli_wayan.mp3',
+  'Betawi Babe (Jakarta)': '/audio/previews/betawi_babe.mp3',
+  'Papua Pace (Papua)': '/audio/previews/papua_pace.mp3',
+  'Sanggam (Berau)': '/audio/previews/sanggam.mp3',
+  'Galuh (Banjar)': '/audio/previews/galuh.mp3',
+  'Cak Mad (Madura)': '/audio/previews/cak_mad.mp3',
+  'Adek (Melayu)': '/audio/previews/adek.mp3',
+  'Nyong (Ambon)': '/audio/previews/nyong.mp3',
+
+  // Karakter ElevenLabs Studio (Prabu Pajajaran Server)
+  'Sarah': '/audio/previews/elevenlabs_sarah.mp3',
+  'George': '/audio/previews/elevenlabs_george.mp3',
+  'Charlie': '/audio/previews/elevenlabs_charlie.mp3',
+  'Alice': '/audio/previews/elevenlabs_alice.mp3',
+  'Callum': '/audio/previews/elevenlabs_callum.mp3',
+  'Roger': '/audio/previews/elevenlabs_roger.mp3',
+  'Laura': '/audio/previews/elevenlabs_laura.mp3',
+};
+
+// Helper: Cek apakah karakter memiliki sampel audio preview
+export const checkVoiceHasPreview = (voice, cache = {}) => {
+  if (!voice) return false;
+  if (voice.isCloned) return true; // Suara kloningan pengguna selalu memiliki sampel rekaman
+  if (STATIC_AUDIO_PREVIEWS[voice.name]) return true;
+  if (cache && cache[voice.name]) return true;
+  return false;
+};
 
 const EMOTIONS = [
   { id: 'Netral', label: 'Netral', icon: <Smile className="w-4 h-4" /> },
@@ -289,6 +409,54 @@ const getVoiceAvatarMeta = (v) => {
     };
   }
 
+  // ElevenLabs Studio
+  if (v.category === 'ElevenLabs') {
+    return {
+      initials: '🎙️ ' + initials,
+      gradient: v.gender === 'Female' ? 'from-purple-500 via-pink-600 to-indigo-700' : 'from-indigo-600 via-purple-700 to-slate-800',
+      badge: 'ElevenLabs',
+      roleColor: 'bg-purple-50 text-purple-700 border-purple-200',
+      genderIcon: v.gender === 'Female' ? '♀ Wanita' : '♂ Pria',
+      glow: 'shadow-purple-500/20'
+    };
+  }
+
+  // Microsoft Azure Neural
+  if (v.category === 'Azure') {
+    return {
+      initials: '🔷 ' + initials,
+      gradient: v.gender === 'Female' ? 'from-cyan-500 via-blue-600 to-indigo-700' : 'from-blue-600 via-indigo-700 to-slate-800',
+      badge: 'Azure Neural',
+      roleColor: 'bg-blue-50 text-blue-700 border-blue-200',
+      genderIcon: v.gender === 'Female' ? '♀ Wanita' : '♂ Pria',
+      glow: 'shadow-blue-500/20'
+    };
+  }
+
+  // Google Cloud Neural2
+  if (v.category === 'Google Cloud') {
+    return {
+      initials: '☁️ ' + initials,
+      gradient: 'from-sky-500 via-blue-600 to-indigo-700',
+      badge: 'Google Cloud',
+      roleColor: 'bg-sky-50 text-sky-700 border-sky-200',
+      genderIcon: v.gender === 'Female' ? '♀ Wanita' : '♂ Pria',
+      glow: 'shadow-sky-500/20'
+    };
+  }
+
+  // Voicebox Local
+  if (v.category === 'Voicebox Local') {
+    return {
+      initials: '🖥️ ' + initials,
+      gradient: 'from-emerald-600 via-teal-700 to-cyan-800',
+      badge: 'Offline 82M',
+      roleColor: 'bg-emerald-50 text-emerald-700 border-emerald-200',
+      genderIcon: v.gender === 'Female' ? '♀ Wanita' : '♂ Pria',
+      glow: 'shadow-emerald-500/20'
+    };
+  }
+
   // Nasional Females
   if (v.gender === 'Female') {
     const palette = {
@@ -370,19 +538,29 @@ const splitTextIntoNaturalChunks = (text, maxChars = 800) => {
   return chunks;
 };
 
-// Exponential Backoff Fetch
-const fetchWithRetry = async (url, options, retries = 5, backoff = 1000) => {
+// Exponential Backoff Fetch with Multi-Key Pool (Up to 8 Keys) Fail-Safe
+const fetchWithRetry = async (url, options, retries = 5, backoff = 1000, keyPool = [], keyIndex = 0) => {
   try {
     const res = await fetch(url, options);
     if (!res.ok) {
       const errBody = await res.text();
+      // Fail-Safe: Jika terkena HTTP 429 (quota limit) atau 503, dan ada kunci lain di keyPool
+      if ((res.status === 429 || res.status === 503) && keyPool.length > 1 && url.includes('key=')) {
+        const nextIdx = (keyIndex + 1) % keyPool.length;
+        const nextKey = keyPool[nextIdx];
+        if (nextKey && nextKey !== keyPool[keyIndex]) {
+          console.warn(`⚠️ Kunci Gemini #${keyIndex + 1} limit/error (HTTP ${res.status}). Otomatis beralih ke Kunci Fail-Safe #${nextIdx + 1}...`);
+          const nextUrl = url.replace(/key=[^&]+/, `key=${nextKey}`);
+          return fetchWithRetry(nextUrl, options, retries, backoff, keyPool, nextIdx);
+        }
+      }
       throw new Error(`HTTP ${res.status}: ${errBody}`);
     }
     return await res.json();
   } catch (err) {
     if (retries > 0) {
       await new Promise(r => setTimeout(r, backoff));
-      return fetchWithRetry(url, options, retries - 1, backoff * 2);
+      return fetchWithRetry(url, options, retries - 1, backoff * 2, keyPool, keyIndex);
     }
     throw err;
   }
@@ -491,7 +669,13 @@ const stitchPCMChunksToWav = (pcmChunks, sampleRate = 24000) => {
   return buildWavBlobFromPCM(mergedPCM, sampleRate);
 };
 
-export const GentraStudio = ({ user, onLogout }) => {
+export const GentraStudio = ({ 
+  user, 
+  onLogout, 
+  activeEngine = 'gemini', 
+  onOpenEngineModal, 
+  onSelectEngine 
+}) => {
   // Navigation State
   const [view, setView] = useState('studio'); // 'studio' | 'cloning' | 'ads' | 'history'
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -513,17 +697,52 @@ export const GentraStudio = ({ user, onLogout }) => {
       localStorage.setItem('gentra_studio_theme', nextTheme ? 'dark' : 'light');
     } catch (e) {}
   };
-  const [apiKey, setApiKey] = useState(() => {
+  // Pool 8 Kunci API Google Gemini (Fail-Safe Key Pool)
+  const [geminiKeys, setGeminiKeys] = useState(() => {
     try {
-      return localStorage.getItem('gentra_gemini_key') || (typeof import.meta !== 'undefined' && import.meta.env?.VITE_GEMINI_API_KEY) || '';
-    } catch (e) {
-      return '';
-    }
+      const saved = localStorage.getItem('gentra_gemini_keys_pool');
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed) && parsed.length === 8) return parsed;
+      }
+    } catch (e) {}
+    const defaultKey1 = (typeof localStorage !== 'undefined' && localStorage.getItem('gentra_gemini_key')) || (typeof import.meta !== 'undefined' && import.meta.env?.VITE_GEMINI_API_KEY) || '';
+    const defaultKey2 = (typeof localStorage !== 'undefined' && localStorage.getItem('gentra_gemini_backup_key')) || '';
+    return [defaultKey1, defaultKey2, '', '', '', '', '', ''];
   });
+
+  const [keyVisibility, setKeyVisibility] = useState([false, false, false, false, false, false, false, false]);
+
+  const handleUpdateGeminiKey = (index, value) => {
+    setGeminiKeys(prev => {
+      const next = [...prev];
+      next[index] = value;
+      try {
+        localStorage.setItem('gentra_gemini_keys_pool', JSON.stringify(next));
+        if (index === 0) localStorage.setItem('gentra_gemini_key', value);
+        if (index === 1) localStorage.setItem('gentra_gemini_backup_key', value);
+      } catch (e) {}
+      return next;
+    });
+  };
+
+  const activeKeyPool = geminiKeys.filter(k => k && k.trim().length > 0);
+  const activeKey = activeKeyPool[0] || (typeof import.meta !== 'undefined' && import.meta.env?.VITE_GEMINI_API_KEY) || '';
+  const apiKey = activeKey; // Alias compatibility
+
   const [showApiKeyModal, setShowApiKeyModal] = useState(false);
+  const [generationError, setGenerationError] = useState(null);
+
+  // State 3 Blok Pemisah Karakter Studio (Expand & Collapse)
+  const [isBlock1Open, setIsBlock1Open] = useState(true); // NUSA VOICE (Nasional - 14)
+  const [isBlock2Open, setIsBlock2Open] = useState(true); // PASUNDAN VOICE (Sunda - 8)
+  const [isBlock3Open, setIsBlock3Open] = useState(true); // LOGAT NUSANTARA (Dialek - 13)
 
   // Multi-Engine TTS State
-  const [ttsEngine, setTtsEngine] = useState('gemini'); // 'gemini' | 'google' | 'azure'
+  const [ttsEngine, setTtsEngine] = useState('gemini'); // 'gemini' | 'elevenlabs' | 'azure' | 'google' | 'voicebox'
+  const [elevenApiKey, setElevenApiKey] = useState(() => {
+    try { return localStorage.getItem('gentra_eleven_key') || ''; } catch (e) { return ''; }
+  });
   const [googleApiKey, setGoogleApiKey] = useState(() => {
     try { return localStorage.getItem('gentra_google_key') || ''; } catch (e) { return ''; }
   });
@@ -533,6 +752,18 @@ export const GentraStudio = ({ user, onLogout }) => {
   const [azureRegion, setAzureRegion] = useState(() => {
     try { return localStorage.getItem('gentra_azure_region') || 'southeastasia'; } catch (e) { return 'southeastasia'; }
   });
+
+  // Benchmark / Arena Komparasi State (Dapur Pengujian Backend)
+  const [showBenchmarkModal, setShowBenchmarkModal] = useState(false);
+  const [isBenchmarking, setIsBenchmarking] = useState(false);
+  const [benchmarkResults, setBenchmarkResults] = useState([]);
+  const [playingBenchmarkIndex, setPlayingBenchmarkIndex] = useState(null);
+  const [benchmarkText, setBenchmarkText] = useState('');
+  const benchmarkAudioRef = useRef(null);
+
+  // Ketersediaan Audio & Notifikasi Abu
+  const [previewUnavailableVoice, setPreviewUnavailableVoice] = useState(null);
+  const [generationProgress, setGenerationProgress] = useState(0);
 
   // Master Admin Security State (Pengaturan Kunci API Terproteksi)
   const [isAdminUnlocked, setIsAdminUnlocked] = useState(() => user?.role === 'Master Admin');
@@ -582,8 +813,7 @@ export const GentraStudio = ({ user, onLogout }) => {
   const [speed, setSpeed] = useState(1.0);
   const [pitch, setPitch] = useState(0);
 
-  // Engine Selection: 'cloud' (Gemini Flagship) | 'voicebox' (Voicebox Localhost 17493) | 'browser' (Browser Web Speech)
-  const [activeEngine, setActiveEngine] = useState('cloud');
+  // Voicebox Local Engine status
   const [voiceboxStatus, setVoiceboxStatus] = useState('ready'); // 'ready' | 'connected' | 'offline'
   const textareaRef = useRef(null);
 
@@ -681,15 +911,23 @@ export const GentraStudio = ({ user, onLogout }) => {
   const previewAudioCache = useRef({});
   const currentAudioRef = useRef(null);
 
+  // Sinkronisasi daftar karakter vokal sesuai Server Engine aktif
   useEffect(() => {
-    try {
-      localStorage.setItem('gentra_voices_v3', JSON.stringify(voices));
-    } catch (e) {}
-  }, [voices]);
+    if (activeEngine === 'azure') {
+      setVoices(AZURE_VOICES);
+      setSelectedVoice(AZURE_VOICES[0]);
+    } else if (activeEngine === 'elevenlabs') {
+      setVoices(ELEVENLABS_VOICES);
+      setSelectedVoice(ELEVENLABS_VOICES[0]);
+    } else {
+      setVoices(INITIAL_VOICES);
+      setSelectedVoice(INITIAL_VOICES[0]);
+    }
+    setVoiceCategory('Semua');
+  }, [activeEngine]);
 
   const filteredVoices = voices.filter(v => {
     if (voiceCategory === 'Semua') return true;
-    if (voiceCategory === 'Kloningan') return v.isCloned;
     return v.category === voiceCategory;
   });
 
@@ -701,7 +939,20 @@ export const GentraStudio = ({ user, onLogout }) => {
   const handlePreviewVoice = async (v, e) => {
     if (e) e.stopPropagation();
 
-    // 1. Jika sedang memutar suara karakter ini, hentikan
+    // 1. Cek ketersediaan sampel audio karakter
+    const hasAudio = checkVoiceHasPreview(v, previewAudioCache.current);
+    if (!hasAudio) {
+      if (currentAudioRef.current) {
+        currentAudioRef.current.pause();
+        currentAudioRef.current.currentTime = 0;
+      }
+      setPreviewingVoice(null);
+      setPreviewUnavailableVoice(v.name);
+      setTimeout(() => setPreviewUnavailableVoice(null), 4000);
+      return;
+    }
+
+    // 2. Jika sedang memutar suara karakter ini, hentikan
     if (previewingVoice === v.name) {
       if (currentAudioRef.current) {
         currentAudioRef.current.pause();
@@ -725,99 +976,32 @@ export const GentraStudio = ({ user, onLogout }) => {
 
     setPreviewingVoice(v.name);
 
-    // 2. Cek apakah ada file audio preview berkualitas tinggi atau sudah di cache
-    const staticAudioMap = {
-      'Anita': '/audio/previews/anita.wav',
-      'Agus': '/audio/previews/agus.wav',
-      'Siti': '/audio/previews/siti.wav',
-      'Abah': '/audio/previews/abah.wav',
-      'Teh Neng': '/audio/previews/teh_neng.wav'
-    };
-
-    const cachedOrStaticUrl = previewAudioCache.current[v.name] || staticAudioMap[v.name];
+    // 3. Putar audio preview terkonfirmasi dari cache atau file statis
+    const cachedOrStaticUrl = previewAudioCache.current[v.name] || STATIC_AUDIO_PREVIEWS[v.name];
     if (cachedOrStaticUrl) {
       const audio = new Audio(cachedOrStaticUrl);
       currentAudioRef.current = audio;
       audio.onended = () => setPreviewingVoice(null);
-      audio.onerror = () => setPreviewingVoice(null);
+      audio.onerror = () => {
+        setPreviewingVoice(null);
+        setPreviewUnavailableVoice(v.name);
+        setTimeout(() => setPreviewUnavailableVoice(null), 4000);
+      };
       try {
         await audio.play();
         return;
       } catch (err) {
         console.warn('Gagal memutar audio preview langsung:', err);
+        setPreviewingVoice(null);
+        setPreviewUnavailableVoice(v.name);
+        setTimeout(() => setPreviewUnavailableVoice(null), 4000);
+        return;
       }
     }
 
-    // 3. Ambil Kunci Gemini API (Prioritas: state -> localStorage -> .env)
-    const activeKey = apiKey || (typeof import.meta !== 'undefined' && import.meta.env?.VITE_GEMINI_API_KEY) || "";
-
-    if (activeKey) {
-      try {
-        const sampleText = v.category === 'Sunda'
-          ? `Sampurasun wargi Jabar! Abdi ${v.name}, sora alami siap kanggo produksi audio anjeun.`
-          : `Halo! Saya ${v.name}, pengisi suara alami berstandar studio untuk produksi Anda.`;
-
-        const personaInstruction = v.personaPrompt ? `${v.personaPrompt} ` : "";
-        const fullPrompt = `Sebagai pengisi suara ${v.name} (${v.desc}). ${personaInstruction}Ucapkan kalimat ini dengan intonasi manusiawi yang sangat alami, hangat, dan artikulatif: "${sampleText}"`;
-
-        let res;
-        try {
-          res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${TTS_MODEL}:generateContent?key=${activeKey}`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              contents: [{ parts: [{ text: fullPrompt }] }],
-              generationConfig: {
-                responseModalities: ["AUDIO"],
-                speechConfig: {
-                  voiceConfig: {
-                    prebuiltVoiceConfig: { voiceName: v.id || 'Aoede' }
-                  }
-                }
-              }
-            })
-          });
-        } catch (mErr) {
-          res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${TTS_FALLBACK_MODEL}:generateContent?key=${activeKey}`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              contents: [{ parts: [{ text: fullPrompt }] }],
-              generationConfig: {
-                responseModalities: ["AUDIO"],
-                speechConfig: {
-                  voiceConfig: {
-                    prebuiltVoiceConfig: { voiceName: v.id || 'Aoede' }
-                  }
-                }
-              }
-            })
-          });
-        }
-
-        const data = await res.json();
-        const inlineData = data?.candidates?.[0]?.content?.parts?.[0]?.inlineData;
-
-        if (inlineData?.data) {
-          const pcm16 = base64ToPCM16(inlineData.data);
-          const wavBlob = buildWavBlobFromPCM(pcm16, 24000);
-          const audioUrl = URL.createObjectURL(wavBlob);
-          previewAudioCache.current[v.name] = audioUrl;
-
-          const audio = new Audio(audioUrl);
-          currentAudioRef.current = audio;
-          audio.onended = () => setPreviewingVoice(null);
-          audio.onerror = () => setPreviewingVoice(null);
-          await audio.play();
-          return;
-        }
-      } catch (apiErr) {
-        console.warn('Gagal memanggil Gemini TTS preview:', apiErr);
-      }
-    }
-
-    // Jika tidak ada koneksi/API, batalkan status preview dengan anggun tanpa robotik
-    setTimeout(() => setPreviewingVoice(null), 1000);
+    setPreviewUnavailableVoice(v.name);
+    setTimeout(() => setPreviewUnavailableVoice(null), 4000);
+    setPreviewingVoice(null);
   };
 
   // Recording
@@ -1083,54 +1267,14 @@ PENTING:
   const handleGenerateAudio = async () => {
     if (!text.trim()) return;
 
-    // 1. Eksekusi Engine Voicebox Local (100% Offline Privasi)
-    if (activeEngine === 'voicebox') {
-      setIsGenerating(true);
-      setProgressStatus('Menghubungkan ke Voicebox Localhost (127.0.0.1:17493)...');
-      try {
-        const response = await fetch('http://127.0.0.1:17493/generate', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            text: text,
-            voice: selectedVoice.name,
-            speed: speed,
-            engine: 'kokoro'
-          })
-        });
-
-        if (response.ok) {
-          const blob = await response.blob();
-          const url = URL.createObjectURL(blob);
-          setAudioUrl(url);
-          setProgressStatus('Sintesis sukses via Engine Voicebox Localhost!');
-          setIsGenerating(false);
-          return;
-        }
-      } catch (err) {
-        console.info('Voicebox service di port 17493 belum aktif, menjalankan sintesis offline teroptimasi.');
-      }
-
-      // Fallback lokal offline teroptimasi jika Voicebox desktop daemon belum dinyalakan
-      setProgressStatus('Memproses audio via Engine Voicebox Local (Kokoro Mode)...');
-      await new Promise(r => setTimeout(r, 700));
-
-      if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
-        window.speechSynthesis.cancel();
-        // Bersihkan tag kurung siku agar tidak dilafalkan harafiah
-        const cleanSpeakText = text.replace(/\[.*?\]/g, ' ');
-        const utterance = new SpeechSynthesisUtterance(cleanSpeakText);
-        utterance.lang = 'id-ID';
-        utterance.rate = speed * (selectedVoice.gender === 'Female' ? 1.05 : 0.92);
-        utterance.pitch = selectedVoice.gender === 'Female' ? 1.15 : 0.85;
-        window.speechSynthesis.speak(utterance);
-        setProgressStatus('Audio Voicebox Lokal berhasil diperdengarkan secara offline!');
-      }
-      setIsGenerating(false);
+    // 1. Cek Ketersediaan Karakter: jika sampel preview tidak ada, karakter tidak dapat digunakan untuk generate
+    if (!checkVoiceHasPreview(selectedVoice, previewAudioCache.current)) {
+      setPreviewUnavailableVoice(selectedVoice.name);
+      setTimeout(() => setPreviewUnavailableVoice(null), 4000);
       return;
     }
 
-    // 2. Eksekusi Engine Flagship Cloud (Gemini Flash Multimodal)
+    // 2. Ambil Kunci Gemini API Aktif
     const activeKey = apiKey || (typeof import.meta !== 'undefined' && import.meta.env?.VITE_GEMINI_API_KEY) || "";
     if (!activeKey) {
       setShowApiKeyModal(true);
@@ -1139,7 +1283,9 @@ PENTING:
 
     setIsGenerating(true);
     setAudioUrl(null);
-    setProgressStatus('Memecah naskah menjadi segmen kalimat alami...');
+    setGenerationError(null);
+    setGenerationProgress(15);
+    setProgressStatus('Mempersiapkan naskah & konfigurasi vokal Gemini Flash Neural...');
 
     const chunks = splitTextIntoNaturalChunks(text, 800);
     setTotalChunksCount(chunks.length);
@@ -1153,28 +1299,47 @@ PENTING:
 
     const personaInstruction = selectedVoice.personaPrompt ? `${selectedVoice.personaPrompt} ` : "";
 
-    const dialectInstruction = dialect === 'sunda' 
+    const dialectInstruction = selectedVoice.category === 'Sunda' || dialect === 'sunda'
       ? `Gunakan cengkok dan intonasi khas Sunda yang ${selectedVoice.accent || 'luwes'}, natural, dan hangat.` 
-      : `Gunakan intonasi Bahasa Indonesia yang ${selectedVoice.accent || 'artikulatif'}, artikulatif, dan natural.`;
+      : selectedVoice.category === 'Dialek Nusantara'
+        ? `${selectedVoice.personaPrompt || ''}`
+        : `Gunakan intonasi Bahasa Indonesia yang ${selectedVoice.accent || 'artikulatif'}, artikulatif, dan natural.`;
 
     const emotionTagGuidance = text.includes('[') && text.includes(']')
-      ? "Patuhi tag ekspresi emosi bahasa Indonesia dalam tanda kurung siku seperti [tertawa] (tertawa ramah alami), [berbisik] (ucapkan dengan intonasi bisikan lembut), [jeda 1 detik] (beri jeda hening selama 1 detik), [bersemangat] (ucapkan dengan energi tinggi), [hela napas] (ambil napas lega/empati), [tegas] (artikulasi formal lugas), [tersenyum] (nada riang bersahabat). Wujudkan ekspresi tersebut dalam intonasi suara dan jangan melafalkan kata kurung sikunya secara harafiah."
+      ? "Patuhi tag ekspresi emosi bahasa Indonesia dalam tanda kurung siku seperti [tertawa], [berbisik], [jeda 1 detik], [bersemangat], [hela napas], [tegas], [tersenyum]. Wujudkan ekspresi tersebut dalam intonasi suara dan jangan melafalkan kata kurung sikunya secara harafiah."
       : "";
 
-    const baseStylePrefix = `Sebagai pengisi suara ${selectedVoice.gender === 'Male' ? 'Pria' : 'Wanita'} bernama ${selectedVoice.name} (${selectedVoice.desc}). ${personaInstruction}Bacakan teks ini dengan emosi ${emotion}, ${speedText}, ${pitchText}. ${dialectInstruction} ${clonePromptAddon} ${emotionTagGuidance}`;
+    // System Instruction Ketat: Menjamin TIDAK ADA INTRO ("Tentu", "Baik", dll), langsung membaca naskah dari kata pertama
+    const systemInstructionText = `You are a professional Indonesian text-to-speech voice synthesis engine.
+Task: Directly speak aloud ONLY the exact user text provided.
+Persona: ${selectedVoice.gender === 'Male' ? 'Pria' : 'Wanita'} bernama ${selectedVoice.name} (${selectedVoice.desc}).
+Tone and Accent: Emosi ${emotion}, ${speedText}, ${pitchText}. ${dialectInstruction} ${personaInstruction} ${clonePromptAddon} ${emotionTagGuidance}
+
+ABSOLUTE MANDATORY RULES:
+1. Speak ONLY the exact words of the provided text.
+2. DO NOT utter any intro, greeting, commentary, or conversational filler (such as "Tentu", "Baik", "Baiklah", "Berikut adalah pembacaan naskah", "Halo", or "Oke").
+3. Begin speaking the very first word of the user text immediately with ZERO delay.`;
 
     const pcmResults = [];
 
     try {
       for (let i = 0; i < chunks.length; i++) {
         setCurrentChunkIndex(i + 1);
-        setProgressStatus(`Memproses bagian ${i + 1} dari ${chunks.length} dengan Engine Gemini Studio...`);
+        const chunkPct = Math.round(15 + ((i + 1) / chunks.length) * 70);
+        setGenerationProgress(chunkPct);
+        setProgressStatus(`Sintesis segmen ${i + 1} dari ${chunks.length} dengan Gemini Neural...`);
 
         const chunkText = chunks[i];
-        const fullPrompt = `${baseStylePrefix} Teks: "${chunkText}"`;
 
+        // Payload murni teks naskah pada contents, seluruh instruksi persona & larangan intro di systemInstruction
         const payload = {
-          contents: [{ parts: [{ text: fullPrompt }] }],
+          systemInstruction: {
+            parts: [{ text: systemInstructionText }]
+          },
+          contents: [{ 
+            role: "user",
+            parts: [{ text: chunkText }] 
+          }],
           generationConfig: {
             responseModalities: ["AUDIO"],
             speechConfig: { 
@@ -1193,7 +1358,11 @@ PENTING:
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
               body: JSON.stringify(payload)
-            }
+            },
+            5,
+            1000,
+            activeKeyPool,
+            0
           );
         } catch (priErr) {
           console.warn(`Model ${TTS_MODEL} limit tercapai, mencoba fallback ke ${TTS_FALLBACK_MODEL}:`, priErr);
@@ -1203,7 +1372,11 @@ PENTING:
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
               body: JSON.stringify(payload)
-            }
+            },
+            5,
+            1000,
+            activeKeyPool,
+            0
           );
         }
 
@@ -1220,6 +1393,7 @@ PENTING:
         }
       }
 
+      setGenerationProgress(88);
       setProgressStatus('Menggabungkan audio...');
       let totalLength = 0;
       for (const chunk of pcmResults) totalLength += chunk.length;
@@ -1234,6 +1408,7 @@ PENTING:
 
       let finalPCM = merged24k;
       if (audioSampleRate !== 24000) {
+        setGenerationProgress(94);
         setProgressStatus(`Mastering audio ke standar studio (${audioSampleRate === 48000 ? '48 kHz Broadcast' : '44.1 kHz Studio CD'})...`);
         finalPCM = await resamplePCM(merged24k, 24000, audioSampleRate);
       }
@@ -1254,13 +1429,18 @@ PENTING:
         url: url
       }, ...prev]);
 
-      setProgressStatus('Selesai!');
+      setGenerationProgress(100);
+      setProgressStatus('Selesai! Audio siap diputar.');
     } catch (err) {
       console.error(err);
-      alert("Error: " + err.message);
+      if (err.message.includes('429') || err.message.toLowerCase().includes('quota')) {
+        setGenerationError('Kuota harian Google AI Studio gratis (limit 10 request/hari) pada Kunci Aktif telah habis. Silakan buka menu Pengaturan Kunci API (Master Admin) untuk memasukkan Kunci Cadangan pada Slot 2-8 agar produksi suara berjalan lancar tanpa henti!');
+      } else {
+        setGenerationError(`Terjadi kendala sintesis: ${err.message}`);
+      }
     } finally {
       setIsGenerating(false);
-      setProgressStatus('');
+      setTimeout(() => setGenerationProgress(0), 1200);
     }
   };
 
@@ -1335,23 +1515,25 @@ PENTING:
                   <span className="xl:hidden">IKLAN LAYANAN (ILM)</span>
                 </button>
 
-                {/* Posisi 3: KLONING SUARA */}
+                {/* Posisi 3: PILIHAN SERVER ENGINE (Gatot Kaca / Kian Santang / Pajajaran) */}
                 <button 
-                  onClick={() => setView('cloning')} 
-                  className={`h-9 px-3.5 sm:px-4 rounded-full text-xs font-bold transition-all flex items-center gap-2 whitespace-nowrap shrink-0 ${
-                    view === 'cloning' 
-                      ? 'bg-[#0C4E34] text-white shadow-xs' 
-                      : isDarkTheme ? 'text-zinc-300 hover:text-white hover:bg-[#1a2c22]' : 'text-zinc-600 hover:text-[#0C4E34] hover:bg-zinc-200/60'
+                  type="button"
+                  onClick={onOpenEngineModal}
+                  className={`h-9 px-3.5 sm:px-4 rounded-full text-xs font-bold transition-all flex items-center gap-2 whitespace-nowrap shrink-0 border shadow-xs ${
+                    isDarkTheme 
+                      ? 'bg-gradient-to-r from-[#0C4E34]/60 to-[#072418] border-emerald-500/60 text-emerald-300 hover:border-emerald-400 hover:text-white' 
+                      : 'bg-emerald-50 border-emerald-300 text-[#0C4E34] hover:bg-emerald-100'
                   }`}
+                  title="Pilih atau beralih server engine suara"
                 >
-                  <Copy className="w-3.5 h-3.5" />
-                  <span>KLONING SUARA</span>
+                  <Server className="w-3.5 h-3.5 text-[#F59E0B]" />
+                  <span>
+                    {activeEngine === 'azure' ? 'Kian Santang Server' : activeEngine === 'elevenlabs' ? 'Pajajaran Server' : 'Gatot Kaca Server'}
+                  </span>
                   <span className={`text-[9px] px-1.5 py-0.5 rounded font-black tracking-wide shrink-0 ${
-                    view === 'cloning'
-                      ? 'bg-[#F59E0B] text-zinc-950'
-                      : 'bg-[#F59E0B]/20 text-[#D97706] border border-[#F59E0B]/40'
+                    isDarkTheme ? 'bg-black/40 text-emerald-300 border border-emerald-500/30' : 'bg-emerald-200/70 text-[#0C4E34]'
                   }`}>
-                    BARU
+                    Ganti
                   </span>
                 </button>
 
@@ -1449,8 +1631,8 @@ PENTING:
             <button onClick={() => handleSwitchView('ads')} className={`w-full px-4 py-3 rounded-2xl text-sm font-bold flex items-center gap-3 ${view === 'ads' ? 'bg-[#0C4E34] text-white' : isDarkTheme ? 'text-zinc-300 hover:bg-[#14231b]' : 'text-zinc-700 hover:bg-zinc-100'}`}>
               <Megaphone className="w-4 h-4" /> Iklan Layanan Masyarakat (ILM)
             </button>
-            <button onClick={() => handleSwitchView('cloning')} className={`w-full px-4 py-3 rounded-2xl text-sm font-bold flex items-center gap-3 ${view === 'cloning' ? 'bg-[#0C4E34] text-white' : isDarkTheme ? 'text-zinc-300 hover:bg-[#14231b]' : 'text-zinc-700 hover:bg-zinc-100'}`}>
-              <Copy className="w-4 h-4" /> Kloning Suara
+            <button onClick={() => { setIsMenuOpen(false); if (onOpenEngineModal) onOpenEngineModal(); }} className={`w-full px-4 py-3 rounded-2xl text-sm font-bold flex items-center gap-3 text-emerald-400 ${isDarkTheme ? 'hover:bg-[#14231b]' : 'hover:bg-zinc-100'}`}>
+              <Server className="w-4 h-4 text-[#F59E0B]" /> Server: {activeEngine === 'azure' ? 'Kian Santang' : activeEngine === 'elevenlabs' ? 'Pajajaran' : 'Gatot Kaca'} (Ganti)
             </button>
             <button onClick={() => handleSwitchView('history')} className={`w-full px-4 py-3 rounded-2xl text-sm font-bold flex items-center gap-3 ${view === 'history' ? 'bg-[#0C4E34] text-white' : isDarkTheme ? 'text-zinc-300 hover:bg-[#14231b]' : 'text-zinc-700 hover:bg-zinc-100'}`}>
               <History className="w-4 h-4" /> Riwayat ({history.length})
@@ -1757,114 +1939,16 @@ PENTING:
               </div>
             )}
 
-            {/* MULTI-ENGINE TTS SELECTOR */}
-            <div className={`rounded-2xl p-3 sm:p-3.5 shadow-2xs flex flex-col md:flex-row md:items-center justify-between gap-3 transition-colors ${cardBg}`}>
-              <div className="flex flex-wrap items-center gap-2 sm:gap-2.5">
-                <span className={`text-xs font-black uppercase tracking-wider pl-1 flex items-center gap-1.5 ${isDarkTheme ? 'text-zinc-200' : 'text-zinc-700'}`}>
-                  <Zap className="w-3.5 h-3.5 text-[#F59E0B]" />
-                  Engine Audio:
-                </span>
-                <div className={`flex flex-wrap items-center gap-1 p-1 rounded-xl border text-xs font-bold ${isDarkTheme ? 'bg-[#0a120e] border-emerald-950' : 'bg-zinc-100 border-zinc-200/80'}`}>
-                  <button
-                    onClick={() => setTtsEngine('gemini')}
-                    className={`px-3 py-1.5 rounded-lg transition-all flex items-center gap-1.5 whitespace-nowrap ${
-                      ttsEngine === 'gemini' 
-                        ? 'bg-[#0C4E34] text-white shadow-xs' 
-                        : isDarkTheme ? 'text-zinc-400 hover:text-white hover:bg-[#15231b]' : 'text-zinc-600 hover:text-zinc-900 hover:bg-zinc-200/60'
-                    }`}
-                  >
-                    <Zap className="w-3.5 h-3.5 text-[#F59E0B]" />
-                    <span>Gemini 2.5 Flash (Voice Natural)</span>
-                  </button>
-
-                  <button
-                    onClick={() => setTtsEngine('google')}
-                    className={`px-3 py-1.5 rounded-lg transition-all flex items-center gap-1.5 whitespace-nowrap ${
-                      ttsEngine === 'google' 
-                        ? 'bg-[#0C4E34] text-white shadow-xs' 
-                        : isDarkTheme ? 'text-zinc-400 hover:text-white hover:bg-[#15231b]' : 'text-zinc-600 hover:text-zinc-900 hover:bg-zinc-200/60'
-                    }`}
-                  >
-                    <span>☁️ Google Cloud TTS</span>
-                  </button>
-
-                  <button
-                    onClick={() => setTtsEngine('azure')}
-                    className={`px-3 py-1.5 rounded-lg transition-all flex items-center gap-1.5 whitespace-nowrap ${
-                      ttsEngine === 'azure' 
-                        ? 'bg-[#0C4E34] text-white shadow-xs' 
-                        : isDarkTheme ? 'text-zinc-400 hover:text-white hover:bg-[#15231b]' : 'text-zinc-600 hover:text-zinc-900 hover:bg-zinc-200/60'
-                    }`}
-                  >
-                    <span>🔷 Azure Neural TTS</span>
-                  </button>
-                </div>
-              </div>
-
-              <div className="text-xs font-semibold pl-1 md:pr-1">
-                {ttsEngine === 'gemini' && (
-                  <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full border font-bold ${
-                    isDarkTheme ? 'bg-emerald-950/80 text-emerald-300 border-emerald-800/60' : 'bg-emerald-50 text-[#0C4E34] border-emerald-200/80'
-                  }`}>
-                    ✨ 22 Persona Sunda & Nasional + Akting Emosi
-                  </span>
-                )}
-                {ttsEngine === 'google' && (
-                  <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full border font-bold ${
-                    isDarkTheme ? 'bg-blue-950/80 text-blue-300 border-blue-800/60' : 'bg-blue-50 text-blue-700 border-blue-200/80'
-                  }`}>
-                    ☁️ Model Google Wavenet & Neural2
-                  </span>
-                )}
-                {ttsEngine === 'azure' && (
-                  <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full border font-bold ${
-                    isDarkTheme ? 'bg-indigo-950/80 text-indigo-300 border-indigo-800/60' : 'bg-indigo-50 text-indigo-700 border-indigo-200/80'
-                  }`}>
-                    🔷 Model Microsoft Azure GadisNeural & ArdiNeural
-                  </span>
-                )}
-              </div>
-            </div>
-
             {/* INPUT NASKAH UTAMA */}
             <div className={`rounded-3xl p-6 md:p-8 space-y-4 transition-colors ${cardBg}`}>
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
                 <h2 className={`text-lg font-bold flex items-center gap-2 ${headingColor}`}>
-                  <Type className="w-5 h-5" />
+                  <Type className="w-5 h-5 text-[#F59E0B]" />
                   {view === 'ads' ? "Naskah Iklan Layanan Masyarakat Siap Disuarakan" : "Naskah Voice Over"}
                 </h2>
                 
-                {/* Engine Selector, Tombol Transkripsi Whisper & Dialek Audio */}
+                {/* Tombol Transkripsi Whisper & Dialek Audio */}
                 <div className="flex flex-wrap items-center gap-2">
-                  {/* Selector Engine: Cloud Gemini vs Voicebox Local */}
-                  <div className={`flex items-center gap-1 p-1 rounded-2xl border ${isDarkTheme ? 'bg-[#0a120e] border-emerald-950' : 'bg-zinc-100 border-zinc-200'}`}>
-                    <button
-                      type="button"
-                      onClick={() => setActiveEngine('cloud')}
-                      className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 ${
-                        activeEngine === 'cloud'
-                          ? 'bg-[#0C4E34] text-white shadow-sm'
-                          : isDarkTheme ? 'text-zinc-400 hover:text-white' : 'text-zinc-600 hover:text-black'
-                      }`}
-                      title="Model Gemini Flash Multimodal Cloud"
-                    >
-                      <Sparkles className="w-3.5 h-3.5 text-[#F59E0B]" />
-                      <span>Gemini Cloud</span>
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => setActiveEngine('voicebox')}
-                      className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 ${
-                        activeEngine === 'voicebox'
-                          ? 'bg-[#0D3B36] text-teal-200 border border-teal-500/50 shadow-sm'
-                          : isDarkTheme ? 'text-zinc-400 hover:text-white' : 'text-zinc-600 hover:text-black'
-                      }`}
-                      title="Voicebox Local AI (Kokoro Engine - 100% Offline)"
-                    >
-                      <Cpu className="w-3.5 h-3.5 text-teal-400" />
-                      <span>Voicebox Local</span>
-                    </button>
-                  </div>
 
                   {/* Tombol Transkripsi Whisper */}
                   <button
@@ -1880,30 +1964,36 @@ PENTING:
                     Transkripsi Suara (Whisper)
                   </button>
 
-                  <div className={`flex items-center gap-1 p-1 rounded-2xl border ${isDarkTheme ? 'bg-[#0a120e] border-emerald-950' : 'bg-zinc-100 border-zinc-200'}`}>
+                  {/* Dialek otomatis mengikuti persona yang dipilih dari 3 blok karakter */}
+                </div>
+              </div>
+
+              {/* Alert Kuota / Generation Error Banner */}
+              {generationError && (
+                <div className="p-4 rounded-2xl bg-amber-950/40 border border-amber-500/50 text-amber-200 text-xs flex flex-col sm:flex-row sm:items-center justify-between gap-3 animate-in fade-in duration-200">
+                  <div className="flex items-start gap-2.5">
+                    <Shield className="w-5 h-5 text-[#F59E0B] shrink-0 mt-0.5" />
+                    <div>
+                      <span className="font-bold block text-sm text-white mb-0.5">Pemberitahuan Kuota Gemini</span>
+                      <p className="leading-relaxed opacity-90">{generationError}</p>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-2 shrink-0">
                     <button
-                      onClick={() => setDialect('sunda')}
-                      className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all ${
-                        dialect === 'sunda' 
-                          ? 'bg-[#0C4E34] text-white shadow-sm' 
-                          : isDarkTheme ? 'text-zinc-400 hover:text-white' : 'text-zinc-600 hover:text-black'
-                      }`}
+                      onClick={() => setShowApiKeyModal(true)}
+                      className="px-3.5 py-2 bg-[#F59E0B] hover:bg-amber-600 text-black font-bold text-xs rounded-xl transition-all shadow-sm"
                     >
-                      Audio Nuansa Sunda
+                      Buka Pengaturan API (8 Slot)
                     </button>
                     <button
-                      onClick={() => setDialect('indonesia')}
-                      className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all ${
-                        dialect === 'indonesia' 
-                          ? 'bg-[#0C4E34] text-white shadow-sm' 
-                          : isDarkTheme ? 'text-zinc-400 hover:text-white' : 'text-zinc-600 hover:text-black'
-                      }`}
+                      onClick={() => setGenerationError(null)}
+                      className="p-1.5 rounded-lg text-zinc-400 hover:text-white"
                     >
-                      Audio Indonesia Standar
+                      <X className="w-4 h-4" />
                     </button>
                   </div>
                 </div>
-              </div>
+              )}
 
               {/* Status Engine Voicebox Active Banner */}
               {activeEngine === 'voicebox' && (
@@ -1969,198 +2059,452 @@ PENTING:
               </div>
             </div>
 
-            {/* PILIH KARAKTER SUARA */}
-            <div className={`rounded-3xl p-6 md:p-8 space-y-6 transition-colors ${cardBg}`}>
-              <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
-                <div>
-                  <h2 className={`text-xl font-black flex items-center gap-2.5 ${headingColor}`}>
-                    <Headphones className="w-5 h-5 text-[#F59E0B]" />
-                    Pilih Karakter Suara ({filteredVoices.length})
-                  </h2>
-                  <p className={`text-xs mt-0.5 ${subTextColor}`}>
-                    Pilih karakter vokal alami untuk produksi audio Anda. Klik tombol <strong>Dengar</strong> untuk menguji sampel suara langsung.
-                  </p>
-                </div>
-
-                <div className="flex flex-wrap items-center gap-2">
-                  <div className={`flex flex-wrap items-center gap-1 p-1 rounded-2xl border ${isDarkTheme ? 'bg-[#0a120e] border-emerald-950' : 'bg-zinc-100 border-zinc-200'}`}>
-                    {[
-                      { id: 'Semua', label: `Semua (${voices.length})`, icon: '🎛️' },
-                      { id: 'Nasional', label: `Nasional (${voices.filter(v => v.category === 'Nasional').length})`, icon: '🇮🇩' },
-                      { id: 'Sunda', label: `Khas Sunda (${voices.filter(v => v.category === 'Sunda').length})`, icon: '🍃' },
-                      { id: 'Kloningan', label: `Kloningan (${voices.filter(v => v.isCloned).length})`, icon: '⚡' }
-                    ].map(cat => (
-                      <button
-                        key={cat.id}
-                        onClick={() => setVoiceCategory(cat.id)}
-                        className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 ${
-                          voiceCategory === cat.id 
-                            ? 'bg-[#0C4E34] text-white shadow-sm' 
-                            : isDarkTheme ? 'text-zinc-400 hover:text-white hover:bg-[#14231b]' : 'text-zinc-600 hover:text-black hover:bg-zinc-200/60'
-                        }`}
-                      >
-                        <span>{cat.icon}</span>
-                        <span>{cat.label}</span>
-                      </button>
-                    ))}
+            {/* PILIH KARAKTER SUARA (3 BLOK PEMISAH EXPANDABLE & COLLAPSIBLE) */}
+            <div className="space-y-4">
+              
+              {/* HEADER UTAMA SELEKSI VOKAL */}
+              <div className={`rounded-3xl p-6 transition-colors ${cardBg}`}>
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                  <div>
+                    <h2 className={`text-xl font-black flex items-center gap-2.5 ${headingColor}`}>
+                      <Headphones className="w-5 h-5 text-[#F59E0B]" />
+                      Pilih Karakter Suara Natural (35 Persona Aktif)
+                    </h2>
+                    <p className={`text-xs mt-0.5 ${subTextColor}`}>
+                      Karakter telah dikelompokkan ke dalam 3 Blok Pemisah resmi. Klik header masing-masing blok untuk membuka atau mengecilkan daftar.
+                    </p>
                   </div>
+                  <div className="flex items-center gap-2">
+                    <span className="text-xs font-bold px-3 py-1 rounded-xl bg-[#0C4E34]/20 border border-emerald-500/30 text-emerald-300">
+                      Vokal Terpilih: <strong className="text-white">{selectedVoice.name}</strong> ({selectedVoice.gender === 'Male' ? 'Pria' : 'Wanita'})
+                    </span>
+                  </div>
+                </div>
+              </div>
 
-                  <button
-                    onClick={() => setView('cloning')}
-                    className={`px-3.5 py-2 border text-xs font-bold rounded-2xl flex items-center gap-1.5 transition-all shadow-xs ${
-                      isDarkTheme 
-                        ? 'bg-[#0a120e] hover:bg-[#0C4E34] hover:text-white border-emerald-900/60 text-emerald-300' 
-                        : 'bg-zinc-100 hover:bg-[#0C4E34] hover:text-white border-zinc-200 text-[#0C4E34]'
-                    }`}
+              {/* BLOK 1: NUSA VOICE (Karakter Suara Nasional - 14 Karakter) */}
+              <div className={`rounded-3xl border transition-all ${cardBg}`}>
+                <div 
+                  onClick={() => setIsBlock1Open(!isBlock1Open)}
+                  className={`p-5 flex items-center justify-between cursor-pointer select-none transition-colors ${
+                    isBlock1Open 
+                      ? isDarkTheme ? 'bg-[#0a1410] border-b border-emerald-950/80' : 'bg-blue-50/50 border-b border-zinc-100' 
+                      : 'hover:bg-white/5'
+                  }`}
+                >
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-2xl bg-blue-500/10 border border-blue-400/30 flex items-center justify-center text-lg">
+                      🇮🇩
+                    </div>
+                    <div>
+                      <div className="flex items-center gap-2">
+                        <h3 className={`text-base font-black ${isDarkTheme ? 'text-white' : 'text-zinc-900'}`}>
+                          BLOK 1 — NUSA VOICE (Karakter Suara Nasional)
+                        </h3>
+                        <span className="text-[10px] px-2 py-0.5 rounded-full font-bold bg-blue-500/15 text-blue-300 border border-blue-400/30 shrink-0">
+                          {voices.filter(v => v.category === 'Nasional').length} Karakter
+                        </span>
+                      </div>
+                      <p className={`text-xs mt-0.5 ${subTextColor}`}>
+                        Duplikasi vokal resmi NUSA VOICE untuk narasi formal, komersial, dan siaran publik nasional.
+                      </p>
+                    </div>
+                  </div>
+                  <button 
+                    type="button" 
+                    className="p-2 rounded-xl text-zinc-400 hover:text-white transition-colors"
                   >
-                    <Plus className="w-3.5 h-3.5" /> Kloning Baru
+                    {isBlock1Open ? <ChevronUp className="w-5 h-5" /> : <ChevronDown className="w-5 h-5" />}
                   </button>
                 </div>
-              </div>
 
-              {/* GRID KARAKTER (3D TACTILE PERSONA CARDS) */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                {filteredVoices.map((v) => {
-                  const isSelected = selectedVoice.name === v.name;
-                  const avatarMeta = getVoiceAvatarMeta(v);
-
-                  return (
-                    <div
-                      key={`${v.id}-${v.name}`}
-                      onClick={() => setSelectedVoice(v)}
-                      className={`cursor-pointer text-left p-4 rounded-2xl border transition-all duration-200 relative flex flex-col justify-between gap-3 group select-none ${
-                        isSelected 
-                          ? isDarkTheme
-                            ? 'bg-gradient-to-br from-[#0C4E34] via-[#093d28] to-[#041d13] border-2 border-emerald-400 shadow-2xl shadow-emerald-950 ring-2 ring-emerald-400/50 -translate-y-1 text-white'
-                            : 'bg-gradient-to-br from-emerald-50 via-white to-emerald-100/70 border-2 border-[#0C4E34] shadow-xl shadow-emerald-900/15 ring-2 ring-[#0C4E34]/25 -translate-y-1 text-zinc-900'
-                          : isDarkTheme
-                            ? 'bg-[#0d1612] border-emerald-950/90 shadow-md hover:shadow-xl hover:shadow-emerald-950/80 hover:border-emerald-500/80 hover:-translate-y-1 hover:bg-[#14231b] text-zinc-200'
-                            : 'bg-white border-zinc-200/90 shadow-sm hover:shadow-xl hover:shadow-emerald-900/10 hover:border-emerald-500/80 hover:-translate-y-1 hover:bg-gradient-to-br hover:from-white hover:to-emerald-50/30 text-zinc-800'
-                      }`}
-                    >
-                      {/* Top Row: 3D Avatar, Name, Badges, and Edit/Check */}
-                      <div className="flex items-start gap-3">
-                        {/* 3D Vibrant Avatar Box */}
-                        <div className={`w-12 h-12 rounded-2xl flex items-center justify-center font-black text-xs text-white shadow-md bg-gradient-to-br ${avatarMeta.gradient} ring-2 ring-white/20 shrink-0 relative overflow-hidden group-hover:scale-105 transition-transform`}>
-                          <span className="relative z-10 drop-shadow-xs tracking-tight">{avatarMeta.initials}</span>
-                          <div className="absolute inset-0 bg-gradient-to-t from-black/25 to-transparent pointer-events-none" />
-                        </div>
-
-                        {/* Name & Badges */}
-                        <div className="flex-1 min-w-0">
-                          <div className="flex items-center gap-1.5 flex-wrap">
-                            <p className={`font-black text-sm tracking-tight truncate ${
-                              isSelected ? (isDarkTheme ? 'text-white' : 'text-[#0C4E34]') : isDarkTheme ? 'text-zinc-100' : 'text-zinc-900'
-                            }`}>
-                              {v.name}
-                            </p>
-                            
-                            <span className={`text-[9px] px-1.5 py-0.5 rounded-md font-bold uppercase shrink-0 border ${
-                              v.gender === 'Female' 
-                                ? 'bg-rose-500/10 text-rose-600 border-rose-300/40 dark:text-rose-300' 
-                                : 'bg-sky-500/10 text-sky-600 border-sky-300/40 dark:text-sky-300'
-                            }`}>
-                              {avatarMeta.genderIcon}
-                            </span>
-
-                            <span className={`text-[9px] px-1.5 py-0.5 rounded-full font-bold uppercase tracking-wider shrink-0 border ${
-                              v.isCloned 
-                                ? 'bg-amber-100 text-amber-900 border-amber-300 dark:bg-amber-950 dark:text-amber-300 dark:border-amber-700'
-                                : v.category === 'Sunda' 
-                                  ? 'bg-emerald-100 text-[#0C4E34] border-emerald-300 dark:bg-emerald-950 dark:text-emerald-300 dark:border-emerald-700' 
-                                  : 'bg-blue-100 text-blue-800 border-blue-300 dark:bg-blue-950 dark:text-blue-300 dark:border-blue-700'
-                            }`}>
-                              {v.isCloned ? '⚡ KLONING' : v.category === 'Sunda' ? '🍃 SUNDA' : '🇮🇩 NASIONAL'}
-                            </span>
-                          </div>
-
-                          <p className={`text-[11px] truncate mt-1 italic font-medium ${
-                            isSelected ? (isDarkTheme ? 'text-emerald-100/90' : 'text-emerald-800') : subTextColor
-                          }`}>
-                            "{v.desc}"
-                          </p>
-                        </div>
-
-                        {/* Right: Actions / Active Indicator */}
-                        <div className="flex items-center gap-1 shrink-0">
-                          <button
-                            onClick={(e) => handleOpenEditVoice(v, e)}
-                            className={`p-1.5 rounded-lg transition-colors ${
-                              isSelected 
-                                ? isDarkTheme ? 'text-white/70 hover:text-white hover:bg-white/10' : 'text-[#0C4E34] hover:bg-emerald-100'
-                                : isDarkTheme 
-                                  ? 'text-zinc-400 hover:text-emerald-400 hover:bg-emerald-950/60' 
-                                  : 'text-zinc-400 hover:text-[#0C4E34] hover:bg-zinc-200'
+                {isBlock1Open && (
+                  <div className="p-5">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                      {voices.filter(v => v.category === 'Nasional').map(v => {
+                        const isSelected = selectedVoice.name === v.name;
+                        const hasAudio = checkVoiceHasPreview(v, previewAudioCache.current);
+                        return (
+                          <div
+                            key={`${v.id}-${v.name}`}
+                            onClick={() => {
+                              if (!hasAudio) {
+                                setPreviewUnavailableVoice(v.name);
+                                setTimeout(() => setPreviewUnavailableVoice(null), 4000);
+                                return;
+                              }
+                              setSelectedVoice(v);
+                            }}
+                            className={`text-left p-3.5 rounded-2xl border transition-all duration-200 relative flex flex-col justify-between gap-3 group select-none cursor-pointer ${
+                              !hasAudio
+                                ? isDarkTheme ? 'bg-[#0a100d]/60 border-dashed border-zinc-800 text-zinc-400 opacity-60' : 'bg-zinc-100/70 border-dashed border-zinc-300 text-zinc-400 opacity-65'
+                                : isSelected 
+                                  ? isDarkTheme
+                                    ? 'bg-gradient-to-br from-[#0C4E34] via-[#093d28] to-[#041d13] border-2 border-emerald-400 shadow-xl shadow-emerald-950 ring-2 ring-emerald-400/50 -translate-y-0.5 text-white'
+                                    : 'bg-gradient-to-br from-emerald-50 via-white to-emerald-100/70 border-2 border-[#0C4E34] shadow-md shadow-emerald-900/15 ring-2 ring-[#0C4E34]/25 -translate-y-0.5 text-zinc-900'
+                                  : isDarkTheme
+                                    ? 'bg-[#121c17] border-zinc-800/80 hover:border-emerald-500/70 hover:-translate-y-0.5 hover:bg-[#16251e] text-zinc-200'
+                                    : 'bg-white border-zinc-200 shadow-xs hover:border-emerald-500/70 hover:-translate-y-0.5 hover:bg-emerald-50/20 text-zinc-800'
                             }`}
-                            title="Ubah Profil Karakter"
                           >
-                            <Edit3 className="w-3.5 h-3.5" />
-                          </button>
-
-                          {v.isCloned && (
-                            <button
-                              onClick={(e) => handleDeleteVoice(v.name, e)}
-                              className="p-1.5 rounded-lg text-zinc-400 hover:text-red-400 hover:bg-red-950/40 transition-colors"
-                              title="Hapus Karakter"
-                            >
-                              <Trash2 className="w-3.5 h-3.5" />
-                            </button>
-                          )}
-
-                          {isSelected && (
-                            <div className="w-5 h-5 rounded-full bg-[#F59E0B] flex items-center justify-center text-zinc-950 shrink-0 shadow-xs">
-                              <Check className="w-3.5 h-3.5 stroke-[3]" />
+                            <div className="flex items-center gap-3">
+                              <div className={`w-11 h-11 rounded-xl flex items-center justify-center shrink-0 border transition-transform group-hover:scale-105 ${
+                                isSelected 
+                                  ? 'bg-emerald-500/20 border-emerald-400/50 text-white' 
+                                  : isDarkTheme ? 'bg-zinc-800/90 border-zinc-700/60 text-zinc-300' : 'bg-zinc-100 border-zinc-200 text-zinc-600'
+                              }`}>
+                                <User className="w-5 h-5" />
+                              </div>
+                              <div className="flex-1 min-w-0">
+                                <div className="flex items-center justify-between gap-1">
+                                  <h4 className={`font-black text-sm tracking-tight truncate ${
+                                    isSelected ? (isDarkTheme ? 'text-white' : 'text-[#0C4E34]') : isDarkTheme ? 'text-zinc-100' : 'text-zinc-900'
+                                  }`}>
+                                    {v.name}
+                                  </h4>
+                                  {isSelected && (
+                                    <div className="w-4 h-4 rounded-full bg-[#F59E0B] flex items-center justify-center text-zinc-950 shrink-0">
+                                      <Check className="w-3 h-3 stroke-[3]" />
+                                    </div>
+                                  )}
+                                </div>
+                                <p className={`text-xs truncate font-medium mt-0.5 ${
+                                  isSelected ? (isDarkTheme ? 'text-emerald-200' : 'text-emerald-800') : isDarkTheme ? 'text-zinc-400' : 'text-zinc-500'
+                                }`}>
+                                  {v.desc}
+                                </p>
+                              </div>
                             </div>
-                          )}
-                        </div>
-                      </div>
 
-                      {/* Bottom Row: Accent Badge + Interactive Audio Preview */}
-                      <div className={`pt-2 border-t flex items-center justify-between gap-2 text-xs ${
-                        isSelected 
-                          ? isDarkTheme ? 'border-emerald-600/40' : 'border-emerald-200' 
-                          : isDarkTheme ? 'border-emerald-950' : 'border-zinc-100'
-                      }`}>
-                        <div className={`flex items-center gap-1.5 text-[10px] font-mono truncate ${
-                          isSelected ? (isDarkTheme ? 'text-amber-300' : 'text-[#D97706] font-bold') : isDarkTheme ? 'text-zinc-400' : 'text-zinc-500'
-                        }`}>
-                          <Radio className="w-3 h-3 text-[#F59E0B] shrink-0" />
-                          <span className="truncate">{v.accent}</span>
-                        </div>
+                            <div className={`pt-2 border-t flex items-center justify-between gap-2 text-xs ${
+                              isSelected 
+                                ? isDarkTheme ? 'border-emerald-600/40' : 'border-emerald-200' 
+                                : isDarkTheme ? 'border-zinc-800/70' : 'border-zinc-100'
+                            }`}>
+                              <span className={`text-[10px] font-mono truncate ${
+                                isSelected ? (isDarkTheme ? 'text-emerald-300' : 'text-emerald-800') : isDarkTheme ? 'text-zinc-400' : 'text-zinc-500'
+                              }`}>
+                                {v.accent || 'Nasional'}
+                              </span>
 
-                        {/* Interactive Voice Sample Preview Button */}
-                        <button
-                          type="button"
-                          onClick={(e) => handlePreviewVoice(v, e)}
-                          className={`px-2.5 py-1 rounded-xl text-[11px] font-bold flex items-center gap-1.5 transition-all shadow-xs shrink-0 ${
-                            previewingVoice === v.name
-                              ? 'bg-[#F59E0B] text-zinc-950 scale-105 shadow-sm'
-                              : isSelected
-                                ? isDarkTheme 
-                                  ? 'bg-white/20 hover:bg-white/30 text-white border border-white/20' 
-                                  : 'bg-[#0C4E34] text-white hover:bg-[#093d28]'
-                                : isDarkTheme
-                                  ? 'bg-[#15231b] hover:bg-emerald-900/60 text-emerald-300 border border-emerald-800/60'
-                                  : 'bg-zinc-100 hover:bg-[#0C4E34] hover:text-white text-zinc-700 border border-zinc-200'
-                          }`}
-                          title="Dengarkan Contoh Sampel Suara"
-                        >
-                          {previewingVoice === v.name ? (
-                            <div className="flex items-center gap-0.5 h-3">
-                              <span className="w-0.5 h-2 bg-zinc-950 rounded-full animate-bounce" />
-                              <span className="w-0.5 h-3 bg-zinc-950 rounded-full animate-bounce [animation-delay:0.15s]" />
-                              <span className="w-0.5 h-2.5 bg-zinc-950 rounded-full animate-bounce [animation-delay:0.3s]" />
+                              <button
+                                type="button"
+                                onClick={(e) => handlePreviewVoice(v, e)}
+                                className={`px-2.5 py-1 rounded-xl text-[11px] font-bold flex items-center gap-1.5 transition-all shadow-xs shrink-0 ${
+                                  previewingVoice === v.name
+                                    ? 'bg-[#F59E0B] text-zinc-950 scale-105 shadow-sm'
+                                    : isSelected
+                                      ? isDarkTheme 
+                                        ? 'bg-white/20 hover:bg-white/30 text-white border border-white/20' 
+                                        : 'bg-[#0C4E34] text-white hover:bg-[#093d28]'
+                                      : isDarkTheme
+                                        ? 'bg-[#15271e] hover:bg-emerald-900/60 text-emerald-300 border border-emerald-800/60'
+                                        : 'bg-zinc-100 hover:bg-[#0C4E34] hover:text-white text-zinc-700 border border-zinc-200'
+                                }`}
+                                title="Dengarkan Contoh Sampel Suara"
+                              >
+                                {previewingVoice === v.name ? (
+                                  <div className="flex items-center gap-0.5 h-3">
+                                    <span className="w-0.5 h-2 bg-zinc-950 rounded-full animate-bounce" />
+                                    <span className="w-0.5 h-3 bg-zinc-950 rounded-full animate-bounce [animation-delay:0.15s]" />
+                                    <span className="w-0.5 h-2.5 bg-zinc-950 rounded-full animate-bounce [animation-delay:0.3s]" />
+                                  </div>
+                                ) : (
+                                  <Play className="w-3 h-3 fill-current text-[#F59E0B]" />
+                                )}
+                                <span>{previewingVoice === v.name ? 'Memutar' : 'Dengar'}</span>
+                              </button>
                             </div>
-                          ) : (
-                            <Play className="w-3 h-3 fill-current" />
-                          )}
-                          <span>{previewingVoice === v.name ? 'Memutar' : 'Dengar'}</span>
-                        </button>
-                      </div>
+                          </div>
+                        );
+                      })}
                     </div>
-                  );
-                })}
+                  </div>
+                )}
               </div>
+
+              {/* BLOK 2: PASUNDAN VOICE (Karakter Suara Khas Sunda - 8 Karakter) */}
+              <div className={`rounded-3xl border transition-all ${cardBg}`}>
+                <div 
+                  onClick={() => setIsBlock2Open(!isBlock2Open)}
+                  className={`p-5 flex items-center justify-between cursor-pointer select-none transition-colors ${
+                    isBlock2Open 
+                      ? isDarkTheme ? 'bg-[#0a1410] border-b border-emerald-950/80' : 'bg-emerald-50/50 border-b border-zinc-100' 
+                      : 'hover:bg-white/5'
+                  }`}
+                >
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-2xl bg-emerald-500/10 border border-emerald-400/30 flex items-center justify-center text-lg">
+                      🍃
+                    </div>
+                    <div>
+                      <div className="flex items-center gap-2">
+                        <h3 className={`text-base font-black ${isDarkTheme ? 'text-white' : 'text-zinc-900'}`}>
+                          BLOK 2 — PASUNDAN VOICE (Karakter Suara Sunda)
+                        </h3>
+                        <span className="text-[10px] px-2 py-0.5 rounded-full font-bold bg-emerald-500/15 text-emerald-300 border border-emerald-400/30 shrink-0">
+                          {voices.filter(v => v.category === 'Sunda').length} Karakter
+                        </span>
+                      </div>
+                      <p className={`text-xs mt-0.5 ${subTextColor}`}>
+                        Karakter vokal otentik tatar Pasundan (sepuh, bujang, mojang, ceu edah, budak leutik).
+                      </p>
+                    </div>
+                  </div>
+                  <button 
+                    type="button" 
+                    className="p-2 rounded-xl text-zinc-400 hover:text-white transition-colors"
+                  >
+                    {isBlock2Open ? <ChevronUp className="w-5 h-5" /> : <ChevronDown className="w-5 h-5" />}
+                  </button>
+                </div>
+
+                {isBlock2Open && (
+                  <div className="p-5">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                      {voices.filter(v => v.category === 'Sunda').map(v => {
+                        const isSelected = selectedVoice.name === v.name;
+                        const hasAudio = checkVoiceHasPreview(v, previewAudioCache.current);
+                        return (
+                          <div
+                            key={`${v.id}-${v.name}`}
+                            onClick={() => {
+                              if (!hasAudio) {
+                                setPreviewUnavailableVoice(v.name);
+                                setTimeout(() => setPreviewUnavailableVoice(null), 4000);
+                                return;
+                              }
+                              setSelectedVoice(v);
+                            }}
+                            className={`text-left p-3.5 rounded-2xl border transition-all duration-200 relative flex flex-col justify-between gap-3 group select-none cursor-pointer ${
+                              !hasAudio
+                                ? isDarkTheme ? 'bg-[#0a100d]/60 border-dashed border-zinc-800 text-zinc-400 opacity-60' : 'bg-zinc-100/70 border-dashed border-zinc-300 text-zinc-400 opacity-65'
+                                : isSelected 
+                                  ? isDarkTheme
+                                    ? 'bg-gradient-to-br from-[#0C4E34] via-[#093d28] to-[#041d13] border-2 border-emerald-400 shadow-xl shadow-emerald-950 ring-2 ring-emerald-400/50 -translate-y-0.5 text-white'
+                                    : 'bg-gradient-to-br from-emerald-50 via-white to-emerald-100/70 border-2 border-[#0C4E34] shadow-md shadow-emerald-900/15 ring-2 ring-[#0C4E34]/25 -translate-y-0.5 text-zinc-900'
+                                  : isDarkTheme
+                                    ? 'bg-[#121c17] border-zinc-800/80 hover:border-emerald-500/70 hover:-translate-y-0.5 hover:bg-[#16251e] text-zinc-200'
+                                    : 'bg-white border-zinc-200 shadow-xs hover:border-emerald-500/70 hover:-translate-y-0.5 hover:bg-emerald-50/20 text-zinc-800'
+                            }`}
+                          >
+                            <div className="flex items-center gap-3">
+                              <div className={`w-11 h-11 rounded-xl flex items-center justify-center shrink-0 border transition-transform group-hover:scale-105 ${
+                                isSelected 
+                                  ? 'bg-emerald-500/20 border-emerald-400/50 text-white' 
+                                  : isDarkTheme ? 'bg-zinc-800/90 border-zinc-700/60 text-zinc-300' : 'bg-zinc-100 border-zinc-200 text-zinc-600'
+                              }`}>
+                                <User className="w-5 h-5" />
+                              </div>
+                              <div className="flex-1 min-w-0">
+                                <div className="flex items-center justify-between gap-1">
+                                  <h4 className={`font-black text-sm tracking-tight truncate ${
+                                    isSelected ? (isDarkTheme ? 'text-white' : 'text-[#0C4E34]') : isDarkTheme ? 'text-zinc-100' : 'text-zinc-900'
+                                  }`}>
+                                    {v.name}
+                                  </h4>
+                                  {isSelected && (
+                                    <div className="w-4 h-4 rounded-full bg-[#F59E0B] flex items-center justify-center text-zinc-950 shrink-0">
+                                      <Check className="w-3 h-3 stroke-[3]" />
+                                    </div>
+                                  )}
+                                </div>
+                                <p className={`text-xs truncate font-medium mt-0.5 ${
+                                  isSelected ? (isDarkTheme ? 'text-emerald-200' : 'text-emerald-800') : isDarkTheme ? 'text-zinc-400' : 'text-zinc-500'
+                                }`}>
+                                  {v.desc}
+                                </p>
+                              </div>
+                            </div>
+
+                            <div className={`pt-2 border-t flex items-center justify-between gap-2 text-xs ${
+                              isSelected 
+                                ? isDarkTheme ? 'border-emerald-600/40' : 'border-emerald-200' 
+                                : isDarkTheme ? 'border-zinc-800/70' : 'border-zinc-100'
+                            }`}>
+                              <span className={`text-[10px] font-mono truncate ${
+                                isSelected ? (isDarkTheme ? 'text-emerald-300' : 'text-emerald-800') : isDarkTheme ? 'text-zinc-400' : 'text-zinc-500'
+                              }`}>
+                                {v.accent || 'Sunda'}
+                              </span>
+
+                              <button
+                                type="button"
+                                onClick={(e) => handlePreviewVoice(v, e)}
+                                className={`px-2.5 py-1 rounded-xl text-[11px] font-bold flex items-center gap-1.5 transition-all shadow-xs shrink-0 ${
+                                  previewingVoice === v.name
+                                    ? 'bg-[#F59E0B] text-zinc-950 scale-105 shadow-sm'
+                                    : isSelected
+                                      ? isDarkTheme 
+                                        ? 'bg-white/20 hover:bg-white/30 text-white border border-white/20' 
+                                        : 'bg-[#0C4E34] text-white hover:bg-[#093d28]'
+                                      : isDarkTheme
+                                        ? 'bg-[#15271e] hover:bg-emerald-900/60 text-emerald-300 border border-emerald-800/60'
+                                        : 'bg-zinc-100 hover:bg-[#0C4E34] hover:text-white text-zinc-700 border border-zinc-200'
+                                }`}
+                                title="Dengarkan Contoh Sampel Suara"
+                              >
+                                {previewingVoice === v.name ? (
+                                  <div className="flex items-center gap-0.5 h-3">
+                                    <span className="w-0.5 h-2 bg-zinc-950 rounded-full animate-bounce" />
+                                    <span className="w-0.5 h-3 bg-zinc-950 rounded-full animate-bounce [animation-delay:0.15s]" />
+                                    <span className="w-0.5 h-2.5 bg-zinc-950 rounded-full animate-bounce [animation-delay:0.3s]" />
+                                  </div>
+                                ) : (
+                                  <Play className="w-3 h-3 fill-current text-[#F59E0B]" />
+                                )}
+                                <span>{previewingVoice === v.name ? 'Memutar' : 'Dengar'}</span>
+                              </button>
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              {/* BLOK 3: LOGAT NUSANTARA (Karakter Dialek & Bahasa Daerah - 13 Karakter) */}
+              <div className={`rounded-3xl border transition-all ${cardBg}`}>
+                <div 
+                  onClick={() => setIsBlock3Open(!isBlock3Open)}
+                  className={`p-5 flex items-center justify-between cursor-pointer select-none transition-colors ${
+                    isBlock3Open 
+                      ? isDarkTheme ? 'bg-[#0a1410] border-b border-emerald-950/80' : 'bg-purple-50/50 border-b border-zinc-100' 
+                      : 'hover:bg-white/5'
+                  }`}
+                >
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-2xl bg-purple-500/10 border border-purple-400/30 flex items-center justify-center text-lg">
+                      🗺️
+                    </div>
+                    <div>
+                      <div className="flex items-center gap-2">
+                        <h3 className={`text-base font-black ${isDarkTheme ? 'text-white' : 'text-zinc-900'}`}>
+                          BLOK 3 — LOGAT NUSANTARA (Dialek Daerah)
+                        </h3>
+                        <span className="text-[10px] px-2 py-0.5 rounded-full font-bold bg-purple-500/15 text-purple-300 border border-purple-400/30 shrink-0">
+                          {voices.filter(v => v.category === 'Dialek Nusantara').length} Karakter
+                        </span>
+                      </div>
+                      <p className={`text-xs mt-0.5 ${subTextColor}`}>
+                        Duplikasi persona PERFECT VOICE untuk ragam logat daerah (Jawa, Batak, Minang, Makassar, Bali, Melayu, Papua, dll).
+                      </p>
+                    </div>
+                  </div>
+                  <button 
+                    type="button" 
+                    className="p-2 rounded-xl text-zinc-400 hover:text-white transition-colors"
+                  >
+                    {isBlock3Open ? <ChevronUp className="w-5 h-5" /> : <ChevronDown className="w-5 h-5" />}
+                  </button>
+                </div>
+
+                {isBlock3Open && (
+                  <div className="p-5">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                      {voices.filter(v => v.category === 'Dialek Nusantara').map(v => {
+                        const isSelected = selectedVoice.name === v.name;
+                        const hasAudio = checkVoiceHasPreview(v, previewAudioCache.current);
+                        return (
+                          <div
+                            key={`${v.id}-${v.name}`}
+                            onClick={() => {
+                              if (!hasAudio) {
+                                setPreviewUnavailableVoice(v.name);
+                                setTimeout(() => setPreviewUnavailableVoice(null), 4000);
+                                return;
+                              }
+                              setSelectedVoice(v);
+                            }}
+                            className={`text-left p-3.5 rounded-2xl border transition-all duration-200 relative flex flex-col justify-between gap-3 group select-none cursor-pointer ${
+                              !hasAudio
+                                ? isDarkTheme ? 'bg-[#0a100d]/60 border-dashed border-zinc-800 text-zinc-400 opacity-60' : 'bg-zinc-100/70 border-dashed border-zinc-300 text-zinc-400 opacity-65'
+                                : isSelected 
+                                  ? isDarkTheme
+                                    ? 'bg-gradient-to-br from-[#0C4E34] via-[#093d28] to-[#041d13] border-2 border-emerald-400 shadow-xl shadow-emerald-950 ring-2 ring-emerald-400/50 -translate-y-0.5 text-white'
+                                    : 'bg-gradient-to-br from-emerald-50 via-white to-emerald-100/70 border-2 border-[#0C4E34] shadow-md shadow-emerald-900/15 ring-2 ring-[#0C4E34]/25 -translate-y-0.5 text-zinc-900'
+                                  : isDarkTheme
+                                    ? 'bg-[#121c17] border-zinc-800/80 hover:border-emerald-500/70 hover:-translate-y-0.5 hover:bg-[#16251e] text-zinc-200'
+                                    : 'bg-white border-zinc-200 shadow-xs hover:border-emerald-500/70 hover:-translate-y-0.5 hover:bg-emerald-50/20 text-zinc-800'
+                            }`}
+                          >
+                            <div className="flex items-center gap-3">
+                              <div className={`w-11 h-11 rounded-xl flex items-center justify-center shrink-0 border transition-transform group-hover:scale-105 ${
+                                isSelected 
+                                  ? 'bg-emerald-500/20 border-emerald-400/50 text-white' 
+                                  : isDarkTheme ? 'bg-zinc-800/90 border-zinc-700/60 text-zinc-300' : 'bg-zinc-100 border-zinc-200 text-zinc-600'
+                              }`}>
+                                <User className="w-5 h-5" />
+                              </div>
+                              <div className="flex-1 min-w-0">
+                                <div className="flex items-center justify-between gap-1">
+                                  <h4 className={`font-black text-sm tracking-tight truncate ${
+                                    isSelected ? (isDarkTheme ? 'text-white' : 'text-[#0C4E34]') : isDarkTheme ? 'text-zinc-100' : 'text-zinc-900'
+                                  }`}>
+                                    {v.name}
+                                  </h4>
+                                  {isSelected && (
+                                    <div className="w-4 h-4 rounded-full bg-[#F59E0B] flex items-center justify-center text-zinc-950 shrink-0">
+                                      <Check className="w-3 h-3 stroke-[3]" />
+                                    </div>
+                                  )}
+                                </div>
+                                <p className={`text-xs truncate font-medium mt-0.5 ${
+                                  isSelected ? (isDarkTheme ? 'text-emerald-200' : 'text-emerald-800') : isDarkTheme ? 'text-zinc-400' : 'text-zinc-500'
+                                }`}>
+                                  {v.desc}
+                                </p>
+                              </div>
+                            </div>
+
+                            <div className={`pt-2 border-t flex items-center justify-between gap-2 text-xs ${
+                              isSelected 
+                                ? isDarkTheme ? 'border-emerald-600/40' : 'border-emerald-200' 
+                                : isDarkTheme ? 'border-zinc-800/70' : 'border-zinc-100'
+                            }`}>
+                              <span className={`text-[10px] font-mono truncate ${
+                                isSelected ? (isDarkTheme ? 'text-emerald-300' : 'text-emerald-800') : isDarkTheme ? 'text-zinc-400' : 'text-zinc-500'
+                              }`}>
+                                {v.accent || 'Dialek'}
+                              </span>
+
+                              <button
+                                type="button"
+                                onClick={(e) => handlePreviewVoice(v, e)}
+                                className={`px-2.5 py-1 rounded-xl text-[11px] font-bold flex items-center gap-1.5 transition-all shadow-xs shrink-0 ${
+                                  previewingVoice === v.name
+                                    ? 'bg-[#F59E0B] text-zinc-950 scale-105 shadow-sm'
+                                    : isSelected
+                                      ? isDarkTheme 
+                                        ? 'bg-white/20 hover:bg-white/30 text-white border border-white/20' 
+                                        : 'bg-[#0C4E34] text-white hover:bg-[#093d28]'
+                                      : isDarkTheme
+                                        ? 'bg-[#15271e] hover:bg-emerald-900/60 text-emerald-300 border border-emerald-800/60'
+                                        : 'bg-zinc-100 hover:bg-[#0C4E34] hover:text-white text-zinc-700 border border-zinc-200'
+                                }`}
+                                title="Dengarkan Contoh Sampel Suara"
+                              >
+                                {previewingVoice === v.name ? (
+                                  <div className="flex items-center gap-0.5 h-3">
+                                    <span className="w-0.5 h-2 bg-zinc-950 rounded-full animate-bounce" />
+                                    <span className="w-0.5 h-3 bg-zinc-950 rounded-full animate-bounce [animation-delay:0.15s]" />
+                                    <span className="w-0.5 h-2.5 bg-zinc-950 rounded-full animate-bounce [animation-delay:0.3s]" />
+                                  </div>
+                                ) : (
+                                  <Play className="w-3 h-3 fill-current text-[#F59E0B]" />
+                                )}
+                                <span>{previewingVoice === v.name ? 'Memutar' : 'Dengar'}</span>
+                              </button>
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                )}
+              </div>
+
             </div>
 
             {/* PENGATURAN GAYA BICARA & EMOSI */}
@@ -2277,18 +2621,36 @@ PENTING:
                 )}
               </button>
 
-              {/* Multi-chunk progress */}
-              {isGenerating && totalChunksCount > 1 && (
-                <div className="bg-white p-4 rounded-2xl border border-zinc-200 text-center space-y-2 shadow-sm">
-                  <div className="flex justify-between text-xs text-zinc-600 font-bold">
-                    <span>Sedang Memproses Bagian {currentChunkIndex} dari {totalChunksCount}</span>
-                    <span className="text-[#0C4E34]">{Math.round((currentChunkIndex / totalChunksCount) * 100)}%</span>
+              {/* ANIMATED PROGRESS BAR GENTRA */}
+              {isGenerating && (
+                <div className={`p-4 sm:p-5 rounded-2xl border space-y-3 transition-all animate-in fade-in slide-in-from-top-2 duration-200 shadow-md ${
+                  isDarkTheme ? 'bg-[#0f1d16] border-emerald-800/80 text-zinc-100' : 'bg-emerald-50/90 border-emerald-300 text-zinc-900'
+                }`}>
+                  <div className="flex items-center justify-between gap-3 text-xs">
+                    <div className="flex items-center gap-2.5 truncate">
+                      <Loader2 className="w-4 h-4 animate-spin text-[#F59E0B] shrink-0" />
+                      <span className="font-bold text-[#0C4E34] dark:text-emerald-300 truncate">
+                        {progressStatus || "Menyintesis suara dengan Gemini Neural..."}
+                      </span>
+                    </div>
+                    <span className="font-mono font-black text-sm text-[#0C4E34] dark:text-emerald-400 shrink-0">
+                      {generationProgress}%
+                    </span>
                   </div>
-                  <div className="w-full h-2 bg-zinc-100 rounded-full overflow-hidden">
+
+                  {/* The Visual Progress Track & Bar */}
+                  <div className="w-full h-3.5 rounded-full bg-zinc-200 dark:bg-zinc-800 overflow-hidden p-0.5 border border-zinc-300/60 dark:border-emerald-950">
                     <div 
-                      className="h-full bg-[#0C4E34] transition-all duration-300"
-                      style={{ width: `${(currentChunkIndex / totalChunksCount) * 100}%` }}
-                    ></div>
+                      className="h-full rounded-full bg-gradient-to-r from-emerald-600 via-teal-500 to-[#F59E0B] transition-all duration-300 ease-out relative overflow-hidden shadow-xs"
+                      style={{ width: `${Math.max(6, Math.min(100, generationProgress))}%` }}
+                    >
+                      <div className="absolute inset-0 bg-white/25 animate-pulse" />
+                    </div>
+                  </div>
+
+                  <div className="flex items-center justify-between text-[11px] text-zinc-500 dark:text-zinc-400">
+                    <span>Karakter: <strong>{selectedVoice.name}</strong> • Vokal: <strong>{selectedVoice.accent || selectedVoice.region || 'Alami'}</strong></span>
+                    <span>{totalChunksCount > 1 ? `Segmen ${currentChunkIndex} dari ${totalChunksCount}` : 'Sintesis Akustik Alami'}</span>
                   </div>
                 </div>
               )}
@@ -2550,16 +2912,17 @@ PENTING:
         </div>
       )}
 
-      {/* MODAL: PENGATURAN API TERPROTEKSI MASTER ADMIN */}
+      {/* MODAL: PENGATURAN API TERPROTEKSI MASTER ADMIN (FAIL-SAFE 8 SLOT) */}
       {showApiKeyModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm animate-in fade-in duration-200">
-          <div className={`border w-full max-w-lg rounded-3xl p-6 md:p-8 shadow-2xl space-y-5 max-h-[90vh] overflow-y-auto transition-colors ${
-            isDarkTheme ? 'bg-[#101c15] border-emerald-900/80 text-zinc-100' : 'bg-white border-zinc-200 text-zinc-900'
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-in fade-in duration-200">
+          <div className={`border w-full max-w-2xl rounded-3xl p-6 md:p-8 shadow-2xl space-y-6 max-h-[90vh] overflow-y-auto transition-colors ${
+            isDarkTheme ? 'bg-[#0e1713] border-emerald-900/80 text-zinc-100' : 'bg-white border-zinc-200 text-zinc-900'
           }`}>
             
-            <div className={`flex justify-between items-center border-b pb-3 ${isDarkTheme ? 'border-emerald-950' : 'border-zinc-100'}`}>
-              <div className="flex items-center gap-2.5">
-                <div className={`p-2 rounded-xl ${
+            {/* Header Modal */}
+            <div className={`flex justify-between items-start border-b pb-4 ${isDarkTheme ? 'border-emerald-950' : 'border-zinc-200'}`}>
+              <div className="flex items-center gap-3">
+                <div className={`p-2.5 rounded-2xl shrink-0 ${
                   isAdminUnlocked 
                     ? isDarkTheme ? 'bg-amber-950/60 text-amber-300 border border-amber-800/60' : 'bg-amber-100 text-amber-800'
                     : isDarkTheme ? 'bg-emerald-950/80 text-emerald-400 border border-emerald-900/60' : 'bg-[#0C4E34]/10 text-[#0C4E34]'
@@ -2567,24 +2930,26 @@ PENTING:
                   {isAdminUnlocked ? <Unlock className="w-5 h-5 text-[#F59E0B]" /> : <Lock className="w-5 h-5 text-[#10b981]" />}
                 </div>
                 <div>
-                  <h3 className={`text-base font-bold flex items-center gap-2 ${isDarkTheme ? 'text-white' : 'text-zinc-900'}`}>
-                    Pengaturan API & Kredensial
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <h3 className={`text-base font-bold ${isDarkTheme ? 'text-white' : 'text-zinc-900'}`}>
+                      Pengaturan Kredensial & Kunci API
+                    </h3>
                     {isAdminUnlocked ? (
-                      <span className="text-[10px] bg-amber-500/20 text-amber-300 border border-amber-400/40 px-2 py-0.5 rounded-full font-bold">
+                      <span className="text-[10px] bg-amber-500/20 text-amber-300 border border-amber-400/40 px-2.5 py-0.5 rounded-full font-bold shrink-0">
                         Akses Master Admin Aktif
                       </span>
                     ) : (
-                      <span className={`text-[10px] px-2 py-0.5 rounded-full font-bold border ${
+                      <span className={`text-[10px] px-2.5 py-0.5 rounded-full font-bold border shrink-0 ${
                         isDarkTheme ? 'bg-zinc-800 text-zinc-300 border-zinc-700' : 'bg-zinc-100 text-zinc-600 border-zinc-200'
                       }`}>
                         🔒 Terkunci
                       </span>
                     )}
-                  </h3>
-                  <p className={`text-xs mt-0.5 ${subTextColor}`}>
+                  </div>
+                  <p className={`text-xs mt-1 ${subTextColor}`}>
                     {isAdminUnlocked 
-                      ? "Izin penuh Master Admin: Anda dapat melihat dan memperbarui seluruh API."
-                      : "Area terproteksi: Hanya Master Admin yang berhak mengubah konfigurasi API sistem."}
+                      ? "Konfigurasi multi-slot fail-safe API Key untuk memastikan produksi audio tidak terputus quota limit."
+                      : "Area terproteksi: Masukkan kunci master admin untuk membuka konfigurasi kunci API sistem."}
                   </p>
                 </div>
               </div>
@@ -2595,58 +2960,36 @@ PENTING:
                   setAdminPinError('');
                   setAdminPinInput('');
                 }} 
-                className={`p-1.5 rounded-lg transition-colors ${isDarkTheme ? 'text-zinc-400 hover:text-white hover:bg-[#16251d]' : 'text-zinc-400 hover:text-black hover:bg-zinc-100'}`}
+                className={`p-1.5 rounded-lg transition-colors shrink-0 ${isDarkTheme ? 'text-zinc-400 hover:text-white hover:bg-[#16251d]' : 'text-zinc-400 hover:text-black hover:bg-zinc-100'}`}
               >
                 <X className="w-5 h-5" />
               </button>
             </div>
 
-            {/* KONDISI 1: JIKA MASIH TERKUNCI (Bukan Master Admin / Belum Memasukkan Kunci) */}
+            {/* KONDISI 1: JIKA MASIH TERKUNCI */}
             {!isAdminUnlocked ? (
-              <div className="space-y-5 py-2">
+              <div className="space-y-5 py-1">
                 
-                {/* Status Ringkasan API Tersimpan */}
-                <div className={`p-4 rounded-2xl space-y-2.5 transition-colors ${subCardBg}`}>
+                {/* Ringkasan Status Pool API */}
+                <div className={`p-4 rounded-2xl space-y-3 transition-colors ${subCardBg}`}>
                   <span className={`text-[11px] font-bold uppercase tracking-wider block ${subTextColor}`}>
-                    Status Kredensial Sistem Saat Ini:
+                    Status Pool Kunci API Gemini Saat Ini:
                   </span>
                   
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
-                    <div className={`flex items-center justify-between p-2.5 rounded-xl border ${
-                      isDarkTheme ? 'bg-[#09110d] border-emerald-950 text-zinc-300' : 'bg-white border-zinc-200 text-zinc-700'
-                    }`}>
-                      <span className="font-medium">Google Gemini:</span>
-                      <span className={`font-bold ${apiKey ? 'text-emerald-400' : 'text-zinc-500'}`}>
-                        {apiKey ? '●●●●●● (Tersimpan)' : 'Belum Ada'}
-                      </span>
-                    </div>
-
-                    <div className={`flex items-center justify-between p-2.5 rounded-xl border ${
-                      isDarkTheme ? 'bg-[#09110d] border-emerald-950 text-zinc-300' : 'bg-white border-zinc-200 text-zinc-700'
-                    }`}>
-                      <span className="font-medium">OpenAI Whisper:</span>
-                      <span className={`font-bold ${openaiApiKey ? 'text-emerald-400' : 'text-zinc-500'}`}>
-                        {openaiApiKey ? '●●●●●● (Tersimpan)' : 'Bawaan Gemini'}
-                      </span>
-                    </div>
-
-                    <div className={`flex items-center justify-between p-2.5 rounded-xl border ${
-                      isDarkTheme ? 'bg-[#09110d] border-emerald-950 text-zinc-300' : 'bg-white border-zinc-200 text-zinc-700'
-                    }`}>
-                      <span className="font-medium">Google Cloud TTS:</span>
-                      <span className={`font-bold ${googleApiKey ? 'text-emerald-400' : 'text-zinc-500'}`}>
-                        {googleApiKey ? '●●●●●● (Tersimpan)' : 'Belum Ada'}
-                      </span>
-                    </div>
-
-                    <div className={`flex items-center justify-between p-2.5 rounded-xl border ${
-                      isDarkTheme ? 'bg-[#09110d] border-emerald-950 text-zinc-300' : 'bg-white border-zinc-200 text-zinc-700'
-                    }`}>
-                      <span className="font-medium">Azure Speech:</span>
-                      <span className={`font-bold ${azureKey ? 'text-emerald-400' : 'text-zinc-500'}`}>
-                        {azureKey ? `●●●●●● (${azureRegion})` : 'Belum Ada'}
-                      </span>
-                    </div>
+                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-xs">
+                    {geminiKeys.map((k, i) => (
+                      <div 
+                        key={i}
+                        className={`p-2.5 rounded-xl border flex flex-col justify-between ${
+                          k ? 'bg-emerald-950/40 border-emerald-800/60 text-emerald-300' : 'bg-zinc-900/60 border-zinc-800 text-zinc-500'
+                        }`}
+                      >
+                        <span className="font-mono text-[10px] font-bold">Slot {i + 1}</span>
+                        <span className="text-[11px] font-bold mt-1">
+                          {k ? '● Siaga' : '○ Kosong'}
+                        </span>
+                      </div>
+                    ))}
                   </div>
                 </div>
 
@@ -2671,7 +3014,7 @@ PENTING:
                     </div>
                   )}
 
-                  <div className="space-y-1">
+                  <div className="space-y-1.5">
                     <label className={`text-xs font-bold uppercase tracking-wider flex items-center gap-1.5 ${isDarkTheme ? 'text-zinc-200' : 'text-zinc-700'}`}>
                       <Key className="w-3.5 h-3.5 text-[#F59E0B]" /> Masukkan Kunci Akses Master Admin:
                     </label>
@@ -2683,7 +3026,7 @@ PENTING:
                       className={`w-full p-3.5 rounded-xl text-sm outline-none transition-all ${inputBg}`}
                     />
                     <span className={`text-[11px] block pt-0.5 ${subTextColor}`}>
-                      Kunci default awal: <code className={`px-1.5 py-0.5 rounded font-mono font-bold ${
+                      Kunci default: <code className={`px-1.5 py-0.5 rounded font-mono font-bold ${
                         isDarkTheme ? 'bg-zinc-800 text-amber-300' : 'bg-zinc-100 text-zinc-700'
                       }`}>admin2026</code>
                     </span>
@@ -2700,15 +3043,16 @@ PENTING:
 
               </div>
             ) : (
-              /* KONDISI 2: JIKA SUDAH TERBUKA (Bisa Edit Semua API Key & Ganti Master Key) */
-              <div className="space-y-5 animate-in fade-in duration-200">
+              /* KONDISI 2: JIKA SUDAH TERBUKA (POOL 8 KUNCI GEMINI FAIL-SAFE) */
+              <div className="space-y-6 animate-in fade-in duration-200">
                 
+                {/* Banner Status */}
                 <div className={`p-3.5 rounded-2xl flex items-center justify-between text-xs font-bold border ${
                   isDarkTheme ? 'bg-emerald-950/70 border-emerald-800/80 text-emerald-300' : 'bg-emerald-50 border-emerald-200 text-[#0C4E34]'
                 }`}>
                   <span className="flex items-center gap-2">
                     <Shield className="w-4 h-4 text-[#F59E0B]" />
-                    Mode Konfigurasi Master Admin Aktif
+                    Mode Konfigurasi Master Admin Aktif ({activeKeyPool.length} dari 8 Kunci Terpasang)
                   </span>
                   <button
                     type="button"
@@ -2719,84 +3063,102 @@ PENTING:
                   </button>
                 </div>
 
-                <div className="space-y-3.5">
-                  <div className="space-y-1">
-                    <label className={`text-[11px] font-bold uppercase flex items-center gap-1.5 ${isDarkTheme ? 'text-zinc-200' : 'text-zinc-600'}`}>
-                      <Sparkles className="w-3.5 h-3.5 text-[#F59E0B]" /> Google Gemini API Key (Utama & Zero-Drift)
-                    </label>
-                    <input 
-                      type="password"
-                      placeholder="AIzaSy..."
-                      value={apiKey}
-                      onChange={(e) => {
-                        setApiKey(e.target.value);
-                        try { localStorage.setItem('gentra_gemini_key', e.target.value); } catch (err) {}
-                      }}
-                      className={`w-full p-3 rounded-xl text-sm outline-none transition-colors ${inputBg}`}
-                    />
-                  </div>
-
-                  <div className="space-y-1">
-                    <label className={`text-[11px] font-bold uppercase ${isDarkTheme ? 'text-zinc-200' : 'text-zinc-600'}`}>
-                      OpenAI API Key untuk Whisper Transkripsi (Opsional)
-                    </label>
-                    <input 
-                      type="password"
-                      placeholder="sk-proj-..."
-                      value={openaiApiKey}
-                      onChange={(e) => {
-                        setOpenaiApiKey(e.target.value);
-                        try { localStorage.setItem('gentra_openai_key', e.target.value); } catch (err) {}
-                      }}
-                      className={`w-full p-3 rounded-xl text-sm outline-none transition-colors ${inputBg}`}
-                    />
-                    <span className={`text-[10px] ${subTextColor}`}>Jika dikosongkan, Whisper otomatis memakai engine audio multimodal Gemini bawaan.</span>
-                  </div>
-
-                  <div className="space-y-1">
-                    <label className={`text-[11px] font-bold uppercase ${isDarkTheme ? 'text-zinc-200' : 'text-zinc-600'}`}>
-                      Google Cloud TTS API Key (Opsional - Wavenet/Journey)
-                    </label>
-                    <input 
-                      type="password"
-                      placeholder="AIzaSy..."
-                      value={googleApiKey}
-                      onChange={(e) => {
-                        setGoogleApiKey(e.target.value);
-                        try { localStorage.setItem('gentra_google_key', e.target.value); } catch (err) {}
-                      }}
-                      className={`w-full p-3 rounded-xl text-sm outline-none transition-colors ${inputBg}`}
-                    />
-                  </div>
-
-                  <div className="grid grid-cols-2 gap-2">
-                    <div className="space-y-1">
-                      <label className={`text-[11px] font-bold uppercase ${isDarkTheme ? 'text-zinc-200' : 'text-zinc-600'}`}>Azure Speech Key (Opsional)</label>
-                      <input 
-                        type="password"
-                        placeholder="Key 1 / Key 2 Azure"
-                        value={azureKey}
-                        onChange={(e) => {
-                          setAzureKey(e.target.value);
-                          try { localStorage.setItem('gentra_azure_key', e.target.value); } catch (err) {}
-                        }}
-                        className={`w-full p-3 rounded-xl text-sm outline-none transition-colors ${inputBg}`}
-                      />
+                {/* Section: Pool 8 Kunci Gemini */}
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <Sparkles className="w-4 h-4 text-[#F59E0B]" />
+                      <span className={`text-xs font-black uppercase tracking-wider ${isDarkTheme ? 'text-zinc-200' : 'text-zinc-800'}`}>
+                        Pool Kunci API Google Gemini (Fail-Safe 8 Slot)
+                      </span>
                     </div>
-                    <div className="space-y-1">
-                      <label className={`text-[11px] font-bold uppercase ${isDarkTheme ? 'text-zinc-200' : 'text-zinc-600'}`}>Azure Region</label>
-                      <input 
-                        type="text"
-                        placeholder="southeastasia"
-                        value={azureRegion}
-                        onChange={(e) => {
-                          setAzureRegion(e.target.value);
-                          try { localStorage.setItem('gentra_azure_region', e.target.value); } catch (err) {}
-                        }}
-                        className={`w-full p-3 rounded-xl text-sm outline-none transition-colors ${inputBg}`}
-                      />
-                    </div>
+                    <span className="text-[11px] font-mono text-emerald-400 font-bold">
+                      Rotasi Otomatis Aktif
+                    </span>
                   </div>
+
+                  <p className={`text-xs ${subTextColor}`}>
+                    Masukkan hingga 8 API Key dari proyek Google AI Studio yang berbeda. Jika kuota gratis (limit 10 request/hari) pada Kunci #1 habis, sistem otomatis beralih ke Kunci #2, #3, dst tanpa memutus proses generate.
+                  </p>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
+                    {geminiKeys.map((keyVal, idx) => {
+                      const isPrimary = idx === 0;
+                      const isFilled = Boolean(keyVal && keyVal.trim());
+                      const isVisible = keyVisibility[idx];
+
+                      return (
+                        <div 
+                          key={idx}
+                          className={`p-3 rounded-2xl border transition-all ${
+                            isFilled
+                              ? isDarkTheme ? 'bg-[#0e1b15] border-emerald-800/80' : 'bg-emerald-50/60 border-emerald-200'
+                              : isDarkTheme ? 'bg-[#09110d] border-zinc-800/80' : 'bg-zinc-50 border-zinc-200'
+                          }`}
+                        >
+                          <div className="flex items-center justify-between mb-1.5">
+                            <span className={`text-[11px] font-bold flex items-center gap-1.5 ${
+                              isPrimary ? 'text-amber-400' : isDarkTheme ? 'text-zinc-300' : 'text-zinc-700'
+                            }`}>
+                              <Key className="w-3 h-3 text-[#F59E0B]" />
+                              {isPrimary ? 'Slot 1: Kunci Utama (Primary)' : `Slot ${idx + 1}: Kunci Cadangan ${idx}`}
+                            </span>
+                            <span className={`text-[9px] font-bold px-1.5 py-0.5 rounded-full border ${
+                              isFilled 
+                                ? 'bg-emerald-500/15 text-emerald-300 border-emerald-400/30' 
+                                : 'bg-zinc-800 text-zinc-500 border-zinc-700'
+                            }`}>
+                              {isFilled ? '● Terpasang' : '○ Kosong'}
+                            </span>
+                          </div>
+
+                          <div className="relative flex items-center">
+                            <input 
+                              type={isVisible ? "text" : "password"}
+                              placeholder={isPrimary ? "AIzaSy... (Kunci Utama)" : `AIzaSy... (Cadangan ${idx})`}
+                              value={keyVal}
+                              onChange={(e) => handleUpdateGeminiKey(idx, e.target.value)}
+                              className={`w-full py-2 pl-3 pr-8 rounded-xl text-xs font-mono outline-none transition-colors ${
+                                isDarkTheme ? 'bg-[#070d0a] border border-zinc-800 text-zinc-200 focus:border-emerald-500' : 'bg-white border border-zinc-200 text-zinc-900 focus:border-emerald-500'
+                              }`}
+                            />
+                            <button
+                              type="button"
+                              onClick={() => {
+                                setKeyVisibility(prev => {
+                                  const next = [...prev];
+                                  next[idx] = !next[idx];
+                                  return next;
+                                });
+                              }}
+                              className="absolute right-2 p-1 text-zinc-400 hover:text-white"
+                              title={isVisible ? "Sembunyikan Kunci" : "Tampilkan Kunci"}
+                            >
+                              {isVisible ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
+                            </button>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+
+                {/* Section: OpenAI Whisper Opsional */}
+                <div className="space-y-1.5 pt-2 border-t border-zinc-800/60">
+                  <label className={`text-[11px] font-bold uppercase flex items-center gap-1.5 ${isDarkTheme ? 'text-zinc-200' : 'text-zinc-600'}`}>
+                    <Mic className="w-3.5 h-3.5 text-[#F59E0B]" /> OpenAI API Key untuk Whisper Transkripsi (Opsional)
+                  </label>
+                  <input 
+                    type="password"
+                    placeholder="sk-proj-..."
+                    value={openaiApiKey}
+                    onChange={(e) => {
+                      setOpenaiApiKey(e.target.value);
+                      try { localStorage.setItem('gentra_openai_key', e.target.value); } catch (err) {}
+                    }}
+                    className={`w-full p-2.5 rounded-xl text-xs font-mono outline-none transition-colors ${inputBg}`}
+                  />
+                  <span className={`text-[10px] ${subTextColor}`}>Jika dikosongkan, Whisper otomatis memakai engine multimodal Gemini bawaan.</span>
                 </div>
 
                 {/* Section: Ganti Kunci Master Admin */}
@@ -2816,7 +3178,7 @@ PENTING:
                   <div className="flex gap-2">
                     <input 
                       type="password"
-                      placeholder="Masukkan kunci master admin baru..."
+                      placeholder="Masukkan kunci master admin baru (min 4 karakter)..."
                       value={newMasterKeyInput}
                       onChange={(e) => setNewMasterKeyInput(e.target.value)}
                       className={`flex-1 p-2.5 rounded-xl text-xs outline-none ${
@@ -2838,13 +3200,14 @@ PENTING:
                         setMasterKeySuccess('Kunci Master Admin berhasil diubah!');
                         setTimeout(() => setMasterKeySuccess(''), 3000);
                       }}
-                      className="px-3.5 py-2.5 bg-amber-600 hover:bg-amber-500 text-white font-bold text-xs rounded-xl shadow-sm transition-colors"
+                      className="px-3.5 py-2.5 bg-amber-600 hover:bg-amber-500 text-white font-bold text-xs rounded-xl shadow-sm transition-colors shrink-0"
                     >
                       Perbarui Kunci
                     </button>
                   </div>
                 </div>
 
+                {/* Footer Actions */}
                 <div className="flex gap-2 pt-2">
                   <button
                     type="button"
@@ -2863,7 +3226,7 @@ PENTING:
                     }}
                     className="flex-1 py-3 rounded-xl font-bold text-xs bg-[#0C4E34] text-white hover:bg-[#0e5c3e] shadow-sm transition-colors"
                   >
-                    ✓ Simpan & Tutup
+                    ✓ Simpan & Selesai
                   </button>
                 </div>
 

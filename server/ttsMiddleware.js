@@ -9,6 +9,7 @@ import {
   synthesizeVoicebox,
   benchmarkAllEngines 
 } from './ttsService.js';
+import { getActiveCatalog, ENGINE_CATALOG } from './ttsCatalog.js';
 
 // Baca file .env dan .env.local
 function getEnvKeys() {
@@ -97,6 +98,15 @@ export function ttsApiPlugin() {
                 tier: '100% Offline Sovereign Privacy'
               }
             }
+          }));
+          return;
+        }
+
+        // 1.1 GET /api/tts/catalog -> Katalog modular persona per engine (menghormati isHidden)
+        if (req.method === 'GET' && req.url === '/api/tts/catalog') {
+          res.setHeader('Content-Type', 'application/json');
+          res.end(JSON.stringify({
+            catalog: getActiveCatalog()
           }));
           return;
         }
