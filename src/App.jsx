@@ -140,7 +140,7 @@ function MainApp() {
   };
 
   return (
-    <div className="min-h-screen bg-[#FBFBFA]">
+    <div className={`min-h-screen ${user ? 'bg-[#0B0C0E]' : 'bg-[#FBFBFA]'}`}>
       {user ? (
         // 3. Aplikasi Studio Utama & POP Pilihan Engine
         <>

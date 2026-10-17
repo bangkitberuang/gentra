@@ -494,8 +494,8 @@ export const LandingPage = ({ onOpenLogin }) => {
               <span className="text-xs sm:text-[13px] text-zinc-700 font-semibold mt-0.5 block">Generator Kampanye 30s & 60s</span>
             </div>
             <div className="bg-white/90 backdrop-blur-md p-4 sm:p-5 rounded-2xl border border-white/95 shadow-sm hover:shadow-md transition-all hover:-translate-y-0.5">
-              <span className="text-2xl sm:text-3xl font-black font-mono text-[#0C4E34] block">Gemini Audio</span>
-              <span className="text-xs sm:text-[13px] text-zinc-700 font-semibold mt-0.5 block">Transkripsi Naskah Otomatis</span>
+              <span className="text-2xl sm:text-3xl font-black font-mono text-[#0C4E34] block">Transkripsi AI</span>
+              <span className="text-xs sm:text-[13px] text-zinc-700 font-semibold mt-0.5 block">Konversi Suara ke Naskah Instan</span>
             </div>
           </div>
 
@@ -571,9 +571,9 @@ export const LandingPage = ({ onOpenLogin }) => {
               <div className="w-12 h-12 rounded-2xl bg-rose-100/70 text-rose-700 flex items-center justify-center font-bold">
                 <FileAudio className="w-6 h-6" />
               </div>
-              <h3 className="text-xl font-bold text-zinc-900">Gemini AI Transkripsi Otomatis</h3>
+              <h3 className="text-xl font-bold text-zinc-900">Transkripsi Naskah Otomatis</h3>
               <p className="text-xs text-zinc-600 leading-relaxed">
-                Konversi audio rekaman rapat, konferensi pers, atau naskah lisan menjadi teks terstruktur dalam hitungan detik secara native via Google Gemini Multimodal.
+                Konversi audio rekaman rapat, konferensi pers, atau naskah lisan menjadi teks terstruktur dalam hitungan detik secara otomatis dengan presisi tinggi.
               </p>
             </div>
 
@@ -582,9 +582,9 @@ export const LandingPage = ({ onOpenLogin }) => {
               <div className="w-12 h-12 rounded-2xl bg-teal-100/70 text-teal-700 flex items-center justify-center font-bold">
                 <Zap className="w-6 h-6" />
               </div>
-              <h3 className="text-xl font-bold text-zinc-900">Multi-Engine TTS & Kontrol Emosi</h3>
+              <h3 className="text-xl font-bold text-zinc-900">Neural Engine & Kontrol Emosi</h3>
               <p className="text-xs text-zinc-600 leading-relaxed">
-                Pilihan engine Gemini 3.8 Flash, Google Cloud TTS, dan Azure Neural dengan pengaturan nada, tempo, dan gaya emosi naratif.
+                Teknologi neural audio berstandar penyiaran dengan pengaturan nada, tempo, artikulasi, dan gaya emosi naratif.
               </p>
             </div>
 
@@ -630,7 +630,7 @@ export const LandingPage = ({ onOpenLogin }) => {
                   1. Masukan Naskah
                 </h3>
                 <p className="text-xs text-zinc-500 mt-2 leading-relaxed">
-                  Ketik atau tempel naskah voice over langsung, buat naskah Iklan Layanan Masyarakat (ILM 30s/60s) otomatis, atau transkripsikan rekaman audio rapat via Gemini AI.
+                  Ketik atau tempel naskah voice over langsung, buat naskah Iklan Layanan Masyarakat (ILM 30s/60s) otomatis, atau transkripsikan rekaman audio rapat secara otomatis.
                 </p>
                 
                 <div className="mt-4 pt-3 border-t border-zinc-100 space-y-1.5 text-[11px] text-zinc-600 font-medium">
@@ -644,7 +644,7 @@ export const LandingPage = ({ onOpenLogin }) => {
                   </div>
                   <div className="flex items-center gap-1.5">
                     <Check className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
-                    <span>Transkripsi Suara (Gemini AI)</span>
+                    <span>Transkripsi Suara Otomatis</span>
                   </div>
                 </div>
               </div>
@@ -747,7 +747,7 @@ export const LandingPage = ({ onOpenLogin }) => {
                   4. Render & Unduh WAV
                 </h3>
                 <p className="text-xs text-zinc-500 mt-2 leading-relaxed">
-                  Sintesis neural Gemini instan, proses mastering otomatis ke standar siaran (WAV 48 kHz / 44.1 kHz), dan unduh file audio berkualitas tanpa kompresi.
+                  Sintesis vokal neural instan, proses mastering otomatis ke standar siaran (WAV 48 kHz / 44.1 kHz), dan unduh file audio berkualitas tanpa kompresi.
                 </p>
 
                 <div className="mt-4 pt-3 border-t border-zinc-100 space-y-1.5 text-[11px] text-zinc-600 font-medium">

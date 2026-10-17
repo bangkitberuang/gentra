@@ -1209,7 +1209,7 @@ export const VoiceLabModal = ({
                         </div>
 
                         <div className="space-y-1">
-                          <label className="text-[11px] font-bold block uppercase">Base Model Gemini TTS:</label>
+                          <label className="text-[11px] font-bold block uppercase">Base Model Neural TTS:</label>
                           <select
                             value={newVoiceForm.id}
                             onChange={(e) => {
@@ -1474,7 +1474,7 @@ export const VoiceLabModal = ({
                         </div>
 
                         <div className="space-y-1">
-                          <label className="text-[11px] font-bold block uppercase">Base Model Gemini:</label>
+                          <label className="text-[11px] font-bold block uppercase">Base Model Neural:</label>
                           <select
                             value={editForm.id}
                             onChange={(e) => setEditForm({ ...editForm, id: e.target.value })}
@@ -1607,7 +1607,7 @@ export const VoiceLabModal = ({
                                   <p className={`text-[11px] mt-0.5 flex items-center gap-1.5 flex-wrap ${subText}`}>
                                     <span>Nama Asli: <strong className={isDarkTheme ? 'text-zinc-300' : 'text-zinc-700'}>{v.originalName || v.name}</strong></span>
                                     <span>•</span>
-                                    <span>Base Gemini: <code className="font-mono text-amber-400 font-bold">{v.id}</code></span>
+                                    <span>Base Model: <code className="font-mono text-amber-400 font-bold">{v.id}</code></span>
                                     <span>•</span>
                                     <span className="font-medium">{v.gender === 'Male' ? 'Pria' : 'Wanita'}</span>
                                   </p>
@@ -1757,11 +1757,11 @@ export const VoiceLabModal = ({
                             Total Pengeluaran Rendering Voice Google AI
                           </h3>
                           <span className="text-[10px] px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-400 font-bold border border-emerald-500/30">
-                            Real-time Google API
+                            Real-time Neural Engine
                           </span>
                         </div>
                         <p className={`text-xs mt-0.5 ${subText}`}>
-                          Akumulasi biaya riil Google Gemini Flash Neural TTS berdasarkan volume karakter dan durasi audio siaran.
+                          Akumulasi biaya riil pemrosesan vokal Neural TTS berdasarkan volume karakter dan durasi audio siaran.
                         </p>
                       </div>
 
@@ -1831,10 +1831,10 @@ export const VoiceLabModal = ({
                           <Zap className="w-4 h-4 text-emerald-400" />
                         </div>
                         <div className="text-lg font-black truncate">
-                          Gemini Neural
+                          Neural High-Fidelity
                         </div>
                         <span className={`text-[10px] mt-1 block ${subText}`}>
-                          Tarif Google: Rp 0.15/char
+                          Tarif Studio: Rp 0.15/char
                         </span>
                       </div>
                     </div>
@@ -1913,7 +1913,7 @@ export const VoiceLabModal = ({
                     <div>
                       <h3 className="text-sm font-black uppercase tracking-wider flex items-center gap-2">
                         <Key className="w-4 h-4 text-[#F59E0B]" />
-                        Pool Fail-Safe Multi-Slot Google Gemini API
+                        Pool Fail-Safe Multi-Slot API Engine
                       </h3>
                       <p className={`text-xs mt-0.5 ${subText}`}>
                         Sistem fail-safe multi-slot otomatis berganti ke slot cadangan jika kuota limit tercapai saat produksi audio.
@@ -2030,7 +2030,7 @@ export const VoiceLabModal = ({
                       Arena Benchmark Latensi & Kecepatan Suara
                     </h3>
                     <p className={`text-xs mt-0.5 ${subText}`}>
-                      Bandingkan respons waktu pembuatan audio antar model vokal Google Gemini TTS secara berurutan.
+                      Bandingkan respons waktu pembuatan audio antar model vokal Neural TTS secara berurutan.
                     </p>
                   </div>
 

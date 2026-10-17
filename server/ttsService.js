@@ -42,7 +42,8 @@ export async function synthesizeGemini({ text, voice = 'Aoede', personaPrompt = 
     ? "Gunakan cengkok dan intonasi khas Jawa Barat / Sunda yang luwes, hangat, ramah, dan manusiawi."
     : "Gunakan intonasi Bahasa Indonesia yang sangat alami, artikulatif, ramah, dan mengalir layaknya manusia sungguhan.";
 
-  const prompt = `Sebagai pengisi suara ${voice}. ${personaPrompt ? personaPrompt + ' ' : ''}${dialectDesc} Bacakan teks ini dengan ${speedDesc}, tanpa nada robotik: "${text}"`;
+  const systemInstructionText = `Karakter vokal: ${voice}. ${personaPrompt ? personaPrompt + ' ' : ''}${dialectDesc} Karakteristik vokal: ${speedDesc}.
+ATURAN MUTLAK: Langsung bacakan teks naskah dari kata pertama tanpa kalimat pengantar, tanpa sapaan, tanpa memperkenalkan diri, dan tanpa basa-basi apa pun.`;
 
   const models = ['gemini-3.8-flash-tts', 'gemini-3.8-flash-lite-tts'];
   let lastErr = null;
@@ -53,7 +54,13 @@ export async function synthesizeGemini({ text, voice = 'Aoede', personaPrompt = 
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          contents: [{ parts: [{ text: prompt }] }],
+          systemInstruction: {
+            parts: [{ text: systemInstructionText }]
+          },
+          contents: [{ 
+            role: "user",
+            parts: [{ text }] 
+          }],
           generationConfig: {
             responseModalities: ["AUDIO"],
             speechConfig: {

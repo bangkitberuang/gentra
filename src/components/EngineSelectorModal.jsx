@@ -21,18 +21,18 @@ export const ENGINE_SERVERS = [
     id: 'gemini',
     code: 'ENGINE A',
     name: 'Gatot Kaca Server',
-    engineLabel: 'Google Gemini 3.8 Flash Neural',
-    provider: 'Google DeepMind AI',
+    engineLabel: 'Neural Natural High-Fidelity Engine',
+    provider: 'Neural Voice Engine Core',
     status: 'online',
     statusText: '100% Online & Kuota Siap',
     recommended: true,
-    badges: ['Server Utama', 'Kearifan Sunda', 'Fail-Safe Key'],
+    badges: ['Server Utama', 'Kearifan Pasundan', 'Fail-Safe Key'],
     accentColor: 'emerald',
-    gradientBg: 'from-emerald-950/60 via-emerald-900/30 to-[#071a12]',
-    borderColor: 'border-emerald-500/60',
-    selectedRing: 'ring-emerald-400 border-emerald-400 shadow-emerald-950/80',
-    activeTagColor: 'bg-emerald-500/20 text-emerald-300 border-emerald-500/30',
-    description: 'Server vokal utama dengan prosodi Sunda yang luwes, alami, dan hangat. Dilengkapi fail-safe backup key otomatis dan dukungan paralinguistik emosi [tertawa], [hela napas], [berbisik].',
+    gradientBg: 'from-zinc-900/90 via-[#14161B] to-[#0B0C0E]',
+    borderColor: 'border-[#CCFF00]/60',
+    selectedRing: 'ring-[#CCFF00] border-[#CCFF00] shadow-[#CCFF00]/20',
+    activeTagColor: 'bg-[#CCFF00]/20 text-[#CCFF00] border-[#CCFF00]/30',
+    description: 'Server vokal utama dengan prosodi Sunda yang luwes, alami, dan hangat. Dilengkapi fail-safe backup key otomatis dan dukungan artikulasi paralinguistik ekspresif.',
     features: [
       { label: 'Karakter Utama', value: 'Anita, Agus, Siti, Abah, Teh Neng' },
       { label: 'Dialek & Gaya', value: 'Cengkok Pasundan & Bahasa Indonesia Resmi' },
@@ -45,18 +45,18 @@ export const ENGINE_SERVERS = [
     id: 'azure',
     code: 'ENGINE B',
     name: 'Kian Santang Server',
-    engineLabel: 'Microsoft Azure Cognitive Speech Neural',
-    provider: 'Microsoft Cognitive Services',
+    engineLabel: 'Neural Broadcast Speech Engine',
+    provider: 'Cognitive Broadcast Service',
     status: 'testing',
     statusText: 'Dapur Pengujian Backend',
     recommended: false,
     badges: ['Dapur Pengujian', 'Siaran Berita', 'Standard Protokoler'],
     accentColor: 'sky',
-    gradientBg: 'from-sky-950/60 via-blue-900/30 to-[#07131e]',
+    gradientBg: 'from-zinc-900/90 via-[#14161B] to-[#0B0C0E]',
     borderColor: 'border-sky-500/50',
     selectedRing: 'ring-sky-400 border-sky-400 shadow-sky-950/80',
     activeTagColor: 'bg-sky-500/20 text-sky-300 border-sky-500/30',
-    description: 'Server presisi artikulasi formal untuk siaran berita resmi dan keprotokoleran kedinasan Pemprov Jabar. Siap diuji coba di dapur backend GENTRA.',
+    description: 'Server presisi artikulasi formal untuk siaran berita resmi dan keprotokoleran kedinasan. Siap diuji coba di dapur backend.',
     features: [
       { label: 'Karakter Utama', value: 'Gadis (id-ID) & Ardi (id-ID)' },
       { label: 'Dialek & Gaya', value: 'Diksi Protokoler & Siaran Berita Nasional' },
@@ -69,21 +69,21 @@ export const ENGINE_SERVERS = [
     id: 'elevenlabs',
     code: 'ENGINE C',
     name: 'Prabu Pajajaran Server',
-    engineLabel: 'ElevenLabs Multilingual v2 / Flash',
-    provider: 'ElevenLabs Inc.',
+    engineLabel: 'Neural Ultra Studio Master v2',
+    provider: 'Multilingual Sound Lab',
     status: 'online',
     statusText: 'API Key Aktif & Siap Uji',
     recommended: false,
     badges: ['Studio Grade', '44.1kHz Master', 'Hyper-Realistic'],
     accentColor: 'purple',
-    gradientBg: 'from-purple-950/60 via-indigo-900/30 to-[#12081e]',
+    gradientBg: 'from-zinc-900/90 via-[#14161B] to-[#0B0C0E]',
     borderColor: 'border-purple-500/50',
     selectedRing: 'ring-purple-400 border-purple-400 shadow-purple-950/80',
     activeTagColor: 'bg-purple-500/20 text-purple-300 border-purple-500/30',
-    description: 'Server vokal hyper-realistic standar broadcast studio 44.1kHz dengan artikulasi mikro dan kedalaman emosional untuk produksi podcast dan sinematik.',
+    description: 'Server vokal hyper-realistic standar broadcast studio 44.1kHz dengan artikulasi mikro dan kedalaman emosional untuk produksi audio profesional.',
     features: [
       { label: 'Karakter Utama', value: 'Sarah, George, Charlie, Alice, Callum' },
-      { label: 'Dialek & Gaya', value: 'Multilingual v2 & International Timbre' },
+      { label: 'Dialek & Gaya', value: 'Multilingual Master & International Timbre' },
       { label: 'Kecepatan Latensi', value: 'Studio Rendering (~2.2 detik)' },
       { label: 'Format Output', value: 'Studio CD 44.1 kHz MP3' }
     ],
@@ -109,19 +109,19 @@ export const EngineSelectorModal = ({
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-5 bg-black/85 backdrop-blur-md animate-in fade-in duration-200 overflow-y-auto">
       <div 
-        className="relative w-full max-w-4xl bg-[#09110d] rounded-3xl shadow-2xl border border-emerald-900/70 text-zinc-100 overflow-hidden my-auto transform transition-all"
+        className="relative w-full max-w-4xl bg-[#0B0C0E] rounded-3xl shadow-2xl border border-[#20232B] text-zinc-100 overflow-hidden my-auto transform transition-all"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Glow ambient background elements */}
-        <div className="absolute top-0 right-1/4 w-96 h-60 bg-emerald-600/10 rounded-full blur-3xl pointer-events-none" />
-        <div className="absolute bottom-0 left-1/4 w-96 h-60 bg-teal-600/10 rounded-full blur-3xl pointer-events-none" />
+        <div className="absolute top-0 right-1/4 w-96 h-60 bg-[#CCFF00]/5 rounded-full blur-3xl pointer-events-none" />
+        <div className="absolute bottom-0 left-1/4 w-96 h-60 bg-[#CCFF00]/5 rounded-full blur-3xl pointer-events-none" />
 
         {/* Modal Header */}
-        <div className="relative px-6 sm:px-8 pt-7 pb-5 border-b border-emerald-950/80 bg-gradient-to-b from-[#0e1d16] to-[#09110d]">
+        <div className="relative px-6 sm:px-8 pt-7 pb-5 border-b border-[#20232B] bg-[#14161B]">
           {onClose && (
             <button 
               onClick={onClose}
-              className="absolute top-6 right-6 p-2 rounded-full text-zinc-400 hover:text-white hover:bg-emerald-950/60 transition-colors"
+              className="absolute top-6 right-6 p-2 rounded-full text-zinc-400 hover:text-white hover:bg-zinc-800 transition-colors"
               title="Tutup dialog"
             >
               <X className="w-5 h-5" />
@@ -129,11 +129,11 @@ export const EngineSelectorModal = ({
           )}
 
           <div className="flex items-center gap-3 mb-2">
-            <div className="p-2.5 rounded-2xl bg-gradient-to-br from-[#0C4E34] to-[#083624] text-emerald-400 border border-emerald-500/30 shadow-md">
+            <div className="p-2.5 rounded-2xl bg-[#CCFF00]/15 text-[#CCFF00] border border-[#CCFF00]/30 shadow-md">
               <Server className="w-5 h-5" />
             </div>
             <div>
-              <span className="text-[10px] uppercase tracking-wider font-extrabold text-emerald-400 px-2.5 py-0.5 rounded-full bg-emerald-950/80 border border-emerald-800/60">
+              <span className="text-[10px] uppercase tracking-wider font-extrabold text-[#CCFF00] px-2.5 py-0.5 rounded-full bg-[#181A20] border border-[#20232B]">
                 Voice Engine Cluster Selector
               </span>
               <h2 className="text-xl sm:text-2xl font-black tracking-tight text-white mt-1">
@@ -238,9 +238,9 @@ export const EngineSelectorModal = ({
         </div>
 
         {/* Modal Footer with Active Server Banner and Proceed Button */}
-        <div className="px-6 sm:px-8 py-5 border-t border-emerald-950/80 bg-[#070d0a] flex flex-col sm:flex-row items-center justify-between gap-4">
+        <div className="px-6 sm:px-8 py-5 border-t border-[#20232B] bg-[#14161B] flex flex-col sm:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-3 text-xs text-zinc-400">
-            <ShieldCheck className="w-4 h-4 text-emerald-400 shrink-0" />
+            <ShieldCheck className="w-4 h-4 text-[#CCFF00] shrink-0" />
             <span>
               Server Terpilih:{' '}
               <strong className="text-white">
@@ -255,7 +255,7 @@ export const EngineSelectorModal = ({
               <button
                 type="button"
                 onClick={onClose}
-                className="w-1/2 sm:w-auto px-5 py-2.5 rounded-xl text-xs font-bold border border-zinc-700 text-zinc-300 hover:text-white hover:bg-zinc-800 transition-colors"
+                className="w-1/2 sm:w-auto px-5 py-2.5 rounded-xl text-xs font-bold border border-[#20232B] text-zinc-300 hover:text-white hover:bg-zinc-800 transition-colors"
               >
                 Batal
               </button>
@@ -263,10 +263,10 @@ export const EngineSelectorModal = ({
             <button
               type="button"
               onClick={handleConfirm}
-              className="w-full sm:w-auto px-7 py-3 rounded-xl text-xs font-black bg-gradient-to-r from-[#0C4E34] to-[#10b981] hover:from-[#0e5c3e] hover:to-[#059669] text-white shadow-lg shadow-emerald-950 flex items-center justify-center gap-2 transition-all hover:scale-[1.02] active:scale-95"
+              className="w-full sm:w-auto px-7 py-3 rounded-xl text-xs font-black bg-[#CCFF00] hover:bg-[#b8e600] text-black shadow-lg shadow-[#CCFF00]/15 flex items-center justify-center gap-2 transition-all hover:scale-[1.02] active:scale-95"
             >
               <span>MASUK KE STUDIO VOKAL</span>
-              <ArrowRight className="w-4 h-4" />
+              <ArrowRight className="w-4 h-4 stroke-[3]" />
             </button>
           </div>
         </div>

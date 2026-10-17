@@ -44,16 +44,16 @@ html, body {
 }
 
 .dark ::-webkit-scrollbar-track {
-  background: #08110c;
+  background: #0B0C0E;
 }
 
 .dark ::-webkit-scrollbar-thumb {
-  background: #173827;
+  background: #20232B;
   border-radius: 9999px;
 }
 
 .dark ::-webkit-scrollbar-thumb:hover {
-  background: #23543b;
+  background: #2e323e;
 }
 
 /* Tactile Analog Broadcast Range Slider */
@@ -68,7 +68,7 @@ input[type="range"].studio-fader {
 }
 
 .dark input[type="range"].studio-fader {
-  background: #13241b;
+  background: #20232B;
 }
 
 input[type="range"].studio-fader::-webkit-slider-thumb {
@@ -85,8 +85,9 @@ input[type="range"].studio-fader::-webkit-slider-thumb {
 }
 
 .dark input[type="range"].studio-fader::-webkit-slider-thumb {
-  border-color: #071710;
-  box-shadow: 0 0 8px rgba(245, 158, 11, 0.5), inset 0 1px 1px rgba(255, 255, 255, 0.5);
+  background: #CCFF00;
+  border-color: #0B0C0E;
+  box-shadow: 0 0 10px rgba(204, 255, 0, 0.5);
 }
 
 input[type="range"].studio-fader:active::-webkit-slider-thumb {
