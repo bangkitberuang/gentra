@@ -105,17 +105,14 @@ export const LoginModal = ({ isOpen, onClose, onLoginSuccess }) => {
             <div>
               <div className="flex items-center gap-2">
                 <span className="text-2xl font-black tracking-tight text-white leading-none">GENTRA</span>
-                <span className="text-[10px] font-black bg-[#F59E0B] text-black px-2.5 py-0.5 rounded-full uppercase tracking-wider leading-none shadow-xs">
-                  IKP Diskominfo Jabar
-                </span>
               </div>
-              <p className="text-xs text-amber-300 font-bold mt-1.5">Generator Voice Over Natural</p>
+              <p className="text-xs text-amber-300 font-bold mt-1">Generator Voice Over Natural</p>
             </div>
           </div>
 
           <h2 className="text-lg font-bold tracking-tight text-white">Masuk ke Studio Voice Over</h2>
           <p className="text-xs text-emerald-100/80 mt-1 leading-relaxed">
-            Portal produksi audio resmi IKP Diskominfo Jawa Barat. Silakan verifikasi akses tim Anda.
+            Portal produksi audio resmi. Silakan verifikasi akses tim Anda.
           </p>
         </div>
 

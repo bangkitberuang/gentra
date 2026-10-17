@@ -555,7 +555,7 @@ export const LandingPage = ({ onOpenLogin }) => {
               ARSITEKTUR & ALUR KERJA TERPADU
             </span>
             <h2 className="text-3xl sm:text-4xl font-black text-zinc-900 tracking-tight">
-              Bagan Ekosistem Produksi Audio IKP Diskominfo Jabar
+              Bagan Ekosistem Produksi Audio
             </h2>
             <p className="text-sm text-zinc-600 leading-relaxed">
               Alur kerja terpadu dari pengolahan naskah kebijakan pemerintah provinsi hingga distribusi siaran audio multi-kanal berstandar broadcast untuk wargi Jawa Barat.
@@ -1143,8 +1143,6 @@ export const LandingPage = ({ onOpenLogin }) => {
             <span className="text-lg font-black text-[#0C4E34]">GENTRA</span>
             <span className="text-zinc-400 font-mono">|</span>
             <span className="text-xs font-bold text-[#D97706]">Generator Voice Over Natural</span>
-            <span className="text-zinc-300 font-bold">•</span>
-            <span className="text-[10px] font-black bg-[#F59E0B] text-zinc-950 px-2 py-0.5 rounded-full uppercase tracking-wider">IKP Diskominfo Jabar</span>
           </div>
           <p className="text-xs text-zinc-500 font-medium">
             © 2026 GENTRA • BANGKIT Beruang Ecosystem
