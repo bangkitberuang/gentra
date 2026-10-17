@@ -1974,47 +1974,31 @@ ATURAN MUTLAK: Langsung bacakan teks naskah dari kata pertama tanpa intro, tanpa
       {/* Top Navigation Bar (Persis Screenshot Nusa Voice) */}
       <nav className={`sticky top-0 z-50 backdrop-blur-md transition-colors duration-300 ${isDarkTheme ? 'bg-[#0B0C0E]/95 border-b border-[#1E2026] text-white' : 'bg-white/95 border-b border-zinc-200/80 shadow-sm text-zinc-900'}`}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between h-20 items-center relative">
+          <div className="flex items-center justify-between h-20 gap-4">
             
-            {/* Logo & Tagline (Sisi Kiri - Logo Speech Bubble Waveform & NUSA VOICE V.1.4) */}
-            <div className="flex items-center gap-3 cursor-pointer group shrink-0 z-20" onClick={() => handleSwitchView('studio')}>
-              {isDarkTheme ? (
-                <div className="flex items-center gap-2.5">
-                  <div className="w-9 h-9 rounded-xl bg-[#CCFF00]/15 border border-[#CCFF00]/40 flex items-center justify-center shrink-0 shadow-sm">
-                    <svg className="w-5 h-5 text-[#CCFF00]" viewBox="0 0 24 24" fill="currentColor">
-                      <path d="M12 2C6.48 2 2 6.03 2 11c0 2.87 1.5 5.43 3.84 7.07L5 22l4.47-1.49C10.27 20.81 11.12 21 12 21c5.52 0 10-4.03 10-9s-4.48-9-10-9zm-4 11H7v-4h1v4zm3 2h-1V7h1v8zm3-1h-1v-6h1v6zm3-2h-1v-2h1v2z"/>
-                    </svg>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <span className="text-xl sm:text-2xl font-black tracking-wider text-[#CCFF00]">
-                      NUSA VOICE
-                    </span>
-                    <span className="text-xl sm:text-2xl font-black tracking-wider text-white">
-                      V.1.4
-                    </span>
-                  </div>
-                </div>
-              ) : (
-                <div className="flex items-center gap-3">
-                  <img 
-                    src="/logo.png" 
-                    alt="GENTRA" 
-                    className="w-11 h-11 rounded-2xl object-cover shadow-sm border border-zinc-200/90 group-hover:scale-105 transition-transform shrink-0"
-                  />
-                  <div className="flex flex-col justify-center">
-                    <span className="text-2xl font-black tracking-tight leading-none text-[#0C4E34]">
-                      GENTRA
-                    </span>
-                    <span className="text-[11px] font-bold text-[#D97706] tracking-tight mt-0.5 whitespace-nowrap leading-none">
-                      Generator Voice Over Natural
-                    </span>
-                  </div>
-                </div>
-              )}
+            {/* Logo & Tagline (Sisi Kiri - GENTRA) */}
+            <div className="flex items-center gap-3 cursor-pointer group shrink-0" onClick={() => handleSwitchView('studio')}>
+              <img 
+                src="/logo.png" 
+                alt="GENTRA" 
+                className={`w-11 h-11 rounded-2xl object-cover shadow-sm transition-transform group-hover:scale-105 shrink-0 border ${
+                  isDarkTheme ? 'border-[#20232B] shadow-black/40' : 'border-zinc-200/90'
+                }`}
+              />
+              <div className="flex flex-col justify-center">
+                <span className={`text-2xl font-black tracking-tight leading-none ${isDarkTheme ? 'text-white' : 'text-[#0C4E34]'}`}>
+                  GENTRA
+                </span>
+                <span className={`text-[11px] font-bold tracking-tight mt-0.5 whitespace-nowrap leading-none ${
+                  isDarkTheme ? 'text-[#CCFF00]' : 'text-[#D97706]'
+                }`}>
+                  Ti Téks Jadi Sora
+                </span>
+              </div>
             </div>
 
-            {/* Desktop Menu (Segmented Pill Bar, Tepat di Tengah-Tengah Navbar) */}
-            <div className="hidden md:flex items-center absolute left-1/2 -translate-x-1/2 z-10 pointer-events-auto">
+            {/* Desktop Menu (Segmented Pill Bar) */}
+            <div className="hidden md:flex items-center justify-center shrink-0">
               <div className={`flex items-center gap-1 p-1 rounded-full border shadow-2xs ${isDarkTheme ? 'bg-[#14161B] border-[#20232B]' : 'bg-zinc-100 border-zinc-200/90'}`}>
                 {/* Posisi 1: STUDIO */}
                 <button 
