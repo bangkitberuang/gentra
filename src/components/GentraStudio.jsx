@@ -733,6 +733,22 @@ export const GentraStudio = ({
   // Navigation State
   const [view, setView] = useState('studio'); // 'studio' | 'cloning' | 'ads' | 'history'
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isServerDropdownOpen, setIsServerDropdownOpen] = useState(false);
+  const serverDropdownRef = useRef(null);
+
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (serverDropdownRef.current && !serverDropdownRef.current.contains(e.target)) {
+        setIsServerDropdownOpen(false);
+      }
+    };
+    if (isServerDropdownOpen) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [isServerDropdownOpen]);
 
   // Studio Theme State (Default: Dark Broadcast Studio)
   const [isDarkTheme, setIsDarkTheme] = useState(() => {
@@ -1879,29 +1895,7 @@ PENTING: Langsung bacakan naskah berikut dari kata pertama persis menjiwai usia,
                   <span>ILM</span>
                 </button>
 
-                {/* Posisi 3: PILIHAN SERVER ENGINE (Gatot Kaca / Kian Santang / Pajajaran) */}
-                <button 
-                  type="button"
-                  onClick={onOpenEngineModal}
-                  className={`h-9 px-3.5 sm:px-4 rounded-full text-xs font-bold transition-all flex items-center gap-2 whitespace-nowrap shrink-0 border shadow-xs ${
-                    isDarkTheme 
-                      ? 'bg-gradient-to-r from-[#0C4E34]/60 to-[#072418] border-emerald-500/60 text-emerald-300 hover:border-emerald-400 hover:text-white' 
-                      : 'bg-emerald-50 border-emerald-300 text-[#0C4E34] hover:bg-emerald-100'
-                  }`}
-                  title="Pilih atau beralih server engine suara"
-                >
-                  <Server className="w-3.5 h-3.5 text-[#F59E0B]" />
-                  <span>
-                    {activeEngine === 'azure' ? 'Kian Santang Server' : activeEngine === 'elevenlabs' ? 'Pajajaran Server' : 'Gatot Kaca Server'}
-                  </span>
-                  <span className={`text-[9px] px-1.5 py-0.5 rounded font-black tracking-wide shrink-0 ${
-                    isDarkTheme ? 'bg-black/40 text-emerald-300 border border-emerald-500/30' : 'bg-emerald-200/70 text-[#0C4E34]'
-                  }`}>
-                    Ganti
-                  </span>
-                </button>
-
-                {/* Posisi 4: RIWAYAT */}
+                {/* Posisi 3: RIWAYAT */}
                 <button 
                   onClick={() => setView('history')} 
                   className={`h-9 px-3.5 sm:px-4 rounded-full text-xs font-bold transition-all flex items-center gap-2 whitespace-nowrap shrink-0 ${
@@ -1920,8 +1914,153 @@ PENTING: Langsung bacakan naskah berikut dari kata pertama persis menjiwai usia,
                 </button>
               </div>
 
-              {/* Theme Toggle, User badge, API key, and logout button */}
+              {/* Server Selector Dropdown, Theme Toggle, User badge, API key, and logout button */}
               <div className={`flex items-center gap-1.5 pl-2 border-l ${isDarkTheme ? 'border-emerald-950' : 'border-zinc-200'}`}>
+                {/* Pilihan Server Suara Dropdown (Di sebelah kanan, Dropdown Panah ke Bawah) */}
+                <div className="relative shrink-0" ref={serverDropdownRef}>
+                  <button 
+                    type="button"
+                    onClick={() => setIsServerDropdownOpen(prev => !prev)}
+                    className={`h-9 px-3 sm:px-3.5 rounded-full text-xs font-bold transition-all flex items-center gap-1.5 whitespace-nowrap shrink-0 border shadow-xs ${
+                      isDarkTheme 
+                        ? 'bg-[#14231b] border-emerald-900/80 text-emerald-300 hover:border-emerald-500 hover:text-white' 
+                        : 'bg-zinc-100 hover:bg-zinc-200/70 border-zinc-200 text-zinc-700 hover:text-[#0C4E34]'
+                    }`}
+                    title="Pilihan Server Engine Suara (Klik untuk ganti server)"
+                  >
+                    <Server className="w-3.5 h-3.5 text-[#F59E0B] shrink-0" />
+                    <span className="font-bold">
+                      {activeEngine === 'azure' ? 'Kian Santang' : activeEngine === 'elevenlabs' ? 'Pajajaran' : 'Gatot Kaca'}
+                    </span>
+                    <ChevronDown className={`w-3.5 h-3.5 text-zinc-400 transition-transform duration-200 shrink-0 ${
+                      isServerDropdownOpen ? 'rotate-180 text-emerald-400' : ''
+                    }`} />
+                  </button>
+
+                  {/* Dropdown Menu Panah ke Bawah */}
+                  {isServerDropdownOpen && (
+                    <div className={`absolute right-0 top-full mt-2 w-72 rounded-2xl border shadow-2xl z-50 p-2 backdrop-blur-xl animate-in fade-in slide-in-from-top-2 duration-150 ${
+                      isDarkTheme 
+                        ? 'bg-[#0c1611]/95 border-emerald-900/80 shadow-[0_10px_30px_rgba(0,0,0,0.8)] text-white' 
+                        : 'bg-white/95 border-zinc-200 shadow-[0_10px_30px_rgba(0,0,0,0.12)] text-zinc-800'
+                    }`}>
+                      <div className="px-3 py-1.5 text-[10px] font-black tracking-wider uppercase text-zinc-400 flex items-center justify-between border-b border-zinc-100 dark:border-emerald-950 pb-2 mb-1">
+                        <span>PILIH SERVER SUARA</span>
+                        <span className="text-[9px] px-1.5 py-0.5 rounded font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+                          Aktif
+                        </span>
+                      </div>
+
+                      {/* 1. Gatot Kaca (Gemini) */}
+                      <button
+                        type="button"
+                        onClick={() => {
+                          if (onSelectEngine) onSelectEngine('gemini');
+                          setIsServerDropdownOpen(false);
+                        }}
+                        className={`w-full text-left px-3 py-2.5 rounded-xl transition-all flex items-center justify-between gap-2.5 ${
+                          activeEngine === 'gemini'
+                            ? isDarkTheme ? 'bg-emerald-950/70 border border-emerald-500/50 text-emerald-300' : 'bg-emerald-50 border border-emerald-300 text-[#0C4E34]'
+                            : isDarkTheme ? 'hover:bg-[#14231b] text-zinc-300 hover:text-white' : 'hover:bg-zinc-100 text-zinc-700'
+                        }`}
+                      >
+                        <div className="flex items-center gap-2.5 min-w-0">
+                          <div className="w-7 h-7 rounded-lg bg-emerald-500/20 flex items-center justify-center shrink-0">
+                            <Cpu className="w-4 h-4 text-emerald-400" />
+                          </div>
+                          <div className="min-w-0">
+                            <div className="text-xs font-bold flex items-center gap-1.5">
+                              <span className="truncate">Gatot Kaca Server</span>
+                              <span className="text-[9px] px-1 py-0.2 rounded font-black bg-emerald-500/20 text-emerald-400 shrink-0">Utama</span>
+                            </div>
+                            <div className="text-[10px] text-zinc-400 truncate">Google Gemini 3.8 Neural (Sunda)</div>
+                          </div>
+                        </div>
+                        {activeEngine === 'gemini' && (
+                          <Check className="w-4 h-4 text-emerald-400 shrink-0" />
+                        )}
+                      </button>
+
+                      {/* 2. Kian Santang (Azure) */}
+                      <button
+                        type="button"
+                        onClick={() => {
+                          if (onSelectEngine) onSelectEngine('azure');
+                          setIsServerDropdownOpen(false);
+                        }}
+                        className={`w-full text-left px-3 py-2.5 rounded-xl transition-all flex items-center justify-between gap-2.5 mt-1 ${
+                          activeEngine === 'azure'
+                            ? isDarkTheme ? 'bg-sky-950/70 border border-sky-500/50 text-sky-300' : 'bg-sky-50 border border-sky-300 text-sky-900'
+                            : isDarkTheme ? 'hover:bg-[#14231b] text-zinc-300 hover:text-white' : 'hover:bg-zinc-100 text-zinc-700'
+                        }`}
+                      >
+                        <div className="flex items-center gap-2.5 min-w-0">
+                          <div className="w-7 h-7 rounded-lg bg-sky-500/20 flex items-center justify-center shrink-0">
+                            <Radio className="w-4 h-4 text-sky-400" />
+                          </div>
+                          <div className="min-w-0">
+                            <div className="text-xs font-bold flex items-center gap-1.5">
+                              <span className="truncate">Kian Santang Server</span>
+                              <span className="text-[9px] px-1 py-0.2 rounded font-black bg-sky-500/20 text-sky-400 shrink-0">Azure</span>
+                            </div>
+                            <div className="text-[10px] text-zinc-400 truncate">MS Azure Neural (Protokoler)</div>
+                          </div>
+                        </div>
+                        {activeEngine === 'azure' && (
+                          <Check className="w-4 h-4 text-sky-400 shrink-0" />
+                        )}
+                      </button>
+
+                      {/* 3. Pajajaran (ElevenLabs) */}
+                      <button
+                        type="button"
+                        onClick={() => {
+                          if (onSelectEngine) onSelectEngine('elevenlabs');
+                          setIsServerDropdownOpen(false);
+                        }}
+                        className={`w-full text-left px-3 py-2.5 rounded-xl transition-all flex items-center justify-between gap-2.5 mt-1 ${
+                          activeEngine === 'elevenlabs'
+                            ? isDarkTheme ? 'bg-purple-950/70 border border-purple-500/50 text-purple-300' : 'bg-purple-50 border border-purple-300 text-purple-900'
+                            : isDarkTheme ? 'hover:bg-[#14231b] text-zinc-300 hover:text-white' : 'hover:bg-zinc-100 text-zinc-700'
+                        }`}
+                      >
+                        <div className="flex items-center gap-2.5 min-w-0">
+                          <div className="w-7 h-7 rounded-lg bg-purple-500/20 flex items-center justify-center shrink-0">
+                            <Sparkles className="w-4 h-4 text-purple-400" />
+                          </div>
+                          <div className="min-w-0">
+                            <div className="text-xs font-bold flex items-center gap-1.5">
+                              <span className="truncate">Pajajaran Server</span>
+                              <span className="text-[9px] px-1 py-0.2 rounded font-black bg-purple-500/20 text-purple-400 shrink-0">Studio</span>
+                            </div>
+                            <div className="text-[10px] text-zinc-400 truncate">ElevenLabs Multilingual V2</div>
+                          </div>
+                        </div>
+                        {activeEngine === 'elevenlabs' && (
+                          <Check className="w-4 h-4 text-purple-400 shrink-0" />
+                        )}
+                      </button>
+
+                      {/* Footer: Detail Server Modal trigger */}
+                      <div className="mt-2 pt-1.5 border-t border-zinc-100 dark:border-emerald-950">
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setIsServerDropdownOpen(false);
+                            if (onOpenEngineModal) onOpenEngineModal();
+                          }}
+                          className={`w-full text-center py-1.5 px-2 rounded-lg text-[11px] font-bold transition-colors ${
+                            isDarkTheme 
+                              ? 'text-emerald-400 hover:bg-emerald-950/50 hover:text-emerald-300' 
+                              : 'text-[#0C4E34] hover:bg-emerald-50'
+                          }`}
+                        >
+                          Lihat Detail & Perbandingan Server →
+                        </button>
+                      </div>
+                    </div>
+                  )}
+                </div>
                 {/* Dark Studio Mode Toggle Button */}
                 <button 
                   onClick={toggleTheme}
