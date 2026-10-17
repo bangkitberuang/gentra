@@ -151,23 +151,7 @@ const INITIAL_VOICES = [
     category: 'Sunda', 
     accent: 'Akang Sunda (Santai & Sahaja)',
     personaPrompt: 'Karakter Kang Asep (pria dewasa Sunda yang bersahabat, luwes, santai, gaya bicara akrab dan hangat).',
-    isCustom: false 
-  },
-
-  // --- 13 Persona Logat & Dialek Daerah Nusantara ---
-  { id: 'Kore', name: 'Teh Lilis (Sunda)', desc: 'Logat Sunda halus, ramah, berayun merdu', gender: 'Female', category: 'Dialek Nusantara', accent: 'Sunda Halus', personaPrompt: 'Berbicara dengan logat Sunda halus dan ramah. Nada lembut dan hangat. Kadang sisipkan kata "punten", "mangga", "nya".', isCustom: false },
-  { id: 'Fenrir', name: 'Mas Tejo (Jawa)', desc: 'Logat Jawa medok, santun, intonasi tenang berwibawa', gender: 'Male', category: 'Dialek Nusantara', accent: 'Jawa Medok', personaPrompt: 'Berbicara dengan logat Jawa medok. Intonasi tenang, kalimat sedikit ditarik di akhir. Gunakan nuansa bahasa Jawa seperti "nggih", "monggo", "nuwun".', isCustom: false },
-  { id: 'Charon', name: 'Abang Ucok (Batak)', desc: 'Logat Batak tegas, lantang, lugas dan bervolume mantap', gender: 'Male', category: 'Dialek Nusantara', accent: 'Batak Tegas', personaPrompt: 'Berbicara dengan logat Batak yang kuat dan tegas. Nada lantang dan penuh energi. Kadang gunakan kata seperti "bah", "lae".', isCustom: false },
-  { id: 'Puck', name: 'Daeng (Makassar)', desc: 'Logat Bugis/Makassar bersemangat, cepat dan dinamis', gender: 'Male', category: 'Dialek Nusantara', accent: 'Makassar Cepat', personaPrompt: 'Berbicara dengan logat Bugis atau Makassar yang khas. Intonasi cepat dan bersemangat. Kadang sisipkan kata "ji", "ki", atau "ta".', isCustom: false },
-  { id: 'Charon', name: 'Uda (Minang)', desc: 'Logat Minangkabau mengalun santai, bijak dan bersahabat', gender: 'Male', category: 'Dialek Nusantara', accent: 'Minang Mengalun', personaPrompt: 'Berbicara dengan logat Minangkabau yang jelas. Ritme cepat dan tegas. Kadang gunakan kata "lah", "wak", atau "iyo".', isCustom: false },
-  { id: 'Charon', name: 'Bli Wayan (Bali)', desc: 'Logat Bali tenang, damai, dan mengalir santun', gender: 'Male', category: 'Dialek Nusantara', accent: 'Bali Damai', personaPrompt: 'Berbicara dengan logat Bali yang lembut dan damai. Ritme pelan dan santun. Kadang gunakan kata seperti "nggih", "tiang".', isCustom: false },
-  { id: 'Fenrir', name: 'Betawi Babe (Jakarta)', desc: 'Logat Betawi ceplas-ceplos, akrab dan penuh kehangatan', gender: 'Male', category: 'Dialek Nusantara', accent: 'Betawi Ceplas-Ceplos', personaPrompt: 'Berbicara dengan logat Betawi asli Jakarta yang ceplas-ceplos, ramah, dan santai. Gunakan kata "nih", "deh", "babe".', isCustom: false },
-  { id: 'Charon', name: 'Papua Pace (Papua)', desc: 'Logat Indonesia Timur / Papua ceria dan berirama khas', gender: 'Male', category: 'Dialek Nusantara', accent: 'Papua Ceria', personaPrompt: 'Berbicara dengan logat Papua yang hangat, berirama naik turun bersahabat. Gunakan kata "kaka", "pace", "dong".', isCustom: false },
-  { id: 'Fenrir', name: 'Sanggam (Berau)', desc: 'Logat Berau Kaltim santai namun tegas bersahabat', gender: 'Male', category: 'Dialek Nusantara', accent: 'Berau Kaltim', personaPrompt: 'Berbicara dengan logat Kalimantan Timur khas Berau. Santai namun tegas. Kadang gunakan kata seperti "bah", "lah".', isCustom: false },
-  { id: 'Kore', name: 'Galuh (Banjar)', desc: 'Logat Banjar manis, ramah dan santun', gender: 'Female', category: 'Dialek Nusantara', accent: 'Banjar Manis', personaPrompt: 'Berbicara dengan logat Banjar yang manis dan mengalun ramah. Sisipkan kata "pian", "ulun", "lah".', isCustom: false },
-  { id: 'Fenrir', name: 'Cak Mad (Madura)', desc: 'Logat Madura bersemangat, tegas dan blak-blakan bersahabat', gender: 'Male', category: 'Dialek Nusantara', accent: 'Madura Tegas', personaPrompt: 'Berbicara dengan logat Madura yang tegas, bervolume mantap dan lugas bersahabat.', isCustom: false },
-  { id: 'Kore', name: 'Adek (Melayu)', desc: 'Logat Melayu pesisir santun, berirama mendayu elok', gender: 'Female', category: 'Dialek Nusantara', accent: 'Melayu Santun', personaPrompt: 'Berbicara dengan logat Melayu Riau yang santun, lemah lembut, dan bertutur kata elok bersahaja.', isCustom: false },
-  { id: 'Puck', name: 'Nyong (Ambon)', desc: 'Logat Maluku / Ambon merdu, manis dan penuh kekeluargaan', gender: 'Male', category: 'Dialek Nusantara', accent: 'Ambon Merdu', personaPrompt: 'Berbicara dengan logat Ambon Maluku yang ramah, manis berirama khas kepulauan. Gunakan kata "katong", "dong".', isCustom: false },
+  }
 ];
 
 // --- Karakter Suara Khusus ElevenLabs (Studio Hyper-Realistic) ---
@@ -214,10 +198,10 @@ export const STATIC_AUDIO_PREVIEWS = {
   'Bibi (Ceu Edah)': '/audio/previews/bibi.wav',
   'Budak Leutik (Eneng)': '/audio/previews/budak_eneng.wav',
   'Budak Leutik Eneng': '/audio/previews/budak_eneng.wav',
-  'Budak Leutik (Ujang Alit)': '/audio/previews/budak_ujang.mp3',
-  'Budak Leutik Ujang Alit': '/audio/previews/budak_ujang.mp3',
+  'Budak Leutik (Ujang Alit)': '/audio/previews/budak_eneng.wav',
+  'Budak Leutik Ujang Alit': '/audio/previews/budak_eneng.wav',
   'Teh Neng': '/audio/previews/teh_neng.wav',
-  'Kang Asep': '/audio/previews/kang_asep.mp3',
+  'Kang Asep': '/audio/previews/ujang.wav',
 
   // 14 Persona Nasional (Blok 1 - NUSA VOICE)
   'Anita': '/audio/previews/anita.wav',
@@ -234,21 +218,6 @@ export const STATIC_AUDIO_PREVIEWS = {
   'Adi': '/audio/previews/adi.mp3',
   'Eko': '/audio/previews/eko.mp3',
   'Laras': '/audio/previews/laras.mp3',
-
-  // 13 Persona Dialek Nusantara (Blok 3 - LOGAT DAERAH)
-  'Teh Lilis (Sunda)': '/audio/previews/teh_lilis.mp3',
-  'Mas Tejo (Jawa)': '/audio/previews/mas_tejo.mp3',
-  'Abang Ucok (Batak)': '/audio/previews/abang_ucok.mp3',
-  'Daeng (Makassar)': '/audio/previews/daeng.mp3',
-  'Uda (Minang)': '/audio/previews/uda.mp3',
-  'Bli Wayan (Bali)': '/audio/previews/bli_wayan.mp3',
-  'Betawi Babe (Jakarta)': '/audio/previews/betawi_babe.mp3',
-  'Papua Pace (Papua)': '/audio/previews/papua_pace.mp3',
-  'Sanggam (Berau)': '/audio/previews/sanggam.mp3',
-  'Galuh (Banjar)': '/audio/previews/galuh.mp3',
-  'Cak Mad (Madura)': '/audio/previews/cak_mad.mp3',
-  'Adek (Melayu)': '/audio/previews/adek.mp3',
-  'Nyong (Ambon)': '/audio/previews/nyong.mp3',
 
   // Karakter ElevenLabs Studio (Prabu Pajajaran Server)
   'Sarah': '/audio/previews/elevenlabs_sarah.mp3',
@@ -340,14 +309,6 @@ export const getVoicePersonaInstruction = (voice) => {
       role: `karakter Sunda ${voice.name}`,
       timbre: voice.desc || 'vokal khas Pasundan',
       dialect: 'Gunakan cengkok dan intonasi khas Sunda Jawa Barat yang luwes dan alami'
-    };
-  }
-
-  if (voice.category === 'Dialek Nusantara') {
-    return {
-      role: `pengisi suara berlogat ${voice.accent || voice.name}`,
-      timbre: voice.desc || 'vokal berkarakter daerah Nusantara',
-      dialect: `Gunakan cengkok, dialek, dan intonasi daerah ${voice.accent || voice.name} yang kental, ekspresif, dan alami`
     };
   }
 
@@ -978,10 +939,9 @@ export const GentraStudio = ({
     checkQuota();
   }, [activeKeyPool.length, activeKeyPool[0]]);
 
-  // State 3 Blok Pemisah Karakter Studio (Expand & Collapse)
+  // State 2 Blok Pemisah Karakter Studio (Expand & Collapse)
   const [isBlock1Open, setIsBlock1Open] = useState(true); // NUSA VOICE (Nasional - 14)
   const [isBlock2Open, setIsBlock2Open] = useState(true); // PASUNDAN VOICE (Sunda - 8)
-  const [isBlock3Open, setIsBlock3Open] = useState(true); // LOGAT NUSANTARA (Dialek - 13)
 
   // Multi-Engine TTS State
   const [ttsEngine, setTtsEngine] = useState('gemini'); // 'gemini' | 'elevenlabs' | 'azure' | 'google' | 'voicebox'
@@ -1260,16 +1220,6 @@ export const GentraStudio = ({
             sampleSentence = `Sampurasun wargi Jabar! Hayu urang babarengan ngamumule Jawa Barat Juara!`;
           } else {
             sampleSentence = `Sampurasun wargi Jabar! Sim kuring ${v.name}, siap ngarojong komunikasi publik Jawa Barat Juara.`;
-          }
-        } else if (v.category === 'Dialek Nusantara') {
-          if (v.name.includes('Ucok')) {
-            sampleSentence = `Horas kawan! Saya ${v.name}, siap menyuarakan naskah dengan penuh semangat dan integritas!`;
-          } else if (v.name.includes('Tejo')) {
-            sampleSentence = `Nggih monggo sedulur, kulo ${v.name}, siap makarya sesarengan kanthi guyub rukun.`;
-          } else if (v.name.includes('Babe')) {
-            sampleSentence = `Nah ini dia Betawi Babe, salam kenal buat lu semua warga yang asyik-asyik!`;
-          } else {
-            sampleSentence = `Halo saudaraku semua, saya ${v.name}. Senang bisa mengisi suara untuk Anda.`;
           }
         }
 
@@ -1704,9 +1654,7 @@ PENTING:
 
     const dialectInstruction = selectedVoice.category === 'Sunda' || dialect === 'sunda'
       ? `Gunakan cengkok dan intonasi khas Sunda yang ${selectedVoice.accent || 'luwes'}, natural, dan hangat.` 
-      : selectedVoice.category === 'Dialek Nusantara'
-        ? `${selectedVoice.personaPrompt || ''}`
-        : `Gunakan intonasi Bahasa Indonesia yang ${selectedVoice.accent || 'artikulatif'}, artikulatif, dan natural.`;
+      : `Gunakan intonasi Bahasa Indonesia yang ${selectedVoice.accent || 'artikulatif'}, artikulatif, dan natural.`;
 
     const emotionTagGuidance = text.includes('[') && text.includes(']')
       ? "Patuhi tag ekspresi emosi bahasa Indonesia dalam tanda kurung siku seperti [tertawa], [berbisik], [jeda 1 detik], [bersemangat], [hela napas], [tegas], [tersenyum]. Wujudkan ekspresi tersebut dalam intonasi suara dan jangan melafalkan kata kurung sikunya secara harafiah."
@@ -2836,148 +2784,7 @@ PENTING: Langsung bacakan naskah berikut dari kata pertama persis menjiwai usia,
                                 <span>{previewingVoice === v.name ? 'Memutar' : 'Dengar'}</span>
                               </button>
                             </div>
-                          </div>
-                        );
-                      })}
-                    </div>
-                  </div>
-                )}
-              </div>
-
-              {/* BLOK 3: LOGAT NUSANTARA (Karakter Dialek & Bahasa Daerah - 13 Karakter) */}
-              <div className={`rounded-3xl border transition-all ${cardBg}`}>
-                <div 
-                  onClick={() => setIsBlock3Open(!isBlock3Open)}
-                  className={`p-5 flex items-center justify-between cursor-pointer select-none transition-colors ${
-                    isBlock3Open 
-                      ? isDarkTheme ? 'bg-[#0a1410] border-b border-emerald-950/80' : 'bg-purple-50/50 border-b border-zinc-100' 
-                      : 'hover:bg-white/5'
-                  }`}
-                >
-                  <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-2xl bg-purple-500/10 border border-purple-400/30 flex items-center justify-center text-lg">
-                      🗺️
-                    </div>
-                    <div>
-                      <div className="flex items-center gap-2">
-                        <h3 className={`text-base font-black ${isDarkTheme ? 'text-white' : 'text-zinc-900'}`}>
-                          BLOK 3 — LOGAT NUSANTARA (Dialek Daerah)
-                        </h3>
-                        <span className="text-[10px] px-2 py-0.5 rounded-full font-bold bg-purple-500/15 text-purple-300 border border-purple-400/30 shrink-0">
-                          {voices.filter(v => v.category === 'Dialek Nusantara').length} Karakter
-                        </span>
-                      </div>
-                      <p className={`text-xs mt-0.5 ${subTextColor}`}>
-                        Duplikasi persona PERFECT VOICE untuk ragam logat daerah (Jawa, Batak, Minang, Makassar, Bali, Melayu, Papua, dll).
-                      </p>
-                    </div>
-                  </div>
-                  <button 
-                    type="button" 
-                    className="p-2 rounded-xl text-zinc-400 hover:text-white transition-colors"
-                  >
-                    {isBlock3Open ? <ChevronUp className="w-5 h-5" /> : <ChevronDown className="w-5 h-5" />}
-                  </button>
-                </div>
-
-                {isBlock3Open && (
-                  <div className="p-5">
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-                      {voices.filter(v => v.category === 'Dialek Nusantara').map(v => {
-                        const isSelected = selectedVoice.name === v.name;
-                        const hasAudio = checkVoiceHasPreview(v, previewAudioCache.current);
-                        return (
-                          <div
-                            key={`${v.id}-${v.name}`}
-                            onClick={() => {
-                              if (!hasAudio) {
-                                setPreviewUnavailableVoice(v.name);
-                                setTimeout(() => setPreviewUnavailableVoice(null), 4000);
-                                return;
-                              }
-                              setSelectedVoice(v);
-                            }}
-                            className={`text-left p-3.5 rounded-2xl border transition-all duration-200 relative flex flex-col justify-between gap-3 group select-none cursor-pointer ${
-                              !hasAudio
-                                ? isDarkTheme ? 'bg-[#0a100d]/60 border-dashed border-zinc-800 text-zinc-400 opacity-60' : 'bg-zinc-100/70 border-dashed border-zinc-300 text-zinc-400 opacity-65'
-                                : isSelected 
-                                  ? isDarkTheme
-                                    ? 'bg-gradient-to-br from-[#0C4E34] via-[#093d28] to-[#041d13] border-2 border-emerald-400 shadow-xl shadow-emerald-950 ring-2 ring-emerald-400/50 -translate-y-0.5 text-white'
-                                    : 'bg-gradient-to-br from-emerald-50 via-white to-emerald-100/70 border-2 border-[#0C4E34] shadow-md shadow-emerald-900/15 ring-2 ring-[#0C4E34]/25 -translate-y-0.5 text-zinc-900'
-                                  : isDarkTheme
-                                    ? 'bg-[#121c17] border-zinc-800/80 hover:border-emerald-500/70 hover:-translate-y-0.5 hover:bg-[#16251e] text-zinc-200'
-                                    : 'bg-white border-zinc-200 shadow-xs hover:border-emerald-500/70 hover:-translate-y-0.5 hover:bg-emerald-50/20 text-zinc-800'
-                            }`}
-                          >
-                            <div className="flex items-center gap-3">
-                              <div className={`w-11 h-11 rounded-xl flex items-center justify-center shrink-0 border transition-transform group-hover:scale-105 ${
-                                isSelected 
-                                  ? 'bg-emerald-500/20 border-emerald-400/50 text-white' 
-                                  : isDarkTheme ? 'bg-zinc-800/90 border-zinc-700/60 text-zinc-300' : 'bg-zinc-100 border-zinc-200 text-zinc-600'
-                              }`}>
-                                <User className="w-5 h-5" />
-                              </div>
-                              <div className="flex-1 min-w-0">
-                                <div className="flex items-center justify-between gap-1">
-                                  <h4 className={`font-black text-sm tracking-tight truncate ${
-                                    isSelected ? (isDarkTheme ? 'text-white' : 'text-[#0C4E34]') : isDarkTheme ? 'text-zinc-100' : 'text-zinc-900'
-                                  }`}>
-                                    {v.name}
-                                  </h4>
-                                  {isSelected && (
-                                    <div className="w-4 h-4 rounded-full bg-[#F59E0B] flex items-center justify-center text-zinc-950 shrink-0">
-                                      <Check className="w-3 h-3 stroke-[3]" />
-                                    </div>
-                                  )}
-                                </div>
-                                <p className={`text-xs truncate font-medium mt-0.5 ${
-                                  isSelected ? (isDarkTheme ? 'text-emerald-200' : 'text-emerald-800') : isDarkTheme ? 'text-zinc-400' : 'text-zinc-500'
-                                }`}>
-                                  {v.desc}
-                                </p>
-                              </div>
-                            </div>
-
-                            <div className={`pt-2 border-t flex items-center justify-between gap-2 text-xs ${
-                              isSelected 
-                                ? isDarkTheme ? 'border-emerald-600/40' : 'border-emerald-200' 
-                                : isDarkTheme ? 'border-zinc-800/70' : 'border-zinc-100'
-                            }`}>
-                              <span className={`text-[10px] font-mono truncate ${
-                                isSelected ? (isDarkTheme ? 'text-emerald-300' : 'text-emerald-800') : isDarkTheme ? 'text-zinc-400' : 'text-zinc-500'
-                              }`}>
-                                {v.accent || 'Dialek'}
-                              </span>
-
-                              <button
-                                type="button"
-                                onClick={(e) => handlePreviewVoice(v, e)}
-                                className={`px-2.5 py-1 rounded-xl text-[11px] font-bold flex items-center gap-1.5 transition-all shadow-xs shrink-0 ${
-                                  previewingVoice === v.name
-                                    ? 'bg-[#F59E0B] text-zinc-950 scale-105 shadow-sm'
-                                    : isSelected
-                                      ? isDarkTheme 
-                                        ? 'bg-white/20 hover:bg-white/30 text-white border border-white/20' 
-                                        : 'bg-[#0C4E34] text-white hover:bg-[#093d28]'
-                                      : isDarkTheme
-                                        ? 'bg-[#15271e] hover:bg-emerald-900/60 text-emerald-300 border border-emerald-800/60'
-                                        : 'bg-zinc-100 hover:bg-[#0C4E34] hover:text-white text-zinc-700 border border-zinc-200'
-                                }`}
-                                title="Dengarkan Contoh Sampel Suara"
-                              >
-                                {previewingVoice === v.name ? (
-                                  <div className="flex items-center gap-0.5 h-3">
-                                    <span className="w-0.5 h-2 bg-zinc-950 rounded-full animate-bounce" />
-                                    <span className="w-0.5 h-3 bg-zinc-950 rounded-full animate-bounce [animation-delay:0.15s]" />
-                                    <span className="w-0.5 h-2.5 bg-zinc-950 rounded-full animate-bounce [animation-delay:0.3s]" />
-                                  </div>
-                                ) : (
-                                  <Play className="w-3 h-3 fill-current text-[#F59E0B]" />
-                                )}
-                                <span>{previewingVoice === v.name ? 'Memutar' : 'Dengar'}</span>
-                              </button>
-                            </div>
-                          </div>
+                                   </div>
                         );
                       })}
                     </div>
