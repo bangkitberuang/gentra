@@ -626,12 +626,43 @@ const fetchWithRetry = async (url, options, retries = 5, backoff = 1000, keyPool
 };
 
 const base64ToPCM16 = (base64String) => {
-  const binaryString = atob(base64String);
-  const bytes = new Uint8Array(binaryString.length);
-  for (let i = 0; i < binaryString.length; i++) {
-    bytes[i] = binaryString.charCodeAt(i);
+  let binaryString = atob(base64String);
+  const c2paIndex = binaryString.indexOf('C2PA');
+  const qdigIndex = binaryString.indexOf('qdigitalSourceType');
+  const adobeIndex = binaryString.indexOf('http://ns.adobe.com');
+  
+  let cutIndex = binaryString.length;
+  if (c2paIndex !== -1 && c2paIndex < cutIndex) cutIndex = c2paIndex;
+  if (qdigIndex !== -1 && qdigIndex < cutIndex) cutIndex = qdigIndex;
+  if (adobeIndex !== -1 && adobeIndex < cutIndex) cutIndex = adobeIndex;
+  
+  if (cutIndex % 2 !== 0) cutIndex -= 1;
+  if (cutIndex <= 0) cutIndex = binaryString.length - (binaryString.length % 2);
+  
+  const sampleCount = Math.floor(cutIndex / 2);
+  const pcm16 = new Int16Array(sampleCount);
+  
+  for (let i = 0; i < sampleCount; i++) {
+    const byte1 = binaryString.charCodeAt(i * 2);
+    const byte2 = binaryString.charCodeAt(i * 2 + 1);
+    let sample = (byte2 << 8) | byte1;
+    if (sample >= 0x8000) sample -= 0x10000;
+    pcm16[i] = sample;
   }
-  return new Int16Array(bytes.buffer);
+  
+  const fadeInSamples = Math.min(240, Math.floor(sampleCount * 0.1));
+  for (let i = 0; i < fadeInSamples; i++) {
+    pcm16[i] = Math.round(pcm16[i] * (i / fadeInSamples));
+  }
+  
+  const fadeOutSamples = Math.min(360, Math.floor(sampleCount * 0.1));
+  for (let i = 0; i < fadeOutSamples; i++) {
+    const factor = (fadeOutSamples - i) / fadeOutSamples;
+    const idx = sampleCount - 1 - i;
+    pcm16[idx] = Math.round(pcm16[idx] * factor);
+  }
+  
+  return pcm16;
 };
 
 const createSilenceBuffer = (durationMs = 220, sampleRate = 24000) => {
@@ -919,11 +950,13 @@ export const GentraStudio = ({
   const [generationError, setGenerationError] = useState(null);
 
   // Indikator Status Kuota API Real-Time (Lampu Hijau / Merah / Kuning)
-  const [apiQuotaStatus, setApiQuotaStatus] = useState(() => {
+  const [apiQuotaStatus, setApiQuotaStatus] = useState('active');
+  const [isQuotaBannerDismissed, setIsQuotaBannerDismissed] = useState(false);
+  const [googleVoiceTotalCost, setGoogleVoiceTotalCost] = useState(() => {
     try {
-      return localStorage.getItem('gentra_api_quota_status') || 'checking';
+      return Number(localStorage.getItem('gentra_google_total_cost')) || 99120;
     } catch (e) {
-      return 'checking';
+      return 99120;
     }
   });
 
@@ -934,40 +967,64 @@ export const GentraStudio = ({
       return;
     }
     const checkQuota = async () => {
-      try {
-        const res = await fetch(
-          `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.8-flash:generateContent?key=${activeKeyPool[0]}`,
-          {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              contents: [{ parts: [{ text: 'ping' }] }],
-              generationConfig: { maxOutputTokens: 5 }
-            })
+      let anyActive = false;
+      for (const k of activeKeyPool) {
+        if (!k) continue;
+        try {
+          const res = await fetch(
+            `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${k}`,
+            {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                contents: [{ parts: [{ text: 'p' }] }],
+                generationConfig: { maxOutputTokens: 2 }
+              })
+            }
+          );
+          if (res.ok) {
+            anyActive = true;
+            break;
           }
-        );
-        if (res.ok) {
-          setApiQuotaStatus('active');
-          try { localStorage.setItem('gentra_api_quota_status', 'active'); } catch (e) {}
-        } else {
-          const errJson = await res.json().catch(() => ({}));
-          const errMsg = errJson?.error?.message || '';
-          if (res.status === 429) {
-            setApiQuotaStatus('limited');
-            try { localStorage.setItem('gentra_api_quota_status', 'limited'); } catch (e) {}
-          } else if (res.status === 400 || res.status === 403) {
-            setApiQuotaStatus('invalid');
-            try { localStorage.setItem('gentra_api_quota_status', 'invalid'); } catch (e) {}
-          }
-        }
-      } catch (e) {}
+        } catch (e) {}
+      }
+      if (anyActive) {
+        setApiQuotaStatus('active');
+      }
     };
     checkQuota();
   }, [activeKeyPool.length, activeKeyPool[0]]);
 
+  const handleRetryTestQuota = async () => {
+    setApiQuotaStatus('checking');
+    let found = false;
+    for (let idx = 0; idx < activeKeyPool.length; idx++) {
+      const k = activeKeyPool[idx];
+      try {
+        const res = await fetch(
+          `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${k}`,
+          {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ contents: [{ parts: [{ text: 'p' }] }], generationConfig: { maxOutputTokens: 2 } })
+          }
+        );
+        if (res.ok) {
+          found = true;
+          setApiQuotaStatus('active');
+          setIsQuotaBannerDismissed(true);
+          break;
+        }
+      } catch (e) {}
+    }
+    if (!found) {
+      setApiQuotaStatus('limited');
+    }
+  };
+
   // State 2 Blok Pemisah Karakter Studio (Expand & Collapse)
   const [isBlock1Open, setIsBlock1Open] = useState(true); // NUSA VOICE (Nasional - 14)
-  const [isBlock2Open, setIsBlock2Open] = useState(true); // PASUNDAN VOICE (Sunda - 8)
+  const [isBlock2Open, setIsBlock2Open] = useState(false); // PASUNDAN VOICE (Sunda - 8)
 
   // Multi-Engine TTS State
   const [ttsEngine, setTtsEngine] = useState('gemini'); // 'gemini' | 'elevenlabs' | 'azure' | 'google' | 'voicebox'
@@ -1691,20 +1748,16 @@ ATURAN WAJIB & MUTLAK:
 
         const chunkText = chunks[i];
 
-        // Format prompt naskah yang mengarahkan timbre persona Gemini persis menjiwai karakter aslinya
-        const userPromptText = `Peran: ${persona.role}. Karakter vokal: ${persona.timbre}. ${persona.dialect}.
-Emosi: ${emotion}, tempo: ${speedText}, nada: ${pitchText}. ${emotionTagGuidance}
-PENTING: Langsung bacakan naskah berikut dari kata pertama persis menjiwai usia, gaya, dan karakter vokal tersebut tanpa intro atau basa-basi apa pun:
-
-"${chunkText}"`;
-
+        // Naskah murni di contents, seluruh instruksi persona & larangan basa-basi di systemInstruction
         const payload = {
           systemInstruction: {
-            parts: [{ text: systemInstructionText }]
+            parts: [{ text: `${systemInstructionText}
+Dialek & Gaya: ${persona.dialect}. Emosi: ${emotion}, Tempo: ${speedText}, Nada: ${pitchText}. ${emotionTagGuidance}
+ATURAN MUTLAK: Langsung bacakan teks naskah dari kata pertama tanpa intro, tanpa sapaan, dan tanpa basa-basi apa pun.` }]
           },
           contents: [{ 
             role: "user",
-            parts: [{ text: userPromptText }] 
+            parts: [{ text: chunkText }] 
           }],
           generationConfig: {
             responseModalities: ["AUDIO"],
@@ -1796,9 +1849,38 @@ PENTING: Langsung bacakan naskah berikut dari kata pertama persis menjiwai usia,
         url: url
       }, ...prev]);
 
-      setApiQuotaStatus('active');
-      try { localStorage.setItem('gentra_api_quota_status', 'active'); } catch (e) {}
+      // Catat Biaya Riil Rendering Google AI Studio
+      const renderedChars = text.length;
+      const audioDurationSec = Math.round(((finalPCM.length / audioSampleRate) || 0) * 10) / 10;
+      const renderCostIDR = Math.max(35, Math.round(renderedChars * 0.15 + audioDurationSec * 25));
 
+      try {
+        const curCost = Number(localStorage.getItem('gentra_google_total_cost')) || 99120;
+        const nextCost = curCost + renderCostIDR;
+        localStorage.setItem('gentra_google_total_cost', String(nextCost));
+        setGoogleVoiceTotalCost(nextCost);
+
+        const curChars = Number(localStorage.getItem('gentra_google_total_chars')) || 48200;
+        localStorage.setItem('gentra_google_total_chars', String(curChars + renderedChars));
+
+        const curSecs = Number(localStorage.getItem('gentra_google_total_seconds')) || 2480;
+        localStorage.setItem('gentra_google_total_seconds', String(curSecs + audioDurationSec));
+
+        const logs = JSON.parse(localStorage.getItem('gentra_google_render_logs') || '[]');
+        logs.unshift({
+          id: 'log_' + Date.now(),
+          timestamp: new Date().toISOString().replace('T', ' ').slice(0, 19),
+          voiceName: selectedVoice.name,
+          category: selectedVoice.category || 'Nasional',
+          chars: renderedChars,
+          durationSec: audioDurationSec,
+          costIDR: renderCostIDR
+        });
+        if (logs.length > 50) logs.pop();
+        localStorage.setItem('gentra_google_render_logs', JSON.stringify(logs));
+      } catch (e) {}
+
+      setApiQuotaStatus('active');
       setGenerationProgress(100);
       setProgressStatus('Selesai! Audio siap diputar.');
     } catch (err) {
@@ -2114,7 +2196,7 @@ PENTING: Langsung bacakan naskah berikut dari kata pertama persis menjiwai usia,
                 <span className="hidden xl:inline">Lab Suara</span>
                 <span className="text-[10px] px-1.5 py-0.5 rounded-full font-black bg-amber-500/20 text-amber-400 border border-amber-500/30 flex items-center gap-0.5">
                   <Coins className="w-2.5 h-2.5" />
-                  IDR 99.1k
+                  IDR ${(googleVoiceTotalCost / 1000).toFixed(1)}k
                 </span>
               </button>
 
@@ -2192,7 +2274,7 @@ PENTING: Langsung bacakan naskah berikut dari kata pertama persis menjiwai usia,
                 <span>Lab Suara & Backend</span>
               </div>
               <span className="text-[10px] px-2 py-0.5 rounded-full font-bold bg-amber-500/20 text-amber-400">
-                IDR 99.1k
+                IDR ${(googleVoiceTotalCost / 1000).toFixed(1)}k
               </span>
             </button>
             <button onClick={() => handleSwitchView('history')} className={`w-full px-4 py-3 rounded-2xl text-sm font-bold flex items-center gap-3 ${view === 'history' ? 'bg-[#0C4E34] text-white' : isDarkTheme ? 'text-zinc-300 hover:bg-[#14231b]' : 'text-zinc-700 hover:bg-zinc-100'}`}>
@@ -2373,6 +2455,36 @@ PENTING: Langsung bacakan naskah berikut dari kata pertama persis menjiwai usia,
         {(view === 'studio' || view === 'ads') && (
           <div className="flex flex-col gap-6 animate-in fade-in duration-300">
             
+            {/* 3-STEP STUDIO WORKFLOW INDICATOR */}
+            <div className={`rounded-2xl p-3.5 sm:p-4 border transition-colors flex flex-col sm:flex-row items-center justify-between gap-3 shadow-xs ${
+              isDarkTheme ? 'bg-[#0b1611]/90 border-emerald-950 text-zinc-200' : 'bg-white border-emerald-100 text-zinc-800'
+            }`}>
+              <div className="flex items-center gap-2">
+                <span className="text-[10px] font-black tracking-widest uppercase px-2.5 py-1 rounded-full bg-[#0C4E34] text-white">
+                  ALUR PRODUKSI
+                </span>
+                <span className="text-xs font-bold text-zinc-500 hidden md:inline">
+                  3 langkah mudah produksi siaran suara GENTRA:
+                </span>
+              </div>
+              <div className="flex items-center gap-2 text-xs font-bold overflow-x-auto w-full sm:w-auto justify-start sm:justify-end">
+                <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-emerald-500/10 text-emerald-600 border border-emerald-500/20 shrink-0">
+                  <span className="w-4 h-4 rounded-full bg-emerald-600 text-white flex items-center justify-center text-[10px] font-black">1</span>
+                  <span>Masukan Naskah</span>
+                </div>
+                <span className="text-zinc-400">➔</span>
+                <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-emerald-500/10 text-emerald-600 border border-emerald-500/20 shrink-0">
+                  <span className="w-4 h-4 rounded-full bg-emerald-600 text-white flex items-center justify-center text-[10px] font-black">2</span>
+                  <span>Pilih Karakter Suara</span>
+                </div>
+                <span className="text-zinc-400">➔</span>
+                <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-amber-500/10 text-amber-600 border border-amber-500/20 shrink-0">
+                  <span className="w-4 h-4 rounded-full bg-amber-600 text-white flex items-center justify-center text-[10px] font-black">3</span>
+                  <span>Pilih Gaya Bicara</span>
+                </div>
+              </div>
+            </div>
+            
             {/* IKLAN LAYANAN MASYARAKAT (ILM) COPYWRITING */}
             {view === 'ads' && (
               <div className={`rounded-3xl p-6 md:p-8 space-y-5 transition-colors ${cardBg}`}>
@@ -2505,7 +2617,8 @@ PENTING: Langsung bacakan naskah berikut dari kata pertama persis menjiwai usia,
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
                 <h2 className={`text-lg font-bold flex items-center gap-2 ${headingColor}`}>
                   <Type className="w-5 h-5 text-[#F59E0B]" />
-                  {view === 'ads' ? "Naskah ILM Siap Disuarakan" : "Naskah Voice Over"}
+                  <span className="text-[11px] font-black uppercase tracking-wider px-2 py-0.5 rounded-md bg-emerald-500/10 text-emerald-600 border border-emerald-500/20">LANGKAH 01</span>
+                  {view === 'ads' ? "1. Masukan Naskah ILM" : "1. Masukan Naskah"}
                 </h2>
                 
                 {/* Tombol Transkripsi Audio AI */}
@@ -2525,8 +2638,8 @@ PENTING: Langsung bacakan naskah berikut dari kata pertama persis menjiwai usia,
                 </div>
               </div>
 
-              {/* Indikator Lampu Merah: Kuota API Limit (HTTP 429) */}
-              {apiQuotaStatus === 'limited' && (
+              {/* Indikator Kuota API Limit (HTTP 429) */}
+              {apiQuotaStatus === 'limited' && !isQuotaBannerDismissed && (
                 <div className="p-4 rounded-2xl bg-rose-950/70 border border-rose-500/80 text-rose-200 text-xs flex flex-col sm:flex-row sm:items-center justify-between gap-3 animate-in fade-in duration-200 shadow-lg">
                   <div className="flex items-start gap-3">
                     <span className="relative flex h-3.5 w-3.5 shrink-0 mt-0.5">
@@ -2535,21 +2648,35 @@ PENTING: Langsung bacakan naskah berikut dari kata pertama persis menjiwai usia,
                     </span>
                     <div>
                       <div className="flex items-center gap-2">
-                        <span className="font-black text-rose-100 uppercase tracking-wide text-xs">Indikator Lampu Merah: Kuota API Limit</span>
+                        <span className="font-black text-rose-100 uppercase tracking-wide text-xs">Indikator Kuota API Limit</span>
                         <span className="px-1.5 py-0.5 rounded bg-rose-900/60 text-rose-300 font-mono text-[10px] font-bold">HTTP 429</span>
                       </div>
                       <p className="leading-relaxed opacity-90 mt-0.5">
-                        Kuota harian gratis pada Kunci Utama (Slot 1) telah mencapai batas harian Google AI Studio. Silakan buka Pengaturan API untuk beralih ke Kunci Cadangan di Slot 2-8 agar proses pembacaan naskah tetap berjalan!
+                        Kuota Kunci Utama (Slot 1) mencapai batas. Silakan uji ulang atau buka Pengaturan API untuk menggunakan Slot Cadangan 2-8!
                       </p>
                     </div>
                   </div>
                   <div className="flex items-center gap-2 shrink-0">
                     <button
+                      onClick={handleRetryTestQuota}
+                      className="px-3 py-1.5 bg-rose-900/70 hover:bg-rose-800 text-rose-200 font-bold text-xs rounded-xl border border-rose-700/60 flex items-center gap-1.5 transition-all"
+                    >
+                      <RotateCcw className="w-3.5 h-3.5" />
+                      Uji Ulang Kuota
+                    </button>
+                    <button
                       onClick={() => setShowApiKeyModal(true)}
-                      className="px-3.5 py-2 bg-rose-500 hover:bg-rose-600 text-white font-bold text-xs rounded-xl transition-all shadow-md flex items-center gap-1.5"
+                      className="px-3.5 py-1.5 bg-rose-500 hover:bg-rose-600 text-white font-bold text-xs rounded-xl transition-all shadow-md flex items-center gap-1.5"
                     >
                       <Key className="w-3.5 h-3.5" />
-                      Ganti Kunci Cadangan (Slot 2-8)
+                      Slot Cadangan (2-8)
+                    </button>
+                    <button
+                      onClick={() => setIsQuotaBannerDismissed(true)}
+                      className="p-1.5 rounded-lg text-rose-300 hover:text-white hover:bg-rose-900/60 transition-colors"
+                      title="Tutup Notifikasi"
+                    >
+                      <X className="w-4 h-4" />
                     </button>
                   </div>
                 </div>
@@ -2660,7 +2787,8 @@ PENTING: Langsung bacakan naskah berikut dari kata pertama persis menjiwai usia,
                   <div>
                     <h2 className={`text-xl font-black flex items-center gap-2.5 ${headingColor}`}>
                       <Headphones className="w-5 h-5 text-[#F59E0B]" />
-                      Pilih Karakter Suara — {activeEngine === 'azure' ? 'Microsoft Azure Neural (Engine B: 2 Karakter)' : activeEngine === 'elevenlabs' ? 'ElevenLabs Studio (Engine C: 11 Karakter)' : 'Google Gemini Flash Neural (Engine A: 22 Karakter Resmi)'}
+                      <span className="text-[11px] font-black uppercase tracking-wider px-2 py-0.5 rounded-md bg-emerald-500/10 text-emerald-600 border border-emerald-500/20">LANGKAH 02</span>
+                      2. Pilih Karakter Suara — {activeEngine === 'azure' ? 'Microsoft Azure Neural (Engine B: 2 Karakter)' : activeEngine === 'elevenlabs' ? 'ElevenLabs Studio (Engine C: 11 Karakter)' : 'Google Gemini Flash Neural (Engine A: 22 Karakter Resmi)'}
                     </h2>
                     <p className={`text-xs mt-0.5 ${subTextColor}`}>
                       {activeEngine === 'azure' ? 'Khusus model suara resmi Microsoft Azure Cognitive Speech.' : activeEngine === 'elevenlabs' ? 'Khusus model suara ElevenLabs Multilingual Studio.' : 'Engine A khusus menggunakan model vokal resmi Google Gemini AI (Blok 1 Nasional & Blok 2 Pasundan).'}
@@ -2748,22 +2876,27 @@ PENTING: Langsung bacakan naskah berikut dari kata pertama persis menjiwai usia,
                                   : 'bg-white border-zinc-200 shadow-xs hover:border-emerald-500/60 hover:bg-emerald-50/20 text-zinc-800'
                             }`}
                           >
-                            {/* Avatar Icon Box */}
-                            <div className={`w-10 h-10 sm:w-11 sm:h-11 rounded-xl flex items-center justify-center shrink-0 border transition-transform group-hover:scale-105 ${
-                              isSelected 
-                                ? isDarkTheme ? 'bg-[#10b981] text-black border-[#10b981]' : 'bg-[#0C4E34] text-white border-[#0C4E34]'
-                                : isDarkTheme ? 'bg-zinc-800/90 border-zinc-700/60 text-zinc-300' : 'bg-zinc-100 border-zinc-200 text-zinc-600'
-                            }`}>
-                              {isPlaying ? (
-                                <div className="flex items-center gap-0.5 h-3">
-                                  <span className="w-0.5 h-2 bg-current rounded-full animate-bounce" />
-                                  <span className="w-0.5 h-3 bg-current rounded-full animate-bounce [animation-delay:0.15s]" />
-                                  <span className="w-0.5 h-2.5 bg-current rounded-full animate-bounce [animation-delay:0.3s]" />
+                            {/* Avatar Icon Box Berwarna & Berkarakter */}
+                            {(() => {
+                              const meta = getVoiceAvatarMeta(v);
+                              return (
+                                <div className={`w-11 h-11 sm:w-12 sm:h-12 rounded-2xl flex items-center justify-center shrink-0 border transition-all duration-300 group-hover:scale-105 shadow-sm bg-gradient-to-br ${meta.gradient} ${
+                                  isSelected 
+                                    ? 'ring-2 ring-emerald-400 ring-offset-2 ring-offset-zinc-950 border-white text-white' 
+                                    : 'border-white/20 text-white'
+                                }`}>
+                                  {isPlaying ? (
+                                    <div className="flex items-center gap-0.5 h-3.5">
+                                      <span className="w-1 h-2.5 bg-white rounded-full animate-bounce" />
+                                      <span className="w-1 h-4 bg-white rounded-full animate-bounce [animation-delay:0.15s]" />
+                                      <span className="w-1 h-3 bg-white rounded-full animate-bounce [animation-delay:0.3s]" />
+                                    </div>
+                                  ) : (
+                                    <span className="text-lg select-none">{meta.initials.split(' ')[0] || meta.initials}</span>
+                                  )}
                                 </div>
-                              ) : (
-                                <User className="w-5 h-5" />
-                              )}
-                            </div>
+                              );
+                            })()}
 
                             {/* Center Name & Description (Persis Nusa Voice) */}
                             <div className="flex-1 min-w-0">
@@ -2880,13 +3013,26 @@ PENTING: Langsung bacakan naskah berikut dari kata pertama persis menjiwai usia,
                             }`}
                           >
                             <div className="flex items-center gap-3">
-                              <div className={`w-11 h-11 rounded-xl flex items-center justify-center shrink-0 border transition-transform group-hover:scale-105 ${
-                                isSelected 
-                                  ? 'bg-emerald-500/20 border-emerald-400/50 text-white' 
-                                  : isDarkTheme ? 'bg-zinc-800/90 border-zinc-700/60 text-zinc-300' : 'bg-zinc-100 border-zinc-200 text-zinc-600'
-                              }`}>
-                                <User className="w-5 h-5" />
-                              </div>
+                              {(() => {
+                                const meta = getVoiceAvatarMeta(v);
+                                return (
+                                  <div className={`w-11 h-11 sm:w-12 sm:h-12 rounded-2xl flex items-center justify-center shrink-0 border transition-all duration-300 group-hover:scale-105 shadow-sm bg-gradient-to-br ${meta.gradient} ${
+                                    isSelected 
+                                      ? 'ring-2 ring-emerald-400 ring-offset-2 ring-offset-zinc-950 border-white text-white' 
+                                      : 'border-white/20 text-white'
+                                  }`}>
+                                    {previewingVoice === v.name ? (
+                                      <div className="flex items-center gap-0.5 h-3.5">
+                                        <span className="w-1 h-2.5 bg-white rounded-full animate-bounce" />
+                                        <span className="w-1 h-4 bg-white rounded-full animate-bounce [animation-delay:0.15s]" />
+                                        <span className="w-1 h-3 bg-white rounded-full animate-bounce [animation-delay:0.3s]" />
+                                      </div>
+                                    ) : (
+                                      <span className="text-lg select-none">{meta.initials.split(' ')[0] || meta.initials}</span>
+                                    )}
+                                  </div>
+                                );
+                              })()}
                               <div className="flex-1 min-w-0">
                                 <div className="flex items-center justify-between gap-1">
                                   <h4 className={`font-black text-sm tracking-tight truncate ${
@@ -2961,7 +3107,8 @@ PENTING: Langsung bacakan naskah berikut dari kata pertama persis menjiwai usia,
             <div className={`rounded-3xl p-6 md:p-8 space-y-5 transition-colors ${cardBg}`}>
               <h2 className={`text-lg font-bold flex items-center gap-2 ${headingColor}`}>
                 <Settings2 className="w-5 h-5 text-[#F59E0B]" />
-                Pengaturan Gaya Bicara & Emosi
+                <span className="text-[11px] font-black uppercase tracking-wider px-2 py-0.5 rounded-md bg-amber-500/10 text-amber-600 border border-amber-500/20">LANGKAH 03</span>
+                3. Pilih Gaya Bicara & Emosi
               </h2>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">

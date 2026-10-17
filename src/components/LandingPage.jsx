@@ -30,105 +30,7 @@ import {
 } from 'lucide-react';
 
 const FULL_PERSONAS = [
-  // 8 Khas Sunda
-  { 
-    id: 'sunda_abah', 
-    name: 'Abah', 
-    gender: 'Pria', 
-    category: 'Khas Sunda', 
-    role: 'Kakek / Sesepuh Priangan', 
-    desc: 'Wibawa, bijak, parau hangat khas kakek Priangan.', 
-    badge: 'Sunda',
-    avatar: '👴🏼',
-    tags: ['Wibawa', 'Parau Hangat', 'Bijak'],
-    sampleText: 'Kasep, geulis... regepkeun piwuruk sepuh supados salamet di dunya tur aherat.'
-  },
-  { 
-    id: 'sunda_nini', 
-    name: 'Nini', 
-    gender: 'Wanita', 
-    category: 'Khas Sunda', 
-    role: 'Nenek Sunda', 
-    desc: 'Lembut, teduh, penuh welas asih dan doa seorang ibu.', 
-    badge: 'Sunda',
-    avatar: '👵🏼',
-    tags: ['Teduh', 'Kasih Sayang', 'Santun'],
-    sampleText: 'Sing sabar nya anaking, pancegkeun hate dina kahadean tur ibadah.'
-  },
-  { 
-    id: 'sunda_ujang', 
-    name: 'Ujang', 
-    gender: 'Pria', 
-    category: 'Khas Sunda', 
-    role: 'Pemuda Pasundan', 
-    desc: 'Ceria, lincah, bersemangat dan gaul nyunda.', 
-    badge: 'Sunda',
-    avatar: '👦🏻',
-    tags: ['Ceria', 'Gaul Nyunda', 'Energik'],
-    sampleText: 'Sampurasun wargi Jabar! Hayu urang babarengan ngamumule Jawa Barat Juara!'
-  },
-  { 
-    id: 'sunda_bibi', 
-    name: 'Bibi (Ceu Edah)', 
-    gender: 'Wanita', 
-    category: 'Khas Sunda', 
-    role: 'Ibu / Tante Sunda', 
-    desc: 'Heboh, akrab, guyub dan medok renyah bersahabat.', 
-    badge: 'Sunda',
-    avatar: '👩🏻',
-    tags: ['Guyub', 'Medok Renyah', 'Heboh'],
-    sampleText: 'Aduh euy wargi sadayana, tong hilap jaga kaberesihan sareng kasehatan lingkungan nya!'
-  },
-  { 
-    id: 'sunda_budak_eneng', 
-    name: 'Budak Leutik Eneng', 
-    gender: 'Wanita', 
-    category: 'Khas Sunda', 
-    role: 'Anak Perempuan', 
-    desc: 'Imut, polos, cempreng alami dan menggemaskan.', 
-    badge: 'Sunda',
-    avatar: '👧🏻',
-    tags: ['Polos', 'Imut', 'Menggemaskan'],
-    sampleText: 'Bapa, Ibu... Eneng hoyong diajar maca Al-Qur\'an sareng ngadongeng sasarengan!'
-  },
-  { 
-    id: 'sunda_budak_ujang', 
-    name: 'Budak Leutik Ujang Alit', 
-    gender: 'Pria', 
-    category: 'Khas Sunda', 
-    role: 'Anak Laki-laki', 
-    desc: 'Lincah, polos, suka bertanya dan periang.', 
-    badge: 'Sunda',
-    avatar: '👦🏻',
-    tags: ['Lincah', 'Riang', 'Kreatif'],
-    sampleText: 'Horeee! Hayu urang ulin ka buruan bari diajar elmu pangaweruh anyar!'
-  },
-  { 
-    id: 'sunda_teh_neng', 
-    name: 'Teh Neng', 
-    gender: 'Wanita', 
-    category: 'Khas Sunda', 
-    role: 'Mojang Priangan', 
-    desc: 'Lembut, santun, tutur kata merdu berayun khas Jawa Barat.', 
-    badge: 'Sunda',
-    avatar: '🧕🏻',
-    tags: ['Merdu', 'Santun', 'Priangan'],
-    sampleText: 'Wilujeng enjing wargi Priangan sadayana, mugia dinten ieu pinuh ku kurnia kabagjaan.'
-  },
-  { 
-    id: 'sunda_kang_asep', 
-    name: 'Kang Asep', 
-    gender: 'Pria', 
-    category: 'Khas Sunda', 
-    role: 'Pria Dewasa Komunikatif', 
-    desc: 'Lugas, ramah, artikulatif dan bersahabat.', 
-    badge: 'Sunda',
-    avatar: '👨🏻',
-    tags: ['Komunikatif', 'Lugas', 'Artikulatif'],
-    sampleText: 'Hayu wargi sadaya, urang silih rojong ngawangun tatar Pasundan anu maju tur berakhlak.'
-  },
-
-  // 14 Nasional
+  // BLOK 1 — 14 Karakter Vokal Nasional (NUSA VOICE)
   { 
     id: 'Aoede', 
     name: 'Anita', 
@@ -296,6 +198,104 @@ const FULL_PERSONAS = [
     avatar: '👑',
     tags: ['Anggun', 'Protokoler', 'Elegan'],
     sampleText: 'Dengan rasa bangga dan penghormatan setinggi-tingginya, marilah kita saksikan pembukaan acara resmi ini.'
+  },
+
+  // BLOK 2 — 8 Karakter Khas Sunda (PASUNDAN VOICE)
+  { 
+    id: 'sunda_abah', 
+    name: 'Abah', 
+    gender: 'Pria', 
+    category: 'Khas Sunda', 
+    role: 'Kakek / Sesepuh Priangan', 
+    desc: 'Wibawa, bijak, parau hangat khas kakek Priangan.', 
+    badge: 'Sunda',
+    avatar: '👴🏼',
+    tags: ['Wibawa', 'Parau Hangat', 'Bijak'],
+    sampleText: 'Kasep, geulis... regepkeun piwuruk sepuh supados salamet di dunya tur aherat.'
+  },
+  { 
+    id: 'sunda_nini', 
+    name: 'Nini', 
+    gender: 'Wanita', 
+    category: 'Khas Sunda', 
+    role: 'Nenek Sunda', 
+    desc: 'Lembut, teduh, penuh welas asih dan doa seorang ibu.', 
+    badge: 'Sunda',
+    avatar: '👵🏼',
+    tags: ['Teduh', 'Kasih Sayang', 'Santun'],
+    sampleText: 'Sing sabar nya anaking, pancegkeun hate dina kahadean tur ibadah.'
+  },
+  { 
+    id: 'sunda_ujang', 
+    name: 'Ujang', 
+    gender: 'Pria', 
+    category: 'Khas Sunda', 
+    role: 'Pemuda Pasundan', 
+    desc: 'Ceria, lincah, bersemangat dan gaul nyunda.', 
+    badge: 'Sunda',
+    avatar: '👦🏻',
+    tags: ['Ceria', 'Gaul Nyunda', 'Energik'],
+    sampleText: 'Sampurasun wargi Jabar! Hayu urang babarengan ngamumule Jawa Barat Juara!'
+  },
+  { 
+    id: 'sunda_bibi', 
+    name: 'Bibi (Ceu Edah)', 
+    gender: 'Wanita', 
+    category: 'Khas Sunda', 
+    role: 'Ibu / Tante Sunda', 
+    desc: 'Heboh, akrab, guyub dan medok renyah bersahabat.', 
+    badge: 'Sunda',
+    avatar: '👩🏻',
+    tags: ['Guyub', 'Medok Renyah', 'Heboh'],
+    sampleText: 'Aduh euy wargi sadayana, tong hilap jaga kaberesihan sareng kasehatan lingkungan nya!'
+  },
+  { 
+    id: 'sunda_budak_eneng', 
+    name: 'Budak Leutik Eneng', 
+    gender: 'Wanita', 
+    category: 'Khas Sunda', 
+    role: 'Anak Perempuan', 
+    desc: 'Imut, polos, cempreng alami dan menggemaskan.', 
+    badge: 'Sunda',
+    avatar: '👧🏻',
+    tags: ['Polos', 'Imut', 'Menggemaskan'],
+    sampleText: 'Bapa, Ibu... Eneng hoyong diajar maca Al-Qur\'an sareng ngadongeng sasarengan!'
+  },
+  { 
+    id: 'sunda_budak_ujang', 
+    name: 'Budak Leutik Ujang Alit', 
+    gender: 'Pria', 
+    category: 'Khas Sunda', 
+    role: 'Anak Laki-laki', 
+    desc: 'Lincah, polos, suka bertanya dan periang.', 
+    badge: 'Sunda',
+    avatar: '👦🏻',
+    tags: ['Lincah', 'Riang', 'Kreatif'],
+    sampleText: 'Horeee! Hayu urang ulin ka buruan bari diajar elmu pangaweruh anyar!'
+  },
+  { 
+    id: 'sunda_teh_neng', 
+    name: 'Teh Neng', 
+    gender: 'Wanita', 
+    category: 'Khas Sunda', 
+    role: 'Mojang Priangan', 
+    desc: 'Lembut, santun, tutur kata merdu berayun khas Jawa Barat.', 
+    badge: 'Sunda',
+    avatar: '🧕🏻',
+    tags: ['Merdu', 'Santun', 'Priangan'],
+    sampleText: 'Wilujeng enjing wargi Priangan sadayana, mugia dinten ieu pinuh ku kurnia kabagjaan.'
+  },
+  { 
+    id: 'sunda_kang_asep', 
+    name: 'Kang Asep', 
+    gender: 'Pria', 
+    category: 'Khas Sunda', 
+    role: 'Pria Dewasa Komunikatif', 
+    desc: 'Lugas, ramah, artikulatif dan bersahabat.', 
+    badge: 'Sunda',
+    avatar: '👨🏻',
+    tags: ['Komunikatif', 'Lugas', 'Artikulatif'],
+    sampleText: 'Hayu wargi sadaya, urang silih rojong ngawangun tatar Pasundan anu maju tur berakhlak.'
   }
 ];
 
@@ -334,42 +334,6 @@ export const LandingPage = ({ onOpenLogin }) => {
   const [unavailableVoiceToast, setUnavailableVoiceToast] = useState(null);
   const landingAudioRef = useRef(null);
   const landingAudioCache = useRef({});
-
-  // Studio Amplifier State & Interactive Controls
-  const [ampViewMode, setAmpViewMode] = useState('rack'); // 'rack' | 'studio'
-  const [isAmpPlaying, setIsAmpPlaying] = useState(false);
-  const [isTubeBypass, setIsTubeBypass] = useState(false);
-  const [ampKnobs, setAmpKnobs] = useState({
-    gain: 6,
-    warmth: 8,
-    presence: 7,
-    output: 8
-  });
-  const ampAudioRef = useRef(null);
-
-  const handleToggleAmpAudio = () => {
-    if (isAmpPlaying) {
-      if (ampAudioRef.current) {
-        ampAudioRef.current.pause();
-        ampAudioRef.current.currentTime = 0;
-      }
-      setIsAmpPlaying(false);
-    } else {
-      if (ampAudioRef.current) {
-        ampAudioRef.current.pause();
-      }
-      const audio = new Audio('/audio/previews/kang_asep.mp3');
-      ampAudioRef.current = audio;
-      audio.onended = () => setIsAmpPlaying(false);
-      audio.onerror = () => setIsAmpPlaying(false);
-      audio.play().then(() => {
-        setIsAmpPlaying(true);
-      }).catch(err => {
-        console.warn('Amp audio play failed:', err);
-        setIsAmpPlaying(false);
-      });
-    }
-  };
 
   const filteredPersonas = FULL_PERSONAS.filter(p => {
     if (personaFilter === 'Semua') return true;
@@ -442,10 +406,6 @@ export const LandingPage = ({ onOpenLogin }) => {
           {/* Navigation Links */}
           <nav className="hidden lg:flex items-center space-x-7 text-xs font-bold text-zinc-600">
             <a href="#fitur" className="hover:text-[#0C4E34] transition-colors">Fitur Unggulan</a>
-            <a href="#amplifier" className="hover:text-[#0C4E34] text-[#0C4E34] flex items-center gap-1 transition-colors">
-              <span className="w-2 h-2 rounded-full bg-[#F59E0B] animate-pulse"></span>
-              Studio Amplifier
-            </a>
             <a href="#ekosistem" className="hover:text-[#0C4E34] transition-colors">Bagan Ekosistem</a>
             <a href="#persona" className="hover:text-[#0C4E34] transition-colors">22 Karakter Vokal</a>
             <a href="#ilm" className="hover:text-[#0C4E34] transition-colors">Mode ILM</a>
@@ -541,288 +501,7 @@ export const LandingPage = ({ onOpenLogin }) => {
         </div>
       </section>
 
-      {/* 2.5. STUDIO ANALOG AMPLIFIER & BROADCAST TUBE PROCESSING */}
-      <section id="amplifier" className="py-12 sm:py-16 md:py-20 bg-gradient-to-b from-[#09110d] via-[#0d1712] to-[#070d0a] text-white border-y border-emerald-950/80 relative overflow-hidden">
-        {/* Subtle decorative glow & studio grid */}
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[350px] bg-gradient-to-b from-emerald-500/10 via-[#F59E0B]/5 to-transparent blur-3xl pointer-events-none" />
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(12,78,52,0.15),transparent_70%)] pointer-events-none" />
 
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-          
-          {/* Section Header */}
-          <div className="text-center max-w-3xl mx-auto mb-10 sm:mb-12 space-y-3">
-            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-emerald-950/90 border border-emerald-500/30 text-emerald-400 text-xs font-bold shadow-xs">
-              <Activity className="w-3.5 h-3.5 text-[#F59E0B]" />
-              <span>PENGUAT SINYAL AUDIO & PREAMP TABUNG ANALOG</span>
-            </div>
-            <h2 className="text-3xl sm:text-4xl md:text-5xl font-black tracking-tight text-white">
-              Studio Amplifier & Analog Mastering
-            </h2>
-            <p className="text-xs sm:text-sm md:text-base text-zinc-400 leading-relaxed max-w-2xl mx-auto">
-              Meniru karakter akustik <strong className="text-amber-400">kompresor tabung analog & equalizer rackmount legendaris</strong> untuk memberikan vokal yang tebal, hangat, dan berwibawa khas siaran radio dan televisi profesional.
-            </p>
-          </div>
-
-          {/* Master 19-inch Rack Cabinet Chassis */}
-          <div className="max-w-5xl mx-auto bg-gradient-to-b from-zinc-900 to-black rounded-3xl p-3 sm:p-5 md:p-6 border-2 border-zinc-700/80 shadow-[0_20px_60px_rgba(0,0,0,0.9)] relative">
-            
-            {/* Rack Mounting Screws Left & Right Ears */}
-            <div className="hidden sm:flex absolute left-2 top-0 bottom-0 flex-col justify-between py-6 pointer-events-none">
-              <div className="w-3 h-3 rounded-full bg-zinc-600 border border-zinc-400 shadow-inner" />
-              <div className="w-3 h-3 rounded-full bg-zinc-600 border border-zinc-400 shadow-inner" />
-              <div className="w-3 h-3 rounded-full bg-zinc-600 border border-zinc-400 shadow-inner" />
-            </div>
-            <div className="hidden sm:flex absolute right-2 top-0 bottom-0 flex-col justify-between py-6 pointer-events-none">
-              <div className="w-3 h-3 rounded-full bg-zinc-600 border border-zinc-400 shadow-inner" />
-              <div className="w-3 h-3 rounded-full bg-zinc-600 border border-zinc-400 shadow-inner" />
-              <div className="w-3 h-3 rounded-full bg-zinc-600 border border-zinc-400 shadow-inner" />
-            </div>
-
-            {/* Inner Top Rack Header Bar */}
-            <div className="flex flex-col sm:flex-row items-center justify-between gap-3 pb-4 mb-4 border-b border-zinc-800 px-2 sm:px-6">
-              <div className="flex items-center gap-3">
-                <div className="w-3 h-3 rounded-full bg-rose-500 shadow-[0_0_12px_rgba(244,63,94,1)] animate-pulse" />
-                <div>
-                  <span className="text-xs font-black tracking-widest uppercase text-zinc-300">
-                    GENTRA NEURAL AMPLIFIER UNIT • MODEL GS-48K
-                  </span>
-                  <span className="text-[10px] text-zinc-500 block">Class-A Discrete Variable-Mu Tube Circuit Simulation</span>
-                </div>
-              </div>
-
-              {/* View Switcher: Rack View vs Studio Tube View */}
-              <div className="flex items-center gap-1.5 p-1 rounded-xl bg-zinc-800/90 border border-zinc-700 text-xs">
-                <button
-                  type="button"
-                  onClick={() => setAmpViewMode('rack')}
-                  className={`px-3 py-1.5 rounded-lg font-bold transition-all ${
-                    ampViewMode === 'rack'
-                      ? 'bg-[#0C4E34] text-white shadow-xs'
-                      : 'text-zinc-400 hover:text-white'
-                  }`}
-                >
-                  Panel Rak (Heritage)
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setAmpViewMode('studio')}
-                  className={`px-3 py-1.5 rounded-lg font-bold transition-all ${
-                    ampViewMode === 'studio'
-                      ? 'bg-[#0C4E34] text-white shadow-xs'
-                      : 'text-zinc-400 hover:text-white'
-                  }`}
-                >
-                  Studio & Tabung Vakum
-                </button>
-              </div>
-            </div>
-
-            {/* The Main Amplifier Visual Display */}
-            <div className="relative rounded-2xl overflow-hidden border border-zinc-700/80 shadow-2xl bg-zinc-950">
-              {ampViewMode === 'rack' ? (
-                <div className="relative group p-2 sm:p-4 bg-gradient-to-b from-[#182026] via-[#10171d] to-[#0a0f13] flex items-center justify-center">
-                  <img
-                    src="/images/amplifier-rack.png"
-                    alt="Heritage Audio Tubesoxor Analog Rack Amplifier & Equalizer"
-                    className="w-full h-auto object-contain select-none rounded-xl border border-zinc-800/90 shadow-2xl"
-                  />
-                  {/* Subtle Interactive Overlay Glow for Analog Tubes */}
-                  <div className={`absolute inset-0 pointer-events-none transition-opacity duration-300 ${
-                    isAmpPlaying ? 'opacity-100' : 'opacity-0'
-                  }`} style={{ background: 'radial-gradient(circle at 75% 30%, rgba(245, 158, 11, 0.25), transparent 50%)' }} />
-                </div>
-              ) : (
-                <div className="relative group">
-                  <img
-                    src="/images/studio-amplifier-tubes.jpg"
-                    alt="Analog Tube Mastering Amplifier in Recording Studio"
-                    className="w-full h-auto object-cover select-none transition-transform duration-500 max-h-[500px]"
-                  />
-                  <div className="absolute bottom-4 left-4 right-4 p-3 rounded-xl bg-black/70 backdrop-blur-md border border-white/10 flex items-center justify-between text-xs text-zinc-300">
-                    <span className="font-mono text-amber-400 font-bold">12AX7 & 6BA6 Vacuum Tubes Active</span>
-                    <span className="text-zinc-400">Total Harmonic Distortion (THD): 0.04% Warmth</span>
-                  </div>
-                </div>
-              )}
-            </div>
-
-            {/* Interactive Control Console with Working Animated VU Meter & Knobs */}
-            <div className="mt-5 p-4 sm:p-5 rounded-2xl bg-zinc-950/90 border border-zinc-800 grid grid-cols-1 md:grid-cols-12 gap-5 items-center">
-              
-              {/* Working Analog VU Meter Display */}
-              <div className="md:col-span-5 flex flex-col items-center justify-center p-3 sm:p-4 rounded-xl bg-[#141209] border-2 border-amber-900/60 shadow-inner relative overflow-hidden">
-                <div className="absolute top-1 left-2 text-[9px] font-mono font-bold text-amber-500/80">VU METER (dB)</div>
-                <div className="absolute top-1 right-2 text-[9px] font-mono text-amber-400/60">BROADCAST 48kHz</div>
-                
-                {/* Vintage Meter Face with Warm Glowing Scale */}
-                <div className="w-full h-24 sm:h-28 relative flex items-center justify-center mt-2 bg-gradient-to-b from-[#ffd166]/20 via-[#ffb703]/10 to-transparent rounded-lg border border-amber-600/30 overflow-hidden">
-                  {/* Scale markings SVG */}
-                  <svg className="w-full h-full" viewBox="0 0 200 100">
-                    <path d="M 30 80 A 80 80 0 0 1 170 80" fill="none" stroke="#f59e0b" strokeWidth="1.5" strokeOpacity="0.4" />
-                    <text x="35" y="72" fontSize="7" fill="#fbbf24" fontFamily="monospace">-20</text>
-                    <text x="60" y="52" fontSize="7" fill="#fbbf24" fontFamily="monospace">-10</text>
-                    <text x="95" y="42" fontSize="7" fill="#fbbf24" fontFamily="monospace">-3</text>
-                    <text x="110" y="42" fontSize="7" fill="#f59e0b" fontFamily="monospace" fontWeight="bold">0</text>
-                    <text x="135" y="52" fontSize="7" fill="#ef4444" fontFamily="monospace" fontWeight="bold">+1</text>
-                    <text x="160" y="72" fontSize="7" fill="#ef4444" fontFamily="monospace" fontWeight="bold">+3</text>
-
-                    {/* Animated Needle */}
-                    <line
-                      x1="100"
-                      y1="95"
-                      x2="100"
-                      y2="30"
-                      stroke="#ef4444"
-                      strokeWidth="2"
-                      strokeLinecap="round"
-                      className="transition-transform duration-150 origin-bottom"
-                      style={{
-                        transformOrigin: '100px 95px',
-                        transform: isAmpPlaying 
-                          ? 'rotate(18deg)' 
-                          : 'rotate(-32deg)'
-                      }}
-                    />
-                    <circle cx="100" cy="95" r="4" fill="#71717a" stroke="#27272a" />
-                  </svg>
-
-                  {/* Warm Amber Halo Lighting */}
-                  <div className="absolute inset-0 pointer-events-none" style={{ background: 'radial-gradient(circle at center, rgba(251, 191, 36, 0.25), transparent 70%)' }} />
-                </div>
-
-                <div className="w-full flex items-center justify-between text-[10px] font-mono text-zinc-400 mt-2 px-1">
-                  <span className="flex items-center gap-1">
-                    <span className={`w-2 h-2 rounded-full ${isAmpPlaying ? 'bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,1)]' : 'bg-zinc-600'}`} />
-                    {isAmpPlaying ? 'SIGNAL ACTIVE' : 'STANDBY'}
-                  </span>
-                  <span className="text-amber-400 font-bold">SATURATION: {isTubeBypass ? 'BYPASS' : 'ACTIVE (+4.5 dB)'}</span>
-                </div>
-              </div>
-
-              {/* Knobs & Player Controls */}
-              <div className="md:col-span-7 flex flex-col justify-between gap-4">
-                
-                {/* 4 Knurled Analog Rotary Knobs */}
-                <div className="grid grid-cols-4 gap-2 text-center">
-                  {/* Knob 1: Tube Gain */}
-                  <div 
-                    onClick={() => setAmpKnobs(k => ({ ...k, gain: (k.gain % 10) + 1 }))}
-                    className="flex flex-col items-center gap-1 cursor-pointer group"
-                  >
-                    <div className="w-11 h-11 sm:w-12 sm:h-12 rounded-full bg-gradient-to-b from-zinc-700 via-zinc-800 to-zinc-900 border-2 border-zinc-600 group-hover:border-amber-400 shadow-md relative flex items-center justify-center transition-transform group-active:scale-95">
-                      <div 
-                        className="w-1 h-3.5 bg-amber-400 rounded-full absolute top-1 transition-transform duration-200"
-                        style={{ transformOrigin: 'bottom center', transform: `rotate(${(ampKnobs.gain - 5) * 24}deg)` }}
-                      />
-                    </div>
-                    <span className="text-[10px] font-bold text-zinc-300">GAIN</span>
-                    <span className="text-[9px] font-mono text-amber-400">+{ampKnobs.gain * 1.2} dB</span>
-                  </div>
-
-                  {/* Knob 2: Tube Warmth */}
-                  <div 
-                    onClick={() => setAmpKnobs(k => ({ ...k, warmth: (k.warmth % 10) + 1 }))}
-                    className="flex flex-col items-center gap-1 cursor-pointer group"
-                  >
-                    <div className="w-11 h-11 sm:w-12 sm:h-12 rounded-full bg-gradient-to-b from-zinc-700 via-zinc-800 to-zinc-900 border-2 border-zinc-600 group-hover:border-amber-400 shadow-md relative flex items-center justify-center transition-transform group-active:scale-95">
-                      <div 
-                        className="w-1 h-3.5 bg-amber-400 rounded-full absolute top-1 transition-transform duration-200"
-                        style={{ transformOrigin: 'bottom center', transform: `rotate(${(ampKnobs.warmth - 5) * 24}deg)` }}
-                      />
-                    </div>
-                    <span className="text-[10px] font-bold text-zinc-300">WARMTH</span>
-                    <span className="text-[9px] font-mono text-amber-400">{ampKnobs.warmth * 10}%</span>
-                  </div>
-
-                  {/* Knob 3: Presence EQ */}
-                  <div 
-                    onClick={() => setAmpKnobs(k => ({ ...k, presence: (k.presence % 10) + 1 }))}
-                    className="flex flex-col items-center gap-1 cursor-pointer group"
-                  >
-                    <div className="w-11 h-11 sm:w-12 sm:h-12 rounded-full bg-gradient-to-b from-zinc-700 via-zinc-800 to-zinc-900 border-2 border-zinc-600 group-hover:border-amber-400 shadow-md relative flex items-center justify-center transition-transform group-active:scale-95">
-                      <div 
-                        className="w-1 h-3.5 bg-amber-400 rounded-full absolute top-1 transition-transform duration-200"
-                        style={{ transformOrigin: 'bottom center', transform: `rotate(${(ampKnobs.presence - 5) * 24}deg)` }}
-                      />
-                    </div>
-                    <span className="text-[10px] font-bold text-zinc-300">PRESENCE</span>
-                    <span className="text-[9px] font-mono text-amber-400">+{ampKnobs.presence * 0.8} dB</span>
-                  </div>
-
-                  {/* Knob 4: Output Master */}
-                  <div 
-                    onClick={() => setAmpKnobs(k => ({ ...k, output: (k.output % 10) + 1 }))}
-                    className="flex flex-col items-center gap-1 cursor-pointer group"
-                  >
-                    <div className="w-11 h-11 sm:w-12 sm:h-12 rounded-full bg-gradient-to-b from-zinc-700 via-zinc-800 to-zinc-900 border-2 border-zinc-600 group-hover:border-amber-400 shadow-md relative flex items-center justify-center transition-transform group-active:scale-95">
-                      <div 
-                        className="w-1 h-3.5 bg-amber-400 rounded-full absolute top-1 transition-transform duration-200"
-                        style={{ transformOrigin: 'bottom center', transform: `rotate(${(ampKnobs.output - 5) * 24}deg)` }}
-                      />
-                    </div>
-                    <span className="text-[10px] font-bold text-zinc-300">OUTPUT</span>
-                    <span className="text-[9px] font-mono text-amber-400">0.0 dB</span>
-                  </div>
-                </div>
-
-                {/* Player Bar & Bypass Switch */}
-                <div className="flex flex-wrap items-center justify-between gap-3 pt-2 border-t border-zinc-800">
-                  <button
-                    type="button"
-                    onClick={handleToggleAmpAudio}
-                    className={`px-5 py-2.5 rounded-xl font-bold text-xs flex items-center gap-2 transition-all shadow-md ${
-                      isAmpPlaying
-                        ? 'bg-amber-500 hover:bg-amber-600 text-zinc-950 ring-2 ring-amber-400/50'
-                        : 'bg-[#0C4E34] hover:bg-[#0e5c3e] text-white ring-2 ring-emerald-500/30'
-                    }`}
-                  >
-                    {isAmpPlaying ? <Pause className="w-4 h-4 fill-current" /> : <Play className="w-4 h-4 fill-current" />}
-                    <span>{isAmpPlaying ? 'Hentikan Uji Audio' : 'Dengarkan Output Amplifier'}</span>
-                  </button>
-
-                  {/* Bypass Switch */}
-                  <button
-                    type="button"
-                    onClick={() => setIsTubeBypass(!isTubeBypass)}
-                    className={`px-3 py-1.5 rounded-lg border text-xs font-bold transition-all flex items-center gap-1.5 ${
-                      isTubeBypass 
-                        ? 'bg-zinc-800 border-zinc-600 text-zinc-400' 
-                        : 'bg-emerald-950/80 border-emerald-500/60 text-emerald-300'
-                    }`}
-                  >
-                    <span className={`w-2 h-2 rounded-full ${isTubeBypass ? 'bg-zinc-500' : 'bg-emerald-400'}`} />
-                    <span>Mode: {isTubeBypass ? 'Bypass (Suara Kering)' : 'Tube Warmth (Aktif)'}</span>
-                  </button>
-                </div>
-
-              </div>
-
-            </div>
-
-            {/* Technical Highlights Footer */}
-            <div className="mt-5 grid grid-cols-2 md:grid-cols-4 gap-3 text-left">
-              <div className="p-3 rounded-xl bg-zinc-900/60 border border-zinc-800">
-                <span className="text-[11px] font-bold text-amber-400 block">Vacuum Tube Warmth</span>
-                <span className="text-[10px] text-zinc-400">Harmonik genap & ganjil alami tabung 12AX7.</span>
-              </div>
-              <div className="p-3 rounded-xl bg-zinc-900/60 border border-zinc-800">
-                <span className="text-[11px] font-bold text-emerald-400 block">Broadcast 48kHz Master</span>
-                <span className="text-[10px] text-zinc-400">Zero-drift clock untuk timeline video editing.</span>
-              </div>
-              <div className="p-3 rounded-xl bg-zinc-900/60 border border-zinc-800">
-                <span className="text-[11px] font-bold text-amber-400 block">-23 LUFS Compliance</span>
-                <span className="text-[10px] text-zinc-400">Standar volume seragam EBU R128 siaran TV/web.</span>
-              </div>
-              <div className="p-3 rounded-xl bg-zinc-900/60 border border-zinc-800">
-                <span className="text-[11px] font-bold text-emerald-400 block">Peak Limiting Anti-Clip</span>
-                <span className="text-[10px] text-zinc-400">Menjamin audio jernih tanpa distorsi digital.</span>
-              </div>
-            </div>
-
-          </div>
-
-        </div>
-      </section>
 
       {/* 3. Fitur Unggulan (Bento Grid) */}
       <section id="fitur" className="py-10 sm:py-12 md:py-14 bg-white border-y border-zinc-200/80">
@@ -936,159 +615,159 @@ export const LandingPage = ({ onOpenLogin }) => {
           {/* 4-Stage Workflow Diagram */}
           <div className="grid grid-cols-1 md:grid-cols-4 gap-6 relative">
             
-            {/* Stage 1 */}
+            {/* Stage 1: Masukan Naskah */}
             <div className="bg-white rounded-3xl p-6 border border-zinc-200/90 shadow-sm hover:shadow-xl hover:border-emerald-500/50 transition-all group flex flex-col justify-between relative overflow-hidden">
-              <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-emerald-500 to-teal-500" />
+              <div className="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-emerald-500 to-teal-500" />
               <div>
                 <div className="flex items-center justify-between mb-4">
                   <span className="text-[11px] font-black uppercase tracking-wider px-2.5 py-1 rounded-full bg-emerald-50 text-[#0C4E34] border border-emerald-200">
-                    TAHAP 01
+                    LANGKAH 01
                   </span>
                   <FileText className="w-5 h-5 text-emerald-600" />
                 </div>
                 <h3 className="text-lg font-black text-zinc-900 group-hover:text-[#0C4E34] transition-colors">
-                  Input & Riset Naskah
+                  1. Masukan Naskah
                 </h3>
                 <p className="text-xs text-zinc-500 mt-2 leading-relaxed">
-                  Pengumpulan materi kebijakan daerah, siaran pers resmi pemerintah daerah, serta transkripsi audio rapat penting via Gemini Multimodal.
+                  Ketik atau tempel naskah voice over langsung, buat naskah Iklan Layanan Masyarakat (ILM 30s/60s) otomatis, atau transkripsikan rekaman audio rapat via Gemini AI.
                 </p>
                 
                 <div className="mt-4 pt-3 border-t border-zinc-100 space-y-1.5 text-[11px] text-zinc-600 font-medium">
                   <div className="flex items-center gap-1.5">
                     <Check className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
-                    <span>Naskah Kebijakan & Rilis Pers</span>
+                    <span>Naskah Voice Over Bebas</span>
                   </div>
                   <div className="flex items-center gap-1.5">
                     <Check className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
-                    <span>Gemini AI Voice-to-Text</span>
+                    <span>Generator ILM Otomatis (30s & 60s)</span>
                   </div>
                   <div className="flex items-center gap-1.5">
                     <Check className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
-                    <span>Brief Kampanye Sosial Jabar</span>
+                    <span>Transkripsi Suara (Gemini AI)</span>
                   </div>
                 </div>
               </div>
 
               <div className="mt-5 pt-3 border-t border-zinc-100 flex items-center justify-between text-[11px] text-zinc-400 font-mono">
-                <span>Sumber Konten</span>
-                <span className="font-bold text-emerald-700">Dokumen / Audio</span>
+                <span>Format Input</span>
+                <span className="font-bold text-emerald-700">Teks / Audio</span>
               </div>
             </div>
 
-            {/* Stage 2 */}
+            {/* Stage 2: Pilih Karakter Suara */}
             <div className="bg-white rounded-3xl p-6 border-2 border-[#0C4E34]/30 shadow-md hover:shadow-xl hover:border-[#0C4E34] transition-all group flex flex-col justify-between relative overflow-hidden">
               <div className="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-[#0C4E34] to-[#F59E0B]" />
               <div>
                 <div className="flex items-center justify-between mb-4">
                   <span className="text-[11px] font-black uppercase tracking-wider px-2.5 py-1 rounded-full bg-[#0C4E34] text-white">
-                    TAHAP 02 • INTI
+                    LANGKAH 02 • INTI
                   </span>
-                  <Cpu className="w-5 h-5 text-[#F59E0B]" />
+                  <Headphones className="w-5 h-5 text-[#F59E0B]" />
                 </div>
                 <h3 className="text-lg font-black text-zinc-900 group-hover:text-[#0C4E34] transition-colors">
-                  Studio GENTRA
+                  2. Pilih Karakter Suara
                 </h3>
                 <p className="text-xs text-zinc-500 mt-2 leading-relaxed">
-                  Generator naskah ILM (30s & 60s), pemilihan 22 Persona Sunda & Nasional, kontrol intonasi emosi, serta modulasi gaya siaran audio.
+                  Pilih dari 22 karakter vokal resmi: Blok 1 NUSA VOICE (14 karakter nasional penyiaran) dan Blok 2 PASUNDAN VOICE (8 karakter orisinal tatar Pasundan).
                 </p>
 
                 <div className="mt-4 pt-3 border-t border-zinc-100 space-y-1.5 text-[11px] text-zinc-600 font-medium">
                   <div className="flex items-center gap-1.5">
                     <Check className="w-3.5 h-3.5 text-[#0C4E34] shrink-0" />
-                    <span>22 Karakter Vokal (Sunda & Nasional)</span>
+                    <span>Blok 1: 14 Vokal Nasional</span>
                   </div>
                   <div className="flex items-center gap-1.5">
                     <Check className="w-3.5 h-3.5 text-[#0C4E34] shrink-0" />
-                    <span>Mode ILM 30 Detik & 60 Detik</span>
+                    <span>Blok 2: 8 Vokal Khas Sunda</span>
                   </div>
                   <div className="flex items-center gap-1.5">
                     <Check className="w-3.5 h-3.5 text-[#0C4E34] shrink-0" />
-                    <span>Multi-Engine (Gemini/Google/Azure)</span>
+                    <span>Audisi Vokal Instan (Dengar)</span>
                   </div>
                 </div>
               </div>
 
               <div className="mt-5 pt-3 border-t border-zinc-100 flex items-center justify-between text-[11px] text-zinc-400 font-mono">
-                <span>Engine Audio</span>
-                <span className="font-bold text-[#0C4E34]">GENTRA Engine</span>
+                <span>Pilihan Vokal</span>
+                <span className="font-bold text-[#0C4E34]">22 Karakter Resmi</span>
               </div>
             </div>
 
-            {/* Stage 3 */}
+            {/* Stage 3: Pilih Gaya Bicara & Emosi */}
             <div className="bg-white rounded-3xl p-6 border border-zinc-200/90 shadow-sm hover:shadow-xl hover:border-amber-500/50 transition-all group flex flex-col justify-between relative overflow-hidden">
-              <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-[#F59E0B] to-amber-600" />
+              <div className="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-[#F59E0B] to-amber-600" />
               <div>
                 <div className="flex items-center justify-between mb-4">
                   <span className="text-[11px] font-black uppercase tracking-wider px-2.5 py-1 rounded-full bg-amber-50 text-[#F59E0B] border border-amber-200">
-                    TAHAP 03
+                    LANGKAH 03
                   </span>
                   <Sliders className="w-5 h-5 text-[#F59E0B]" />
                 </div>
                 <h3 className="text-lg font-black text-zinc-900 group-hover:text-[#0C4E34] transition-colors">
-                  Mastering Studio
+                  3. Pilih Gaya Bicara
                 </h3>
                 <p className="text-xs text-zinc-500 mt-2 leading-relaxed">
-                  Resampling presisi tinggi ke standar broadcast penyiaran dan DAW editing timeline video tanpa degradasi (Zero-Drift).
+                  Modulasi gaya penyampaian: pilih emosi (Ramah, Semangat, Tenang, Tegas), atur tempo kecepatan dan nada vokal, serta sisipkan tag emosi alami [tertawa], [berbisik].
                 </p>
 
                 <div className="mt-4 pt-3 border-t border-zinc-100 space-y-1.5 text-[11px] text-zinc-600 font-medium">
                   <div className="flex items-center gap-1.5">
                     <Check className="w-3.5 h-3.5 text-amber-600 shrink-0" />
-                    <span>WAV 48 kHz (Standar Video & TV)</span>
+                    <span>9 Pilihan Emosi & Gaya Bicara</span>
                   </div>
                   <div className="flex items-center gap-1.5">
                     <Check className="w-3.5 h-3.5 text-amber-600 shrink-0" />
-                    <span>WAV 44.1 kHz (Standar Audio CD)</span>
+                    <span>Kontrol Tempo & Nada Dasar</span>
                   </div>
                   <div className="flex items-center gap-1.5">
                     <Check className="w-3.5 h-3.5 text-amber-600 shrink-0" />
-                    <span>Zero-Drift PCM 16-bit Lossless</span>
+                    <span>Tag Emosi Alami [tertawa], [bisik]</span>
                   </div>
                 </div>
               </div>
 
               <div className="mt-5 pt-3 border-t border-zinc-100 flex items-center justify-between text-[11px] text-zinc-400 font-mono">
-                <span>Output Format</span>
-                <span className="font-bold text-amber-700">WAV Broadcast</span>
+                <span>Modulasi</span>
+                <span className="font-bold text-amber-700">Emosi & Artikulasi</span>
               </div>
             </div>
 
-            {/* Stage 4 */}
+            {/* Stage 4: Render & Unduh Audio WAV */}
             <div className="bg-white rounded-3xl p-6 border border-zinc-200/90 shadow-sm hover:shadow-xl hover:border-emerald-500/50 transition-all group flex flex-col justify-between relative overflow-hidden">
-              <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-teal-500 to-emerald-600" />
+              <div className="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-teal-500 to-emerald-600" />
               <div>
                 <div className="flex items-center justify-between mb-4">
                   <span className="text-[11px] font-black uppercase tracking-wider px-2.5 py-1 rounded-full bg-teal-50 text-teal-800 border border-teal-200">
-                    TAHAP 04
+                    LANGKAH 04
                   </span>
-                  <Share2 className="w-5 h-5 text-teal-600" />
+                  <Download className="w-5 h-5 text-teal-600" />
                 </div>
                 <h3 className="text-lg font-black text-zinc-900 group-hover:text-[#0C4E34] transition-colors">
-                  Distribusi Multi-Kanal
+                  4. Render & Unduh WAV
                 </h3>
                 <p className="text-xs text-zinc-500 mt-2 leading-relaxed">
-                  Penyebarluasan materi audio ke kanal media sosial, radio siaran Pemprov, podcast, dan layanan publik seluruh Jawa Barat.
+                  Sintesis neural Gemini instan, proses mastering otomatis ke standar siaran (WAV 48 kHz / 44.1 kHz), dan unduh file audio berkualitas tanpa kompresi.
                 </p>
 
                 <div className="mt-4 pt-3 border-t border-zinc-100 space-y-1.5 text-[11px] text-zinc-600 font-medium">
                   <div className="flex items-center gap-1.5">
                     <Check className="w-3.5 h-3.5 text-teal-600 shrink-0" />
-                    <span>Radio Siaran Jabar & TVRI</span>
+                    <span>Sintesis Vokal Neural Seketika</span>
                   </div>
                   <div className="flex items-center gap-1.5">
                     <Check className="w-3.5 h-3.5 text-teal-600 shrink-0" />
-                    <span>Reels / TikTok Humas Jabar</span>
+                    <span>Mastering 48 kHz Broadcast</span>
                   </div>
                   <div className="flex items-center gap-1.5">
                     <Check className="w-3.5 h-3.5 text-teal-600 shrink-0" />
-                    <span>Podcast & Megafon Publik</span>
+                    <span>File WAV 16-bit Lossless Siap Siar</span>
                   </div>
                 </div>
               </div>
 
               <div className="mt-5 pt-3 border-t border-zinc-100 flex items-center justify-between text-[11px] text-zinc-400 font-mono">
-                <span>Penerima Akhir</span>
-                <span className="font-bold text-teal-700">Wargi Jabar</span>
+                <span>Output Final</span>
+                <span className="font-bold text-teal-700">WAV Broadcast</span>
               </div>
             </div>
 

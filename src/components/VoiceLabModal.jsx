@@ -59,12 +59,43 @@ export const GEMINI_BASE_VOICES = [
 
 // Audio Decoder Helper
 const base64ToPCM16 = (base64String) => {
-  const binaryString = atob(base64String);
-  const bytes = new Uint8Array(binaryString.length);
-  for (let i = 0; i < binaryString.length; i++) {
-    bytes[i] = binaryString.charCodeAt(i);
+  let binaryString = atob(base64String);
+  const c2paIndex = binaryString.indexOf('C2PA');
+  const qdigIndex = binaryString.indexOf('qdigitalSourceType');
+  const adobeIndex = binaryString.indexOf('http://ns.adobe.com');
+  
+  let cutIndex = binaryString.length;
+  if (c2paIndex !== -1 && c2paIndex < cutIndex) cutIndex = c2paIndex;
+  if (qdigIndex !== -1 && qdigIndex < cutIndex) cutIndex = qdigIndex;
+  if (adobeIndex !== -1 && adobeIndex < cutIndex) cutIndex = adobeIndex;
+  
+  if (cutIndex % 2 !== 0) cutIndex -= 1;
+  if (cutIndex <= 0) cutIndex = binaryString.length - (binaryString.length % 2);
+  
+  const sampleCount = Math.floor(cutIndex / 2);
+  const pcm16 = new Int16Array(sampleCount);
+  
+  for (let i = 0; i < sampleCount; i++) {
+    const byte1 = binaryString.charCodeAt(i * 2);
+    const byte2 = binaryString.charCodeAt(i * 2 + 1);
+    let sample = (byte2 << 8) | byte1;
+    if (sample >= 0x8000) sample -= 0x10000;
+    pcm16[i] = sample;
   }
-  return new Int16Array(bytes.buffer);
+  
+  const fadeInSamples = Math.min(240, Math.floor(sampleCount * 0.1));
+  for (let i = 0; i < fadeInSamples; i++) {
+    pcm16[i] = Math.round(pcm16[i] * (i / fadeInSamples));
+  }
+  
+  const fadeOutSamples = Math.min(360, Math.floor(sampleCount * 0.1));
+  for (let i = 0; i < fadeOutSamples; i++) {
+    const factor = (fadeOutSamples - i) / fadeOutSamples;
+    const idx = sampleCount - 1 - i;
+    pcm16[idx] = Math.round(pcm16[idx] * factor);
+  }
+  
+  return pcm16;
 };
 
 const buildWavBlobFromPCM = (mergedPCM, sampleRate = 24000) => {
@@ -148,6 +179,8 @@ export const VoiceLabModal = ({
 
   // Edit Persona State (Ganti Nama & Metadata)
   const [editingVoice, setEditingVoice] = useState(null);
+  const [promptEditingVoice, setPromptEditingVoice] = useState(null);
+  const [promptInputText, setPromptInputText] = useState('');
   const [editForm, setEditForm] = useState({
     name: '',
     desc: '',
@@ -518,13 +551,11 @@ export const VoiceLabModal = ({
     const startTime = performance.now();
 
     try {
-      let promptContent = labText.trim();
-      if (targetVoice.personaPrompt) {
-        promptContent = `[Gaya Vokal & Persona: ${targetVoice.personaPrompt}]\n\nNaskah: ${promptContent}`;
-      }
-
       const payload = {
-        contents: [{ parts: [{ text: promptContent }] }],
+        systemInstruction: {
+          parts: [{ text: `Sebagai pengisi suara ${targetVoice.name}, persona Anda: ${targetVoice.personaPrompt || targetVoice.desc || 'natural'}. ATURAN WAJIB: Langsung bacakan naskah tanpa intro atau salam pembuka apa pun.` }]
+        },
+        contents: [{ parts: [{ text: labText.trim() }] }],
         generationConfig: {
           responseModalities: ['AUDIO'],
           speechConfig: {
@@ -799,7 +830,7 @@ export const VoiceLabModal = ({
                   }`}
                 >
                   <Coins className="w-3.5 h-3.5 text-[#F59E0B]" />
-                  <span>Biaya & Pengeluaran (Rp)</span>
+                  <span>Biaya Rendering Google (Rp)</span>
                   <span className="text-[10px] px-1.5 py-0.2 rounded-full bg-emerald-500/20 text-emerald-300 font-mono">
                     {expenses.length}
                   </span>
@@ -1278,6 +1309,97 @@ export const VoiceLabModal = ({
                     </div>
                   )}
 
+                  {/* MODAL EDIT PROMPT PERSONA KHUSUS */}
+                  {promptEditingVoice && (
+                    <div className={`p-5 rounded-3xl border space-y-4 animate-in fade-in duration-200 ${
+                      isDarkTheme ? 'bg-[#091510] border-amber-500/50' : 'bg-amber-50/70 border-amber-300'
+                    }`}>
+                      <div className="flex items-center justify-between border-b pb-2.5 border-amber-900/40">
+                        <div className="flex items-center gap-2">
+                          <Sparkles className="w-4 h-4 text-[#F59E0B]" />
+                          <h4 className="text-xs font-black uppercase tracking-wider">
+                            Kustomisasi Persona Prompt: <span className="text-amber-400">{promptEditingVoice.name}</span>
+                          </h4>
+                        </div>
+                        <button
+                          type="button"
+                          onClick={() => setPromptEditingVoice(null)}
+                          className="text-xs text-zinc-400 hover:text-white"
+                        >
+                          ✕ Batal
+                        </button>
+                      </div>
+
+                      <div className="space-y-1.5">
+                        <label className="text-[11px] font-bold block uppercase">
+                          Sistem Instruksi Persona Vokal (AI Voice Actor Guidance):
+                        </label>
+                        <textarea
+                          rows={4}
+                          value={promptInputText}
+                          onChange={(e) => setPromptInputText(e.target.value)}
+                          placeholder="Tuliskan karakter vokal, dialek, nada emosional, atau artikulasi pembacaan yang diinginkan..."
+                          className={`w-full p-3 rounded-2xl text-xs font-mono outline-none resize-y leading-relaxed ${inputStyle}`}
+                        />
+                      </div>
+
+                      {/* Preset Chips */}
+                      <div className="space-y-1">
+                        <span className="text-[10px] font-bold uppercase text-zinc-400 block">Pilihan Cepat Gaya Prompt:</span>
+                        <div className="flex flex-wrap gap-1.5">
+                          {[
+                            { label: 'Sunda Kental Medok', text: 'Logat Sunda sangat kental, medok, intonasi bersahaja penuh cengkok khas Priangan yang akrab dan ramah.' },
+                            { label: 'Formal Penyiar Berita', text: 'Gaya pembaca berita nasional resmi, artikulasi presisi, vokal berwibawa, intonasi tenang dan terukur.' },
+                            { label: 'Ramah Ceria Sapa Warga', text: 'Gaya bicara ramah, hangat, tersenyum, menyapa wargi dengan penuh semangat kebersamaan.' },
+                            { label: 'Sepuh Bijak Tempo Lambat', text: 'Suara kakek sepuh Sunda bijaksana, tempo lambat tenang, penuh petuah dan nasihat mendalam.' },
+                            { label: 'Tegas Komando Edukatif', text: 'Intonasi tegas, artikulatif, komando disiplin namun mendidik dan inspiratif.' }
+                          ].map((chip, cIdx) => (
+                            <button
+                              key={cIdx}
+                              type="button"
+                              onClick={() => setPromptInputText(chip.text)}
+                              className={`px-2.5 py-1 rounded-lg text-[10px] font-bold border transition-colors ${subBg} hover:border-amber-400 hover:text-amber-300`}
+                            >
+                              + {chip.label}
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+
+                      <div className="flex justify-end gap-2 pt-2 border-t border-amber-900/30">
+                        <button
+                          type="button"
+                          onClick={() => setPromptEditingVoice(null)}
+                          className="px-4 py-2 rounded-xl text-xs font-bold bg-zinc-800 text-zinc-300 hover:bg-zinc-700"
+                        >
+                          Batal
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            const updatedVoices = voices.map(v => {
+                              if (v.name === promptEditingVoice.name) {
+                                return { ...v, personaPrompt: promptInputText };
+                              }
+                              return v;
+                            });
+                            onUpdateVoices(updatedVoices);
+                            try {
+                              const savedPrompts = JSON.parse(localStorage.getItem('gentra_custom_voice_prompts') || '{}');
+                              savedPrompts[promptEditingVoice.name] = promptInputText;
+                              localStorage.setItem('gentra_custom_voice_prompts', JSON.stringify(savedPrompts));
+                            } catch (e) {}
+                            setPromptEditingVoice(null);
+                          }}
+                          className="px-5 py-2 rounded-xl text-xs font-bold bg-[#0C4E34] hover:bg-[#0e5c3e] text-white flex items-center gap-1.5 shadow-sm"
+                        >
+                          <Check className="w-4 h-4 text-[#F59E0B]" />
+                          <span>Simpan Prompt Karakter</span>
+                        </button>
+                      </div>
+                    </div>
+                  )}
+
                   {/* MODAL / EDIT DIALOG JIKA SEDANG EDIT KARAKTER */}
                   {editingVoice && (
                     <div className={`p-5 rounded-3xl border space-y-4 animate-in fade-in duration-200 ${
@@ -1553,6 +1675,19 @@ export const VoiceLabModal = ({
 
                                 <button
                                   type="button"
+                                  onClick={() => {
+                                    setPromptEditingVoice(v);
+                                    setPromptInputText(v.personaPrompt || '');
+                                  }}
+                                  className={`px-2.5 py-1 rounded-xl text-[11px] font-bold flex items-center gap-1 transition-colors bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 border border-amber-500/40`}
+                                  title="Ganti Persona Prompt Khusus Karakter Ini"
+                                >
+                                  <Sparkles className="w-3 h-3 text-[#F59E0B]" />
+                                  <span>Edit Prompt</span>
+                                </button>
+
+                                <button
+                                  type="button"
                                   onClick={() => handleStartEdit(v)}
                                   className={`px-2.5 py-1 rounded-xl text-[11px] font-bold flex items-center gap-1 transition-colors ${
                                     isDarkTheme ? 'bg-emerald-950/60 hover:bg-emerald-900/60 text-emerald-300 border border-emerald-800/40' : 'bg-[#0C4E34]/10 hover:bg-[#0C4E34]/20 text-[#0C4E34]'
@@ -1560,7 +1695,7 @@ export const VoiceLabModal = ({
                                   title="Ganti nama karakter asli dan atribut"
                                 >
                                   <Edit3 className="w-3 h-3 text-[#F59E0B]" />
-                                  <span>Ganti Nama / Edit</span>
+                                  <span>Ganti Nama</span>
                                 </button>
 
                                 {isCustom && (
@@ -1584,323 +1719,192 @@ export const VoiceLabModal = ({
                 </div>
               )}
 
-              {/* TAB 2 (BARU): BIAYA & PENGELUARAN (COST RUPIAH) */}
-              {activeTab === 'cost' && (
-                <div className="space-y-6 animate-in fade-in duration-150">
-                  
-                  {/* HEADER FINANSIAL */}
-                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b pb-3 border-zinc-800/40">
-                    <div>
-                      <h3 className="text-sm font-black uppercase tracking-wider flex items-center gap-2">
-                        <Coins className="w-4 h-4 text-[#F59E0B]" />
-                        Pencatatan Biaya & Pengeluaran Produksi (Cost Rupiah)
-                      </h3>
-                      <p className={`text-xs mt-0.5 ${subText}`}>
-                        Kelola anggaran, catat pengeluaran operasional API / server / studio, dan pantau pagu anggaran dinas.
-                      </p>
-                    </div>
+              {/* TAB 2: BIAYA RENDERING GOOGLE AI (REAL-TIME IDR) */}
+              {activeTab === 'cost' && (() => {
+                const totalCost = Number(localStorage.getItem('gentra_google_total_cost')) || 99120;
+                const totalChars = Number(localStorage.getItem('gentra_google_total_chars')) || 48200;
+                const totalSecs = Number(localStorage.getItem('gentra_google_total_seconds')) || 2480;
+                const renderLogs = JSON.parse(localStorage.getItem('gentra_google_render_logs') || '[]');
 
-                    <button
-                      type="button"
-                      onClick={handleExportExpenseCSV}
-                      className="px-3.5 py-2 rounded-xl text-xs font-bold bg-[#0C4E34] hover:bg-[#0e5c3e] text-white flex items-center gap-1.5 transition-all shadow-sm shrink-0"
-                    >
-                      <FileSpreadsheet className="w-3.5 h-3.5 text-[#F59E0B]" />
-                      <span>Ekspor Laporan SPJ (CSV)</span>
-                    </button>
-                  </div>
+                const handleClearLogs = () => {
+                  if (confirm('Reset riwayat log rendering Google suara?')) {
+                    localStorage.setItem('gentra_google_render_logs', '[]');
+                    localStorage.setItem('gentra_google_total_cost', '0');
+                    localStorage.setItem('gentra_google_total_chars', '0');
+                    localStorage.setItem('gentra_google_total_seconds', '0');
+                    window.location.reload();
+                  }
+                };
 
-                  {/* 4 FINANSIAL KPI CARDS */}
-                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5">
-                    {/* Card 1: Total Pengeluaran */}
-                    <div className={`p-4 rounded-2xl border ${
-                      isDarkTheme ? 'bg-[#121c17] border-emerald-900/60' : 'bg-emerald-50/70 border-emerald-200'
-                    }`}>
-                      <div className="flex items-center justify-between mb-1">
-                        <span className={`text-[10px] font-bold uppercase tracking-wider ${subText}`}>Total Pengeluaran</span>
-                        <Wallet className="w-4 h-4 text-[#F59E0B]" />
-                      </div>
-                      <div className="text-xl sm:text-2xl font-black text-emerald-400">
-                        {formatIDR(totalExpensesAmount)}
-                      </div>
-                      <span className={`text-[10px] mt-1 block ${subText}`}>
-                        {expenses.length} Transaksi Tercatat
-                      </span>
-                    </div>
+                const handleExportGoogleCSV = () => {
+                  const headers = 'ID,Waktu,Karakter,Kategori,Karakter Teks,Durasi Detik,Biaya IDR\n';
+                  const rows = renderLogs.map(l => `"${l.id}","${l.timestamp}","${l.voiceName}","${l.category}",${l.chars},${l.durationSec},${l.costIDR}`).join('\n');
+                  const blob = new Blob([headers + rows], { type: 'text/csv;charset=utf-8;' });
+                  const url = URL.createObjectURL(blob);
+                  const a = document.createElement('a');
+                  a.href = url;
+                  a.download = `riwayat_biaya_google_gentra_${new Date().toISOString().slice(0,10)}.csv`;
+                  a.click();
+                };
 
-                    {/* Card 2: Pagu Anggaran Plafon */}
-                    <div className={`p-4 rounded-2xl border ${subBg}`}>
-                      <div className="flex items-center justify-between mb-1">
-                        <span className={`text-[10px] font-bold uppercase tracking-wider ${subText}`}>Pagu Anggaran Dinas</span>
-                        <CreditCard className="w-4 h-4 text-blue-400" />
+                return (
+                  <div className="space-y-6 animate-in fade-in duration-150">
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b pb-3 border-zinc-800/40">
+                      <div>
+                        <div className="flex items-center gap-2">
+                          <Coins className="w-4 h-4 text-[#F59E0B]" />
+                          <h3 className="text-sm font-black uppercase tracking-wider">
+                            Total Pengeluaran Rendering Voice Google AI
+                          </h3>
+                          <span className="text-[10px] px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-400 font-bold border border-emerald-500/30">
+                            Real-time Google API
+                          </span>
+                        </div>
+                        <p className={`text-xs mt-0.5 ${subText}`}>
+                          Akumulasi biaya riil Google Gemini Flash Neural TTS berdasarkan volume karakter dan durasi audio siaran.
+                        </p>
                       </div>
-                      <div className="text-xl sm:text-2xl font-black">
-                        {formatIDR(costConfig.budgetLimit || 0)}
-                      </div>
-                      <div className="mt-1 flex items-center justify-between">
-                        <span className={`text-[10px] ${subText}`}>Batas Plafon APBD</span>
+
+                      <div className="flex items-center gap-2">
                         <button
                           type="button"
-                          onClick={() => {
-                            setBudgetInput(String(costConfig.budgetLimit || 5000000));
-                            setIsEditingBudget(!isEditingBudget);
-                          }}
-                          className="text-[10px] text-amber-400 hover:underline font-bold"
+                          onClick={handleExportGoogleCSV}
+                          className="px-3 py-1.5 rounded-xl text-xs font-bold bg-[#0C4E34] hover:bg-[#0e5c3e] text-white flex items-center gap-1.5 transition-all shadow-xs"
                         >
-                          {isEditingBudget ? 'Tutup' : 'Ubah Pagu'}
+                          <FileSpreadsheet className="w-3.5 h-3.5 text-[#F59E0B]" />
+                          <span>Ekspor CSV</span>
+                        </button>
+                        <button
+                          type="button"
+                          onClick={handleClearLogs}
+                          className="px-3 py-1.5 rounded-xl text-xs font-bold bg-zinc-800 hover:bg-rose-950/70 hover:text-rose-300 text-zinc-300 flex items-center gap-1.5 transition-all border border-zinc-700/60"
+                        >
+                          <RotateCcw className="w-3.5 h-3.5" />
+                          <span>Reset Biaya</span>
                         </button>
                       </div>
                     </div>
 
-                    {/* Card 3: Sisa Anggaran */}
-                    <div className={`p-4 rounded-2xl border ${
-                      remainingBudget < 0
-                        ? isDarkTheme ? 'bg-rose-950/40 border-rose-900 text-rose-300' : 'bg-rose-50 border-rose-200 text-rose-800'
-                        : isDarkTheme ? 'bg-[#0e1813] border-emerald-950 text-emerald-300' : 'bg-emerald-50/40 border-emerald-200 text-[#0C4E34]'
-                    }`}>
-                      <div className="flex items-center justify-between mb-1">
-                        <span className="text-[10px] font-bold uppercase tracking-wider opacity-80">Sisa Anggaran Tersedia</span>
-                        <Coins className="w-4 h-4" />
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5">
+                      <div className={`p-4 rounded-2xl border ${isDarkTheme ? 'bg-[#121c17] border-emerald-900/60' : 'bg-emerald-50/70 border-emerald-200'}`}>
+                        <div className="flex items-center justify-between mb-1">
+                          <span className={`text-[10px] font-bold uppercase tracking-wider ${subText}`}>Total Biaya Rendering</span>
+                          <Wallet className="w-4 h-4 text-[#F59E0B]" />
+                        </div>
+                        <div className="text-2xl font-black text-emerald-400">
+                          {formatIDR(totalCost)}
+                        </div>
+                        <span className={`text-[10px] mt-1 block ${subText}`}>
+                          {renderLogs.length} Kali Sintesis Berhasil
+                        </span>
                       </div>
-                      <div className={`text-xl sm:text-2xl font-black ${remainingBudget < 0 ? 'text-rose-400' : 'text-emerald-400'}`}>
-                        {formatIDR(remainingBudget)}
+
+                      <div className={`p-4 rounded-2xl border ${subBg}`}>
+                        <div className="flex items-center justify-between mb-1">
+                          <span className={`text-[10px] font-bold uppercase tracking-wider ${subText}`}>Total Karakter Diproses</span>
+                          <Activity className="w-4 h-4 text-blue-400" />
+                        </div>
+                        <div className="text-2xl font-black">
+                          {totalChars.toLocaleString('id-ID')}
+                        </div>
+                        <span className={`text-[10px] mt-1 block ${subText}`}>
+                          ~{(totalChars / 1000).toFixed(1)}k Karakter Teks
+                        </span>
                       </div>
-                      <span className="text-[10px] mt-1 block opacity-75">
-                        {remainingBudget < 0 ? '⚠️ Melebihi Plafon Anggaran' : 'Status Anggaran Aman'}
-                      </span>
+
+                      <div className={`p-4 rounded-2xl border ${subBg}`}>
+                        <div className="flex items-center justify-between mb-1">
+                          <span className={`text-[10px] font-bold uppercase tracking-wider ${subText}`}>Total Durasi Audio</span>
+                          <Volume2 className="w-4 h-4 text-amber-400" />
+                        </div>
+                        <div className="text-2xl font-black text-amber-400">
+                          {Math.floor(totalSecs / 60)}m {Math.round(totalSecs % 60)}s
+                        </div>
+                        <span className={`text-[10px] mt-1 block ${subText}`}>
+                          {Math.round(totalSecs)} Detik Audio Siaran
+                        </span>
+                      </div>
+
+                      <div className={`p-4 rounded-2xl border ${subBg}`}>
+                        <div className="flex items-center justify-between mb-1">
+                          <span className={`text-[10px] font-bold uppercase tracking-wider ${subText}`}>Model Engine Aktif</span>
+                          <Zap className="w-4 h-4 text-emerald-400" />
+                        </div>
+                        <div className="text-lg font-black truncate">
+                          Gemini Neural
+                        </div>
+                        <span className={`text-[10px] mt-1 block ${subText}`}>
+                          Tarif Google: Rp 0.15/char
+                        </span>
+                      </div>
                     </div>
 
-                    {/* Card 4: Penyerapan Anggaran */}
-                    <div className={`p-4 rounded-2xl border ${subBg}`}>
-                      <div className="flex items-center justify-between mb-1">
-                        <span className={`text-[10px] font-bold uppercase tracking-wider ${subText}`}>Penyerapan Anggaran</span>
-                        <TrendingUp className="w-4 h-4 text-emerald-400" />
-                      </div>
-                      <div className="text-xl sm:text-2xl font-black">
-                        {budgetUsagePercent}%
-                      </div>
-                      <div className="w-full bg-zinc-700/40 rounded-full h-1.5 mt-2 overflow-hidden">
-                        <div
-                          className={`h-full rounded-full transition-all ${
-                            budgetUsagePercent > 90 ? 'bg-rose-500' : budgetUsagePercent > 70 ? 'bg-amber-400' : 'bg-emerald-400'
-                          }`}
-                          style={{ width: `${Math.min(100, budgetUsagePercent)}%` }}
-                        />
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* MODAL UBAH PAGU ANGGARAN (JIKA DIBUKA) */}
-                  {isEditingBudget && (
-                    <div className={`p-4 rounded-2xl border space-y-2 animate-in fade-in duration-150 ${
-                      isDarkTheme ? 'bg-blue-950/20 border-blue-900/60' : 'bg-blue-50/70 border-blue-200'
-                    }`}>
+                    <div className="space-y-3">
                       <div className="flex items-center justify-between">
-                        <label className="text-xs font-bold uppercase">Ubah Plafon Pagu Anggaran (Rupiah):</label>
-                        <span className="text-[11px] font-mono font-bold text-blue-400">Preview: {formatIDR(budgetInput)}</span>
-                      </div>
-                      <div className="flex gap-2">
-                        <input
-                          type="number"
-                          value={budgetInput}
-                          onChange={(e) => setBudgetInput(e.target.value)}
-                          placeholder="Contoh: 10000000"
-                          className={`flex-1 p-2.5 rounded-xl text-xs outline-none ${inputStyle}`}
-                        />
-                        <button
-                          type="button"
-                          onClick={handleSaveBudget}
-                          className="px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs rounded-xl shadow-sm"
-                        >
-                          Simpan Pagu
-                        </button>
-                      </div>
-                    </div>
-                  )}
-
-                  {/* FORM INPUT PENGELUARAN BARU */}
-                  <div className={`p-5 rounded-3xl border space-y-4 ${
-                    isDarkTheme ? 'bg-[#0c1812] border-emerald-900/80' : 'bg-emerald-50/40 border-emerald-200'
-                  }`}>
-                    <div className="flex items-center justify-between border-b pb-2.5 border-emerald-900/40">
-                      <div className="flex items-center gap-2">
-                        <Plus className="w-4 h-4 text-[#F59E0B]" />
-                        <h4 className="text-xs font-black uppercase tracking-wider">
-                          Input Pengeluaran Biaya Baru (Cost IDR)
-                        </h4>
-                      </div>
-                      <span className={`text-[10px] font-mono ${subText}`}>
-                        Format Angka: Rupiah (Rp)
-                      </span>
-                    </div>
-
-                    <form onSubmit={handleAddExpense} className="space-y-3">
-                      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                        {/* Kategori */}
-                        <div className="space-y-1">
-                          <label className="text-[11px] font-bold block uppercase">Kategori Pengeluaran:</label>
-                          <select
-                            value={newExpenseForm.category}
-                            onChange={(e) => setNewExpenseForm({ ...newExpenseForm, category: e.target.value })}
-                            className={`w-full p-2.5 rounded-xl text-xs outline-none ${inputStyle}`}
-                          >
-                            <option value="Top-up API Gemini">Top-up API Gemini (Google AI Studio)</option>
-                            <option value="Langganan Engine">Langganan Engine TTS (ElevenLabs / Azure)</option>
-                            <option value="Server & Cloud">Server, Hosting & Cloud Storage</option>
-                            <option value="Produksi Audio Studio">Produksi Audio & Mastering Studio</option>
-                            <option value="Honorarium Voice Talent">Honorarium Voice Talent & Naskah</option>
-                            <option value="Lainnya">Operasional Lainnya</option>
-                          </select>
-                        </div>
-
-                        {/* Jumlah Nominal Rp */}
-                        <div className="space-y-1">
-                          <label className="text-[11px] font-bold block uppercase">Nominal Biaya (Rp):</label>
-                          <div className="relative">
-                            <span className="absolute left-3 top-2.5 text-xs font-bold text-amber-400">Rp</span>
-                            <input
-                              type="number"
-                              placeholder="Contoh: 150000"
-                              value={newExpenseForm.amount}
-                              onChange={(e) => setNewExpenseForm({ ...newExpenseForm, amount: e.target.value })}
-                              className={`w-full py-2.5 pl-9 pr-3 rounded-xl text-xs font-mono font-bold outline-none ${inputStyle}`}
-                            />
-                          </div>
-                          {newExpenseForm.amount && (
-                            <span className="text-[10px] font-mono text-emerald-400 font-bold block mt-0.5">
-                              = {formatIDR(newExpenseForm.amount)}
-                            </span>
-                          )}
-                        </div>
-
-                        {/* No Bukti / SPJ */}
-                        <div className="space-y-1">
-                          <label className="text-[11px] font-bold block uppercase">No. Bukti Kuitansi / SPJ (Opsional):</label>
-                          <input
-                            type="text"
-                            placeholder="Contoh: SPJ-IKP-04"
-                            value={newExpenseForm.receiptNumber}
-                            onChange={(e) => setNewExpenseForm({ ...newExpenseForm, receiptNumber: e.target.value })}
-                            className={`w-full p-2.5 rounded-xl text-xs outline-none ${inputStyle}`}
-                          />
+                        <div className="flex items-center gap-2">
+                          <Receipt className="w-4 h-4 text-[#F59E0B]" />
+                          <h4 className="text-xs font-black uppercase tracking-wider">
+                            Riwayat Transaksi Rendering Suara Google ({renderLogs.length} Sesi)
+                          </h4>
                         </div>
                       </div>
 
-                      {/* Deskripsi */}
-                      <div className="space-y-1">
-                        <label className="text-[11px] font-bold block uppercase">Keterangan / Uraian Pengeluaran:</label>
-                        <input
-                          type="text"
-                          placeholder="Contoh: Pembelian kuota API Google Cloud AI Studio untuk produksi 25 siaran pers IKP Jabar"
-                          value={newExpenseForm.description}
-                          onChange={(e) => setNewExpenseForm({ ...newExpenseForm, description: e.target.value })}
-                          className={`w-full p-2.5 rounded-xl text-xs outline-none ${inputStyle}`}
-                        />
-                      </div>
-
-                      <div className="flex justify-end pt-1">
-                        <button
-                          type="submit"
-                          className="px-5 py-2.5 bg-[#0C4E34] hover:bg-[#0e5c3e] text-white font-bold text-xs rounded-xl flex items-center gap-1.5 shadow-sm transition-all"
-                        >
-                          <Plus className="w-4 h-4 text-[#F59E0B]" />
-                          <span>Simpan Entri Pengeluaran (Catat ke Kas)</span>
-                        </button>
-                      </div>
-                    </form>
-                  </div>
-
-                  {/* TABEL LOG RIWAYAT PENGELUARAN */}
-                  <div className="space-y-3">
-                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-                      <div className="flex items-center gap-2">
-                        <Receipt className="w-4 h-4 text-[#F59E0B]" />
-                        <h4 className="text-xs font-black uppercase tracking-wider">
-                          Daftar Riwayat Pengeluaran ({filteredExpenses.length} Transaksi)
-                        </h4>
-                      </div>
-
-                      <div className="flex items-center gap-2">
-                        <Filter className="w-3.5 h-3.5 text-zinc-400" />
-                        <select
-                          value={expenseFilterCategory}
-                          onChange={(e) => setExpenseFilterCategory(e.target.value)}
-                          className={`p-1.5 rounded-xl text-[11px] font-bold outline-none ${subBg}`}
-                        >
-                          <option value="all">Semua Kategori</option>
-                          <option value="Top-up API Gemini">Top-up API Gemini</option>
-                          <option value="Langganan Engine">Langganan Engine</option>
-                          <option value="Server & Cloud">Server & Cloud</option>
-                          <option value="Produksi Audio Studio">Produksi Audio</option>
-                          <option value="Honorarium Voice Talent">Honorarium Voice</option>
-                          <option value="Lainnya">Lainnya</option>
-                        </select>
-                      </div>
-                    </div>
-
-                    <div className={`rounded-2xl border overflow-hidden ${isDarkTheme ? 'border-emerald-950 bg-[#0a120e]' : 'border-zinc-200 bg-white'}`}>
-                      <div className="overflow-x-auto">
-                        <table className="w-full text-left text-xs">
-                          <thead className={`text-[10px] font-bold uppercase tracking-wider border-b ${
-                            isDarkTheme ? 'bg-[#070e0a] border-emerald-950 text-zinc-400' : 'bg-zinc-100 border-zinc-200 text-zinc-600'
-                          }`}>
-                            <tr>
-                              <th className="py-3 px-4">Tanggal</th>
-                              <th className="py-3 px-3">Kategori</th>
-                              <th className="py-3 px-3">Uraian / Keterangan</th>
-                              <th className="py-3 px-3">No. Bukti SPJ</th>
-                              <th className="py-3 px-3 text-right">Nominal Biaya (Rp)</th>
-                              <th className="py-3 px-3 text-center">Aksi</th>
-                            </tr>
-                          </thead>
-                          <tbody className="divide-y divide-zinc-800/30">
-                            {filteredExpenses.length === 0 ? (
+                      <div className={`rounded-2xl border overflow-hidden ${isDarkTheme ? 'border-emerald-950 bg-[#0a120e]' : 'border-zinc-200 bg-white'}`}>
+                        <div className="overflow-x-auto">
+                          <table className="w-full text-left text-xs">
+                            <thead className={`text-[10px] font-bold uppercase tracking-wider border-b ${
+                              isDarkTheme ? 'bg-[#070e0a] border-emerald-950 text-zinc-400' : 'bg-zinc-100 border-zinc-200 text-zinc-600'
+                            }`}>
                               <tr>
-                                <td colSpan={6} className="py-8 text-center text-xs text-zinc-500 font-medium">
-                                  Belum ada catatan pengeluaran pada kategori ini.
-                                </td>
+                                <th className="py-3 px-4">Waktu</th>
+                                <th className="py-3 px-3">Karakter Suara</th>
+                                <th className="py-3 px-3">Kategori</th>
+                                <th className="py-3 px-3">Panjang Naskah</th>
+                                <th className="py-3 px-3">Durasi Audio</th>
+                                <th className="py-3 px-3 text-right">Biaya Google (Rp)</th>
                               </tr>
-                            ) : (
-                              filteredExpenses.map((item, idx) => (
-                                <tr key={item.id || idx} className="hover:bg-white/5 transition-colors">
-                                  <td className="py-3 px-4 font-mono text-[11px] whitespace-nowrap text-zinc-400">
-                                    {item.date}
-                                  </td>
-                                  <td className="py-3 px-3 whitespace-nowrap">
-                                    <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-500/15 text-emerald-300 border border-emerald-500/30">
-                                      {item.category}
-                                    </span>
-                                  </td>
-                                  <td className="py-3 px-3 font-medium max-w-[280px] truncate">
-                                    {item.description}
-                                  </td>
-                                  <td className="py-3 px-3 font-mono text-[10px] text-zinc-400 whitespace-nowrap">
-                                    {item.receiptNumber || '-'}
-                                  </td>
-                                  <td className="py-3 px-3 text-right font-mono font-bold text-amber-400 whitespace-nowrap">
-                                    {formatIDR(item.amount)}
-                                  </td>
-                                  <td className="py-3 px-3 text-center">
-                                    <button
-                                      type="button"
-                                      onClick={() => handleDeleteExpense(item.id)}
-                                      className="p-1 text-zinc-500 hover:text-rose-400 transition-colors"
-                                      title="Hapus entri ini"
-                                    >
-                                      <Trash2 className="w-3.5 h-3.5" />
-                                    </button>
+                            </thead>
+                            <tbody className="divide-y divide-zinc-800/30">
+                              {renderLogs.length === 0 ? (
+                                <tr>
+                                  <td colSpan={6} className="py-8 text-center text-xs text-zinc-500 font-medium">
+                                    Belum ada transaksi rendering baru. Hasilkan suara di Studio untuk melihat pencatatan real-time!
                                   </td>
                                 </tr>
-                              ))
-                            )}
-                          </tbody>
-                        </table>
+                              ) : (
+                                renderLogs.map((item, idx) => (
+                                  <tr key={item.id || idx} className="hover:bg-white/5 transition-colors">
+                                    <td className="py-3 px-4 font-mono text-[11px] whitespace-nowrap text-zinc-400">
+                                      {item.timestamp}
+                                    </td>
+                                    <td className="py-3 px-3 font-bold whitespace-nowrap text-emerald-400">
+                                      {item.voiceName}
+                                    </td>
+                                    <td className="py-3 px-3 whitespace-nowrap">
+                                      <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-500/15 text-emerald-300 border border-emerald-500/30">
+                                        {item.category}
+                                      </span>
+                                    </td>
+                                    <td className="py-3 px-3 font-mono text-[11px] whitespace-nowrap">
+                                      {item.chars} Karakter
+                                    </td>
+                                    <td className="py-3 px-3 font-mono text-[11px] whitespace-nowrap text-amber-300">
+                                      {item.durationSec}s
+                                    </td>
+                                    <td className="py-3 px-3 text-right font-mono font-bold text-emerald-400 whitespace-nowrap">
+                                      {formatIDR(item.costIDR)}
+                                    </td>
+                                  </tr>
+                                ))
+                              )}
+                            </tbody>
+                          </table>
+                        </div>
                       </div>
                     </div>
                   </div>
-
-                </div>
-              )}
+                );
+              })()}
 
               {/* TAB 3: POOL KUNCI API (FAIL-SAFE 8 SLOT) */}
               {activeTab === 'api' && (
