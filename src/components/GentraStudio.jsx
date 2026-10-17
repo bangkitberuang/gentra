@@ -42,7 +42,7 @@ import {
 
 // --- Konfigurasi Model ---
 const TTS_MODEL = "gemini-2.5-flash-preview-tts";
-const TEXT_MODEL = "gemini-2.5-flash-preview-09-2025";
+const TEXT_MODEL = "gemini-3.8-flash";
 
 // --- Karakter Suara Bawaan GENTRA (14 Persona Awal + 8 Persona Khas Sunda) ---
 const INITIAL_VOICES = [
