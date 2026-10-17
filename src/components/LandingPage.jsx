@@ -389,7 +389,9 @@ export const LandingPage = ({ onOpenLogin }) => {
             className="w-full h-full object-cover object-[center_65%] opacity-90 sm:opacity-95 select-none pointer-events-none" 
           />
           {/* Gentle atmospheric balance: lets Gedung Sate & Parahyangan mountains shine brightly while keeping typography 100% readable */}
-          <div className="absolute inset-0 bg-gradient-to-b from-[#FBFBFA]/75 via-white/40 to-[#FBFBFA]/85 backdrop-blur-[0.5px]" />
+          <div className="absolute inset-0 bg-gradient-to-b from-[#FBFBFA]/80 via-white/55 to-[#FBFBFA]/85" />
+          {/* Central diffuse glow: softens the bright sunset directly behind text so it doesn't clash */}
+          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(255,255,255,0.8)_0%,transparent_70%)]" />
           <div className="absolute bottom-0 inset-x-0 h-10 bg-gradient-to-t from-white to-transparent" />
         </div>
         
@@ -399,13 +401,16 @@ export const LandingPage = ({ onOpenLogin }) => {
         <div className="relative z-10 max-w-4xl mx-auto px-4 text-center flex flex-col items-center space-y-4 sm:space-y-5">
           
           {/* Typography - Balanced, Impactful & Without Awkward Wraps */}
-          <div className="space-y-2">
+          <div className="space-y-3 flex flex-col items-center">
             <h1 className="text-4xl sm:text-5xl md:text-6xl font-black tracking-tight text-zinc-950 leading-[1.15] drop-shadow-sm">
               Ti Téks Jadi Sora.
             </h1>
-            <p className="text-xs sm:text-sm md:text-base font-extrabold tracking-wider text-[#D97706] uppercase drop-shadow-xs">
-              Gentra Produksi Audio • Standar Penyiaran & Studio Rekaman
-            </p>
+            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/90 backdrop-blur-md border border-amber-300/60 shadow-xs">
+              <span className="w-2 h-2 rounded-full bg-[#D97706] animate-pulse" />
+              <p className="text-xs sm:text-sm font-black tracking-wider text-[#B45309] uppercase">
+                Gentra Produksi Audio • Standar Penyiaran & Studio Rekaman
+              </p>
+            </div>
           </div>
 
           <p className="max-w-3xl mx-auto text-xs sm:text-sm md:text-base text-zinc-800 font-semibold leading-relaxed bg-white/70 backdrop-blur-xs px-4 py-2.5 rounded-2xl border border-white/80 shadow-2xs">
