@@ -49,11 +49,12 @@ import {
 } from 'lucide-react';
 
 // --- Konfigurasi Model (Google Gemini AI v1beta) ---
-const TTS_MODEL = "gemini-2.5-flash-preview-tts";
-const TTS_FALLBACK_MODEL = "gemini-2.0-flash";
-const TEXT_MODELS = ["gemini-2.5-flash", "gemini-2.0-flash", "gemini-2.5-pro", "gemini-2.0-flash-lite"];
-const TEXT_MODEL = "gemini-2.5-flash";
-const TEXT_FALLBACK_MODEL = "gemini-2.0-flash";
+const TTS_MODELS = ["gemini-3.8-flash-tts", "gemini-3.8-flash-lite-tts", "gemini-3.1-flash-tts-preview"];
+const TTS_MODEL = "gemini-3.8-flash-tts";
+const TTS_FALLBACK_MODEL = "gemini-3.8-flash-lite-tts";
+const TEXT_MODELS = ["gemini-3.8-flash", "gemini-3.7-flash", "gemini-3.6-flash"];
+const TEXT_MODEL = "gemini-3.8-flash";
+const TEXT_FALLBACK_MODEL = "gemini-3.7-flash";
 
 // --- Karakter Suara Bawaan GENTRA (14 Persona Awal + 8 Persona Khas Sunda) ---
 const INITIAL_VOICES = [
@@ -809,22 +810,19 @@ export const GentraStudio = ({
 
     setKeyTestStatuses(prev => {
       const next = [...prev];
-      next[index] = { status: 'testing', message: 'Memeriksa kuota...' };
+      next[index] = { status: 'testing', message: 'Memeriksa koneksi & kuota Gemini 3.8...' };
       return next;
     });
 
     try {
       const res = await fetch(
-        `https://generativelanguage.googleapis.com/v1beta/models/${TTS_MODEL}:generateContent?key=${targetKey}`,
+        `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.8-flash:generateContent?key=${targetKey}`,
         {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
-            contents: [{ parts: [{ text: 'tes' }] }],
-            generationConfig: {
-              responseModalities: ["AUDIO"],
-              speechConfig: { voiceConfig: { prebuiltVoiceConfig: { voiceName: 'Aoede' } } }
-            }
+            contents: [{ parts: [{ text: 'ping' }] }],
+            generationConfig: { maxOutputTokens: 5 }
           })
         }
       );
@@ -836,21 +834,21 @@ export const GentraStudio = ({
         }
         setKeyTestStatuses(prev => {
           const next = [...prev];
-          next[index] = { status: 'active', message: '🟢 Kuota Aktif & Siap Pakai' };
+          next[index] = { status: 'active', message: '🟢 Kunci Aktif & Siap Digunakan' };
           return next;
         });
       } else {
         const errJson = await res.json().catch(() => ({}));
         const code = res.status;
         const errMsg = errJson?.error?.message || '';
-        if (code === 429 || errMsg.toLowerCase().includes('quota') || errMsg.toLowerCase().includes('exceeded')) {
+        if (code === 429) {
           if (index === 0) {
             setApiQuotaStatus('limited');
             try { localStorage.setItem('gentra_api_quota_status', 'limited'); } catch(e){}
           }
           setKeyTestStatuses(prev => {
             const next = [...prev];
-            next[index] = { status: 'quota_limit', message: '🔴 Kuota Habis (HTTP 429 Limit)' };
+            next[index] = { status: 'quota_limit', message: `⚠️ Limit (HTTP 429): ${errMsg.slice(0, 65)}` };
             return next;
           });
         } else if (code === 400 || code === 403 || errMsg.toLowerCase().includes('api key') || errMsg.toLowerCase().includes('not valid')) {
@@ -866,7 +864,7 @@ export const GentraStudio = ({
         } else {
           setKeyTestStatuses(prev => {
             const next = [...prev];
-            next[index] = { status: 'error', message: `⚠️ HTTP ${code}` };
+            next[index] = { status: 'error', message: `⚠️ HTTP ${code}: ${errMsg.slice(0, 50)}` };
             return next;
           });
         }
@@ -874,7 +872,7 @@ export const GentraStudio = ({
     } catch (netErr) {
       setKeyTestStatuses(prev => {
         const next = [...prev];
-        next[index] = { status: 'error', message: '⚠️ Gagal terhubung' };
+        next[index] = { status: 'error', message: '⚠️ Gagal terhubung ke jaringan' };
         return next;
       });
     }
@@ -934,16 +932,13 @@ export const GentraStudio = ({
     const checkQuota = async () => {
       try {
         const res = await fetch(
-          `https://generativelanguage.googleapis.com/v1beta/models/${TTS_MODEL}:generateContent?key=${activeKeyPool[0]}`,
+          `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.8-flash:generateContent?key=${activeKeyPool[0]}`,
           {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
-              contents: [{ parts: [{ text: 'tes' }] }],
-              generationConfig: {
-                responseModalities: ["AUDIO"],
-                speechConfig: { voiceConfig: { prebuiltVoiceConfig: { voiceName: 'Aoede' } } }
-              }
+              contents: [{ parts: [{ text: 'ping' }] }],
+              generationConfig: { maxOutputTokens: 5 }
             })
           }
         );
@@ -953,7 +948,7 @@ export const GentraStudio = ({
         } else {
           const errJson = await res.json().catch(() => ({}));
           const errMsg = errJson?.error?.message || '';
-          if (res.status === 429 || errMsg.toLowerCase().includes('quota') || errMsg.toLowerCase().includes('exceeded')) {
+          if (res.status === 429) {
             setApiQuotaStatus('limited');
             try { localStorage.setItem('gentra_api_quota_status', 'limited'); } catch (e) {}
           } else if (res.status === 400 || res.status === 403) {
@@ -1466,92 +1461,66 @@ Langsung bacakan kalimat perkenalan ini dari kata pertama tanpa intro atau basa-
     setTranscribeProgress("Membaca file audio...");
 
     try {
-      if (openaiApiKey.trim()) {
-        // Mode 1: OpenAI Whisper API Resmi
-        setTranscribeProgress("Mentranskripsikan audio dengan OpenAI Whisper API...");
-        const formData = new FormData();
-        formData.append("file", whisperFile);
-        formData.append("model", "whisper-1");
-        formData.append("language", dialect === 'sunda' ? 'su' : 'id');
-
-        const response = await fetch("https://api.openai.com/v1/audio/transcriptions", {
-          method: "POST",
-          headers: {
-            "Authorization": `Bearer ${openaiApiKey.trim()}`
-          },
-          body: formData
-        });
-
-        if (!response.ok) {
-          const errText = await response.text();
-          throw new Error(`OpenAI Whisper error: ${errText}`);
-        }
-
-        const data = await response.json();
-        setTranscribedText(data.text || "");
-        setTranscribeProgress("Transkripsi berhasil diselesaikan!");
-      } else {
-        // Mode 2: Native Multimodal Audio Transcription (Otomatis via Gemini)
-        setTranscribeProgress("Mentranskripsikan audio dengan engine audio...");
-        const activeKey = apiKey || (typeof import.meta !== 'undefined' && import.meta.env?.VITE_GEMINI_API_KEY) || "";
-        if (!activeKey) {
-          setShowApiKeyModal(true);
-          throw new Error("Masukkan API Key terlebih dahulu di menu pengaturan.");
-        }
-
-        const reader = new FileReader();
-        const base64Promise = new Promise((resolve, reject) => {
-          reader.onload = () => {
-            const res = reader.result;
-            const base64 = res.split(',')[1];
-            resolve(base64);
-          };
-          reader.onerror = reject;
-        });
-        reader.readAsDataURL(whisperFile);
-        const base64Data = await base64Promise;
-
-        const mimeType = whisperFile.type || "audio/mp3";
-        const promptText = dialect === 'sunda'
-          ? "Dengarkan rekaman audio ini. Transkripsikan seluruh isi percakapan kata demi kata ke dalam teks bahasa Sunda atau Indonesia secara rapi dan akurat. Hanya berikan teks transkripsi saja tanpa tambahan kata pengantar atau penutup."
-          : "Dengarkan rekaman audio ini. Transkripsikan seluruh isi percakapan kata demi kata ke dalam teks secara akurat dengan ejaan dan tanda baca yang tepat. Hanya berikan teks transkripsi saja tanpa komentar apapun.";
-
-        let result = null;
-        let lastTransErr = null;
-        for (const modelName of TEXT_MODELS) {
-          try {
-            result = await fetchWithRetry(
-              `https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent?key=${activeKey}`,
-              {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                  contents: [{
-                    parts: [
-                      { inlineData: { mimeType: mimeType, data: base64Data } },
-                      { text: promptText }
-                    ]
-                  }]
-                })
-              },
-              3,
-              800,
-              activeKeyPool
-            );
-            if (result?.candidates?.[0]?.content?.parts?.[0]?.text) break;
-          } catch (tErr) {
-            console.warn(`Transkripsi model ${modelName} gagal:`, tErr.message);
-            lastTransErr = tErr;
-          }
-        }
-        if (!result || !result.candidates?.[0]?.content?.parts?.[0]?.text) {
-          throw lastTransErr || new Error("Gagal mentranskripsikan audio.");
-        }
-
-        const textOutput = result.candidates?.[0]?.content?.parts?.[0]?.text || "";
-        setTranscribedText(textOutput.trim());
-        setTranscribeProgress("Transkripsi berhasil diselesaikan!");
+      setTranscribeProgress("Membaca file audio...");
+      const activeKey = activeKeyPool[0] || (typeof import.meta !== 'undefined' && import.meta.env?.VITE_GEMINI_API_KEY) || "";
+      if (!activeKey) {
+        setShowApiKeyModal(true);
+        throw new Error("Masukkan Kunci API Google Gemini terlebih dahulu di menu pengaturan.");
       }
+
+      const reader = new FileReader();
+      const base64Promise = new Promise((resolve, reject) => {
+        reader.onload = () => {
+          const res = reader.result;
+          const base64 = res.split(',')[1];
+          resolve(base64);
+        };
+        reader.onerror = reject;
+      });
+      reader.readAsDataURL(whisperFile);
+      const base64Data = await base64Promise;
+
+      const mimeType = whisperFile.type || (whisperFile.name.endsWith('.wav') ? 'audio/wav' : 'audio/mp3');
+      const promptText = dialect === 'sunda'
+        ? "Dengarkan rekaman audio ini. Transkripsikan seluruh isi percakapan kata demi kata ke dalam teks bahasa Sunda atau Indonesia secara rapi dan akurat sesuai pengucapan. Hanya berikan teks transkripsi saja tanpa tambahan kata pengantar atau penutup."
+        : "Dengarkan rekaman audio ini. Transkripsikan seluruh isi percakapan kata demi kata ke dalam teks secara akurat dengan ejaan dan tanda baca yang tepat. Hanya berikan teks transkripsi saja tanpa komentar apapun.";
+
+      setTranscribeProgress("Mentranskripsikan audio ke teks dengan Google Gemini AI...");
+      let result = null;
+      let lastTransErr = null;
+      for (const modelName of TEXT_MODELS) {
+        try {
+          result = await fetchWithRetry(
+            `https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent?key=${activeKey}`,
+            {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                contents: [{
+                  parts: [
+                    { inlineData: { mimeType: mimeType, data: base64Data } },
+                    { text: promptText }
+                  ]
+                }]
+              })
+            },
+            3,
+            800,
+            activeKeyPool
+          );
+          if (result?.candidates?.[0]?.content?.parts?.[0]?.text) break;
+        } catch (tErr) {
+          console.warn(`Transkripsi model ${modelName} gagal:`, tErr.message);
+          lastTransErr = tErr;
+        }
+      }
+      if (!result || !result.candidates?.[0]?.content?.parts?.[0]?.text) {
+        throw lastTransErr || new Error("Gagal mentranskripsikan audio.");
+      }
+
+      const textOutput = result.candidates?.[0]?.content?.parts?.[0]?.text || "";
+      setTranscribedText(textOutput.trim());
+      setTranscribeProgress("Transkripsi berhasil diselesaikan!");
     } catch (err) {
       console.error(err);
       alert("Gagal mentranskripsi audio: " + err.message);
@@ -2498,10 +2467,8 @@ PENTING: Langsung bacakan naskah berikut dari kata pertama persis menjiwai usia,
                   {view === 'ads' ? "Naskah ILM Siap Disuarakan" : "Naskah Voice Over"}
                 </h2>
                 
-                {/* Tombol Transkripsi Whisper & Dialek Audio */}
+                {/* Tombol Transkripsi Audio AI */}
                 <div className="flex flex-wrap items-center gap-2">
-
-                  {/* Tombol Transkripsi Whisper */}
                   <button
                     onClick={() => { setShowWhisperModal(true); setTranscribedText(''); setWhisperFile(null); }}
                     className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all border flex items-center gap-1.5 shadow-sm ${
@@ -2509,13 +2476,11 @@ PENTING: Langsung bacakan naskah berikut dari kata pertama persis menjiwai usia,
                         ? 'bg-emerald-950/60 hover:bg-emerald-900/60 text-emerald-300 border-emerald-800/60' 
                         : 'bg-[#0C4E34]/10 hover:bg-[#0C4E34]/20 text-[#0C4E34] border-[#0C4E34]/20'
                     }`}
-                    title="Transkripsi Audio ke Naskah dengan OpenAI Whisper"
+                    title="Transkripsi Audio ke Naskah dengan Google Gemini AI"
                   >
                     <Mic className="w-3.5 h-3.5 text-[#F59E0B]" />
-                    Transkripsi Suara (Whisper)
+                    Transkripsi Suara (Gemini AI)
                   </button>
-
-                  {/* Dialek otomatis mengikuti persona yang dipilih dari 3 blok karakter */}
                 </div>
               </div>
 
@@ -3623,22 +3588,19 @@ PENTING: Langsung bacakan naskah berikut dari kata pertama persis menjiwai usia,
                   </div>
                 </div>
 
-                {/* Section: OpenAI Whisper Opsional */}
+                {/* Section: Engine Transkripsi Audio */}
                 <div className="space-y-1.5 pt-2 border-t border-zinc-800/60">
-                  <label className={`text-[11px] font-bold uppercase flex items-center gap-1.5 ${isDarkTheme ? 'text-zinc-200' : 'text-zinc-600'}`}>
-                    <Mic className="w-3.5 h-3.5 text-[#F59E0B]" /> OpenAI API Key untuk Whisper Transkripsi (Opsional)
-                  </label>
-                  <input 
-                    type="password"
-                    placeholder="sk-proj-..."
-                    value={openaiApiKey}
-                    onChange={(e) => {
-                      setOpenaiApiKey(e.target.value);
-                      try { localStorage.setItem('gentra_openai_key', e.target.value); } catch (err) {}
-                    }}
-                    className={`w-full p-2.5 rounded-xl text-xs font-mono outline-none transition-colors ${inputBg}`}
-                  />
-                  <span className={`text-[10px] ${subTextColor}`}>Jika dikosongkan, Whisper otomatis memakai engine multimodal Gemini bawaan.</span>
+                  <div className="flex items-center justify-between">
+                    <label className={`text-[11px] font-bold uppercase flex items-center gap-1.5 ${isDarkTheme ? 'text-zinc-200' : 'text-zinc-600'}`}>
+                      <Mic className="w-3.5 h-3.5 text-[#F59E0B]" /> Transkripsi Audio ke Naskah
+                    </label>
+                    <span className="text-[10px] px-2 py-0.5 rounded font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+                      100% Google Gemini AI
+                    </span>
+                  </div>
+                  <p className={`text-[10px] ${subTextColor}`}>
+                    Fitur transkripsi audio otomatis terintegrasi menggunakan Kunci API Google Gemini (Slot 1-8) tanpa memerlukan pihak ketiga.
+                  </p>
                 </div>
 
                 {/* Section: Ganti Kunci Master Admin */}
@@ -3717,7 +3679,7 @@ PENTING: Langsung bacakan naskah berikut dari kata pertama persis menjiwai usia,
         </div>
       )}
 
-      {/* MODAL: TRANSKRIPSI WHISPER (SPEECH-TO-TEXT) */}
+      {/* MODAL: TRANSKRIPSI SUARA GEMINI AI (SPEECH-TO-TEXT) */}
       {showWhisperModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm animate-in fade-in duration-200">
           <div className={`border w-full max-w-lg rounded-3xl p-6 md:p-8 shadow-2xl space-y-5 transition-colors ${
@@ -3729,8 +3691,8 @@ PENTING: Langsung bacakan naskah berikut dari kata pertama persis menjiwai usia,
                   <Mic className="w-5 h-5 text-[#F59E0B]" />
                 </div>
                 <div>
-                  <h3 className={`text-base font-bold ${isDarkTheme ? 'text-white' : 'text-zinc-900'}`}>Transkripsi Audio ke Naskah (Whisper)</h3>
-                  <p className={`text-[11px] ${subTextColor}`}>Ubah rekaman suara menjadi teks secara otomatis.</p>
+                  <h3 className={`text-base font-bold ${isDarkTheme ? 'text-white' : 'text-zinc-900'}`}>Transkripsi Audio ke Naskah (Gemini AI)</h3>
+                  <p className={`text-[11px] ${subTextColor}`}>Ubah rekaman suara menjadi teks secara otomatis dengan kecerdasan Gemini Multimodal.</p>
                 </div>
               </div>
               <button onClick={() => setShowWhisperModal(false)} className={`p-1 rounded-lg transition-colors ${isDarkTheme ? 'text-zinc-400 hover:text-white hover:bg-[#16251d]' : 'text-zinc-400 hover:text-black hover:bg-zinc-100'}`}>
@@ -3789,7 +3751,7 @@ PENTING: Langsung bacakan naskah berikut dari kata pertama persis menjiwai usia,
                 ) : (
                   <>
                     <Sparkles className="w-4 h-4 text-[#F59E0B]" />
-                    <span>MULAI TRANSKRIPSI WHISPER</span>
+                    <span>MULAI TRANSKRIPSI (GEMINI AI)</span>
                   </>
                 )}
               </button>
