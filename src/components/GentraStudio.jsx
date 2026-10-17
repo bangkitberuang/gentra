@@ -45,8 +45,11 @@ import {
   Eye,
   EyeOff,
   RefreshCw,
-  Activity
+  Activity,
+  FlaskConical,
+  Coins
 } from 'lucide-react';
+import { VoiceLabModal } from './VoiceLabModal.jsx';
 
 // --- Konfigurasi Model (Google Gemini AI v1beta) ---
 const TTS_MODELS = ["gemini-3.8-flash-tts", "gemini-3.8-flash-lite-tts", "gemini-3.1-flash-tts-preview"];
@@ -912,6 +915,7 @@ export const GentraStudio = ({
   const apiKey = activeKey; // Alias compatibility
 
   const [showApiKeyModal, setShowApiKeyModal] = useState(false);
+  const [showVoiceLabModal, setShowVoiceLabModal] = useState(false);
   const [generationError, setGenerationError] = useState(null);
 
   // Indikator Status Kuota API Real-Time (Lampu Hijau / Merah / Kuning)
@@ -1014,7 +1018,7 @@ export const GentraStudio = ({
         const parsed = JSON.parse(saved);
         const clonedVoices = parsed.filter(v => v.isCloned);
         const merged = INITIAL_VOICES.map(iv => {
-          const found = parsed.find(p => p.id === iv.id && p.name === iv.name);
+          const found = parsed.find(p => p.id === iv.id);
           return found ? { ...iv, ...found } : iv;
         });
         return [...merged, ...clonedVoices];
@@ -1025,9 +1029,24 @@ export const GentraStudio = ({
     }
   });
 
+  const handleUpdateVoices = (newVoices) => {
+    setVoices(newVoices);
+    try {
+      localStorage.setItem('gentra_voices_v3', JSON.stringify(newVoices));
+    } catch (e) {}
+  };
+
   const [voiceCategory, setVoiceCategory] = useState('Semua');
   const [selectedVoice, setSelectedVoice] = useState(INITIAL_VOICES[0]);
   const [previewingVoice, setPreviewingVoice] = useState(null);
+
+  // Auto-fallback jika karakter terpilih di-hide oleh admin lab
+  useEffect(() => {
+    if (selectedVoice?.isHidden) {
+      const firstActive = voices.find(v => !v.isHidden) || voices[0];
+      if (firstActive) setSelectedVoice(firstActive);
+    }
+  }, [voices, selectedVoice]);
 
   // Edit Persona Modal State
   const [editingVoice, setEditingVoice] = useState(null);
@@ -1818,10 +1837,10 @@ PENTING: Langsung bacakan naskah berikut dari kata pertama persis menjiwai usia,
       {/* Top Navigation Bar */}
       <nav className={`sticky top-0 z-50 backdrop-blur-md transition-colors duration-300 ${isDarkTheme ? 'bg-[#0c1611]/95 border-b border-emerald-950/80 shadow-md text-white' : 'bg-white/95 border-b border-zinc-200/80 shadow-sm text-zinc-900'}`}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between h-20 items-center">
+          <div className="flex justify-between h-20 items-center relative">
             
-            {/* Logo & Tagline */}
-            <div className="flex items-center gap-2.5 sm:gap-3 cursor-pointer group shrink-0" onClick={() => handleSwitchView('studio')}>
+            {/* Logo & Tagline (Sisi Kiri) */}
+            <div className="flex items-center gap-2.5 sm:gap-3 cursor-pointer group shrink-0 z-20" onClick={() => handleSwitchView('studio')}>
               <img 
                 src="/logo.png" 
                 alt="GENTRA" 
@@ -1837,8 +1856,8 @@ PENTING: Langsung bacakan naskah berikut dari kata pertama persis menjiwai usia,
               </div>
             </div>
 
-            {/* Desktop Menu (Segmented Pill Bar, Tidy & Single Line) */}
-            <div className="hidden md:flex items-center gap-3">
+            {/* Desktop Menu (Segmented Pill Bar, Tepat di Tengah-Tengah Navbar) */}
+            <div className="hidden md:flex items-center absolute left-1/2 -translate-x-1/2 z-10 pointer-events-auto">
               <div className={`flex items-center gap-1 p-1 rounded-full border shadow-2xs ${isDarkTheme ? 'bg-[#121f18] border-emerald-900/60' : 'bg-zinc-100 border-zinc-200/90'}`}>
                 {/* Posisi 1: STUDIO */}
                 <button 
@@ -1885,240 +1904,253 @@ PENTING: Langsung bacakan naskah berikut dari kata pertama persis menjiwai usia,
                   </span>
                 </button>
               </div>
+            </div>
 
-              {/* Server Selector Dropdown, Theme Toggle, User badge, API key, and logout button */}
-              <div className={`flex items-center gap-1.5 pl-2 border-l ${isDarkTheme ? 'border-emerald-950' : 'border-zinc-200'}`}>
-                {/* Pilihan Server Suara Dropdown (Di sebelah kanan, Dropdown Panah ke Bawah) */}
-                <div className="relative shrink-0" ref={serverDropdownRef}>
-                  <button 
-                    type="button"
-                    onClick={() => setIsServerDropdownOpen(prev => !prev)}
-                    className={`h-9 px-2.5 rounded-full text-xs font-bold transition-all flex items-center gap-1 shrink-0 border shadow-xs ${
-                      isDarkTheme 
-                        ? 'bg-[#14231b] border-emerald-900/80 text-emerald-300 hover:border-emerald-500 hover:text-white' 
-                        : 'bg-zinc-100 hover:bg-zinc-200/70 border-zinc-200 text-zinc-700 hover:text-[#0C4E34]'
-                    }`}
-                    title={`Pilihan Server Engine: ${activeEngine === 'azure' ? 'Kian Santang (Azure)' : activeEngine === 'elevenlabs' ? 'Pajajaran (ElevenLabs)' : 'Gatot Kaca (Gemini)'} (Klik untuk ganti server)`}
-                  >
-                    <Server className="w-4 h-4 text-[#F59E0B] shrink-0" />
-                    <ChevronDown className={`w-3.5 h-3.5 text-zinc-400 transition-transform duration-200 shrink-0 ${
-                      isServerDropdownOpen ? 'rotate-180 text-emerald-400' : ''
-                    }`} />
-                  </button>
+            {/* Desktop Right Controls (Server Selector, Theme, Lab Suara & Backend Button, API Indicator, User, Keluar) */}
+            <div className="hidden md:flex items-center gap-2 shrink-0 z-20">
+              {/* Pilihan Server Suara Dropdown (Di sebelah kanan, Dropdown Panah ke Bawah) */}
+              <div className="relative shrink-0" ref={serverDropdownRef}>
+                <button 
+                  type="button"
+                  onClick={() => setIsServerDropdownOpen(prev => !prev)}
+                  className={`h-9 px-2.5 rounded-full text-xs font-bold transition-all flex items-center gap-1 shrink-0 border shadow-xs ${
+                    isDarkTheme 
+                      ? 'bg-[#14231b] border-emerald-900/80 text-emerald-300 hover:border-emerald-500 hover:text-white' 
+                      : 'bg-zinc-100 hover:bg-zinc-200/70 border-zinc-200 text-zinc-700 hover:text-[#0C4E34]'
+                  }`}
+                  title={`Pilihan Server Engine: ${activeEngine === 'azure' ? 'Kian Santang (Azure)' : activeEngine === 'elevenlabs' ? 'Pajajaran (ElevenLabs)' : 'Gatot Kaca (Gemini)'} (Klik untuk ganti server)`}
+                >
+                  <Server className="w-4 h-4 text-[#F59E0B]" />
+                  <ChevronDown className={`w-3.5 h-3.5 text-zinc-400 transition-transform duration-200 shrink-0 ${
+                    isServerDropdownOpen ? 'rotate-180 text-emerald-400' : ''
+                  }`} />
+                </button>
 
-                  {/* Dropdown Menu Panah ke Bawah */}
-                  {isServerDropdownOpen && (
-                    <div className={`absolute right-0 top-full mt-2 w-72 rounded-2xl border shadow-2xl z-50 p-2 backdrop-blur-xl animate-in fade-in slide-in-from-top-2 duration-150 ${
-                      isDarkTheme 
-                        ? 'bg-[#0c1611]/95 border-emerald-900/80 shadow-[0_10px_30px_rgba(0,0,0,0.8)] text-white' 
-                        : 'bg-white/95 border-zinc-200 shadow-[0_10px_30px_rgba(0,0,0,0.12)] text-zinc-800'
-                    }`}>
-                      <div className="px-3 py-1.5 text-[10px] font-black tracking-wider uppercase text-zinc-400 flex items-center justify-between border-b border-zinc-100 dark:border-emerald-950 pb-2 mb-1">
-                        <span>PILIH SERVER SUARA</span>
-                        <span className="text-[9px] px-1.5 py-0.5 rounded font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
-                          Aktif
-                        </span>
-                      </div>
-
-                      {/* 1. Gatot Kaca (Gemini) */}
-                      <button
-                        type="button"
-                        onClick={() => {
-                          if (onSelectEngine) onSelectEngine('gemini');
-                          setIsServerDropdownOpen(false);
-                        }}
-                        className={`w-full text-left px-3 py-2.5 rounded-xl transition-all flex items-center justify-between gap-2.5 ${
-                          activeEngine === 'gemini'
-                            ? isDarkTheme ? 'bg-emerald-950/70 border border-emerald-500/50 text-emerald-300' : 'bg-emerald-50 border border-emerald-300 text-[#0C4E34]'
-                            : isDarkTheme ? 'hover:bg-[#14231b] text-zinc-300 hover:text-white' : 'hover:bg-zinc-100 text-zinc-700'
-                        }`}
-                      >
-                        <div className="flex items-center gap-2.5 min-w-0">
-                          <div className="w-7 h-7 rounded-lg bg-emerald-500/20 flex items-center justify-center shrink-0">
-                            <Cpu className="w-4 h-4 text-emerald-400" />
-                          </div>
-                          <div className="min-w-0">
-                            <div className="text-xs font-bold flex items-center gap-1.5">
-                              <span className="truncate">Gatot Kaca Server</span>
-                              <span className="text-[9px] px-1 py-0.2 rounded font-black bg-emerald-500/20 text-emerald-400 shrink-0">Utama</span>
-                            </div>
-                            <div className="text-[10px] text-zinc-400 truncate">Google Gemini 3.8 Neural (Sunda)</div>
-                          </div>
-                        </div>
-                        {activeEngine === 'gemini' && (
-                          <Check className="w-4 h-4 text-emerald-400 shrink-0" />
-                        )}
-                      </button>
-
-                      {/* 2. Kian Santang (Azure) */}
-                      <button
-                        type="button"
-                        onClick={() => {
-                          if (onSelectEngine) onSelectEngine('azure');
-                          setIsServerDropdownOpen(false);
-                        }}
-                        className={`w-full text-left px-3 py-2.5 rounded-xl transition-all flex items-center justify-between gap-2.5 mt-1 ${
-                          activeEngine === 'azure'
-                            ? isDarkTheme ? 'bg-sky-950/70 border border-sky-500/50 text-sky-300' : 'bg-sky-50 border border-sky-300 text-sky-900'
-                            : isDarkTheme ? 'hover:bg-[#14231b] text-zinc-300 hover:text-white' : 'hover:bg-zinc-100 text-zinc-700'
-                        }`}
-                      >
-                        <div className="flex items-center gap-2.5 min-w-0">
-                          <div className="w-7 h-7 rounded-lg bg-sky-500/20 flex items-center justify-center shrink-0">
-                            <Radio className="w-4 h-4 text-sky-400" />
-                          </div>
-                          <div className="min-w-0">
-                            <div className="text-xs font-bold flex items-center gap-1.5">
-                              <span className="truncate">Kian Santang Server</span>
-                              <span className="text-[9px] px-1 py-0.2 rounded font-black bg-sky-500/20 text-sky-400 shrink-0">Azure</span>
-                            </div>
-                            <div className="text-[10px] text-zinc-400 truncate">MS Azure Neural (Protokoler)</div>
-                          </div>
-                        </div>
-                        {activeEngine === 'azure' && (
-                          <Check className="w-4 h-4 text-sky-400 shrink-0" />
-                        )}
-                      </button>
-
-                      {/* 3. Pajajaran (ElevenLabs) */}
-                      <button
-                        type="button"
-                        onClick={() => {
-                          if (onSelectEngine) onSelectEngine('elevenlabs');
-                          setIsServerDropdownOpen(false);
-                        }}
-                        className={`w-full text-left px-3 py-2.5 rounded-xl transition-all flex items-center justify-between gap-2.5 mt-1 ${
-                          activeEngine === 'elevenlabs'
-                            ? isDarkTheme ? 'bg-purple-950/70 border border-purple-500/50 text-purple-300' : 'bg-purple-50 border border-purple-300 text-purple-900'
-                            : isDarkTheme ? 'hover:bg-[#14231b] text-zinc-300 hover:text-white' : 'hover:bg-zinc-100 text-zinc-700'
-                        }`}
-                      >
-                        <div className="flex items-center gap-2.5 min-w-0">
-                          <div className="w-7 h-7 rounded-lg bg-purple-500/20 flex items-center justify-center shrink-0">
-                            <Sparkles className="w-4 h-4 text-purple-400" />
-                          </div>
-                          <div className="min-w-0">
-                            <div className="text-xs font-bold flex items-center gap-1.5">
-                              <span className="truncate">Pajajaran Server</span>
-                              <span className="text-[9px] px-1 py-0.2 rounded font-black bg-purple-500/20 text-purple-400 shrink-0">Studio</span>
-                            </div>
-                            <div className="text-[10px] text-zinc-400 truncate">ElevenLabs Multilingual V2</div>
-                          </div>
-                        </div>
-                        {activeEngine === 'elevenlabs' && (
-                          <Check className="w-4 h-4 text-purple-400 shrink-0" />
-                        )}
-                      </button>
-
-                      {/* Footer: Detail Server Modal trigger */}
-                      <div className="mt-2 pt-1.5 border-t border-zinc-100 dark:border-emerald-950">
-                        <button
-                          type="button"
-                          onClick={() => {
-                            setIsServerDropdownOpen(false);
-                            if (onOpenEngineModal) onOpenEngineModal();
-                          }}
-                          className={`w-full text-center py-1.5 px-2 rounded-lg text-[11px] font-bold transition-colors ${
-                            isDarkTheme 
-                              ? 'text-emerald-400 hover:bg-emerald-950/50 hover:text-emerald-300' 
-                              : 'text-[#0C4E34] hover:bg-emerald-50'
-                          }`}
-                        >
-                          Lihat Detail & Perbandingan Server →
-                        </button>
-                      </div>
+                {/* Dropdown Menu Panah ke Bawah */}
+                {isServerDropdownOpen && (
+                  <div className={`absolute right-0 top-full mt-2 w-72 rounded-2xl border shadow-2xl z-50 p-2 backdrop-blur-xl animate-in fade-in slide-in-from-top-2 duration-150 ${
+                    isDarkTheme 
+                      ? 'bg-[#0c1611]/95 border-emerald-900/80 shadow-[0_10px_30px_rgba(0,0,0,0.8)] text-white' 
+                      : 'bg-white/95 border-zinc-200 shadow-[0_10px_30px_rgba(0,0,0,0.12)] text-zinc-800'
+                  }`}>
+                    <div className="px-3 py-1.5 text-[10px] font-black tracking-wider uppercase text-zinc-400 flex items-center justify-between border-b border-zinc-100 dark:border-emerald-950 pb-2 mb-1">
+                      <span>PILIH SERVER SUARA</span>
+                      <span className="text-[9px] px-1.5 py-0.5 rounded font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+                        Aktif
+                      </span>
                     </div>
-                  )}
-                </div>
-                {/* Tombol Switch Tema Gelap/Terang (Cukup Satu Tombol Switch) */}
-                <button 
-                  type="button"
-                  onClick={toggleTheme}
-                  className={`h-9 w-9 rounded-full border transition-all flex items-center justify-center shrink-0 shadow-xs ${
-                    isDarkTheme 
-                      ? 'bg-[#14231b] border-emerald-900/80 text-[#F59E0B] hover:bg-[#1b2f24] hover:scale-105' 
-                      : 'bg-zinc-100 border-zinc-200 text-amber-600 hover:bg-zinc-200 hover:scale-105'
-                  }`}
-                  title={isDarkTheme ? "Mode Studio Gelap Aktif (Klik untuk beralih ke Mode Terang)" : "Mode Terang Aktif (Klik untuk beralih ke Studio Gelap)"}
-                >
-                  {isDarkTheme ? <Moon className="w-4 h-4 fill-current text-[#F59E0B]" /> : <Sun className="w-4 h-4 fill-current text-amber-500" />}
-                </button>
 
-                {/* Indikator Lampu Hijau API (Singkat: Simbol Button Hijau Saja) */}
-                <button
-                  type="button"
-                  onClick={() => setShowApiKeyModal(true)}
-                  className={`h-9 w-9 rounded-full border transition-all flex items-center justify-center relative shrink-0 shadow-xs ${
-                    apiQuotaStatus === 'limited'
-                      ? 'bg-rose-950/80 border-rose-500 text-rose-300 hover:bg-rose-900 animate-pulse'
-                      : apiQuotaStatus === 'active'
-                      ? isDarkTheme ? 'bg-[#14231b] border-emerald-600/80 hover:bg-[#1b2f24]' : 'bg-emerald-50 border-emerald-400 hover:bg-emerald-100'
-                      : apiQuotaStatus === 'unconfigured'
-                      ? 'bg-amber-950/40 border-amber-500/60 hover:bg-amber-900/40'
-                      : 'bg-zinc-800 border-zinc-700'
-                  }`}
-                  title={
-                    apiQuotaStatus === 'limited' ? "PERINGATAN: Kuota API Limit (Klik untuk kelola kunci)" :
-                    apiQuotaStatus === 'active' ? "Lampu Hijau: API Siap Digunakan (Klik untuk kelola kunci)" :
-                    apiQuotaStatus === 'unconfigured' ? "Kunci API Belum Dikonfigurasi" : "Status API Key"
-                  }
-                >
-                  <span className="relative flex h-3 w-3 items-center justify-center">
-                    {apiQuotaStatus === 'limited' && (
-                      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-rose-400 opacity-75"></span>
-                    )}
-                    {apiQuotaStatus === 'active' && (
-                      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                    )}
-                    <span className={`relative inline-flex rounded-full h-2.5 w-2.5 ${
-                      apiQuotaStatus === 'limited' ? 'bg-rose-500 shadow-[0_0_8px_rgba(244,63,94,0.9)]' :
-                      apiQuotaStatus === 'active' ? 'bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.9)]' :
-                      apiQuotaStatus === 'unconfigured' ? 'bg-amber-400' : 'bg-zinc-400'
-                    }`}></span>
-                  </span>
-                </button>
+                    {/* 1. Gatot Kaca (Gemini) */}
+                    <button
+                      type="button"
+                      onClick={() => {
+                        if (onSelectEngine) onSelectEngine('gemini');
+                        setIsServerDropdownOpen(false);
+                      }}
+                      className={`w-full text-left px-3 py-2.5 rounded-xl transition-all flex items-center justify-between gap-2.5 ${
+                        activeEngine === 'gemini'
+                          ? isDarkTheme ? 'bg-emerald-950/70 border border-emerald-500/50 text-emerald-300' : 'bg-emerald-50 border border-emerald-300 text-[#0C4E34]'
+                          : isDarkTheme ? 'hover:bg-[#14231b] text-zinc-300 hover:text-white' : 'hover:bg-zinc-100 text-zinc-700'
+                      }`}
+                    >
+                      <div className="flex items-center gap-2.5 min-w-0">
+                        <div className="w-7 h-7 rounded-lg bg-emerald-500/20 flex items-center justify-center shrink-0">
+                          <Cpu className="w-4 h-4 text-emerald-400" />
+                        </div>
+                        <div className="min-w-0">
+                          <div className="text-xs font-bold flex items-center gap-1.5">
+                            <span className="truncate">Gatot Kaca Server</span>
+                            <span className="text-[9px] px-1 py-0.2 rounded font-black bg-emerald-500/20 text-emerald-400 shrink-0">Utama</span>
+                          </div>
+                          <div className="text-[10px] text-zinc-400 truncate">Google Gemini 3.8 Neural (Sunda)</div>
+                        </div>
+                      </div>
+                      {activeEngine === 'gemini' && (
+                        <Check className="w-4 h-4 text-emerald-400 shrink-0" />
+                      )}
+                    </button>
 
-                <button 
-                  onClick={() => setShowApiKeyModal(true)}
-                  className={`h-9 w-9 rounded-full border transition-all flex items-center justify-center shrink-0 ${
-                    apiQuotaStatus === 'limited'
-                      ? 'bg-rose-950/60 border-rose-500 text-rose-300 hover:bg-rose-900 animate-bounce'
-                      : isDarkTheme 
-                      ? 'bg-[#14231b] hover:bg-[#1b2f24] border-emerald-900/80 text-zinc-300 hover:text-white' 
-                      : 'bg-zinc-100 hover:bg-zinc-200/80 border-zinc-200 text-zinc-600 hover:text-[#0C4E34]'
-                  }`}
-                  title="Pengaturan API Key"
-                >
-                  <Key className="w-4 h-4" />
-                </button>
+                    {/* 2. Kian Santang (Azure) */}
+                    <button
+                      type="button"
+                      onClick={() => {
+                        if (onSelectEngine) onSelectEngine('azure');
+                        setIsServerDropdownOpen(false);
+                      }}
+                      className={`w-full text-left px-3 py-2.5 rounded-xl transition-all flex items-center justify-between gap-2.5 mt-1 ${
+                        activeEngine === 'azure'
+                          ? isDarkTheme ? 'bg-sky-950/70 border border-sky-500/50 text-sky-300' : 'bg-sky-50 border border-sky-300 text-sky-900'
+                          : isDarkTheme ? 'hover:bg-[#14231b] text-zinc-300 hover:text-white' : 'hover:bg-zinc-100 text-zinc-700'
+                      }`}
+                    >
+                      <div className="flex items-center gap-2.5 min-w-0">
+                        <div className="w-7 h-7 rounded-lg bg-sky-500/20 flex items-center justify-center shrink-0">
+                          <Radio className="w-4 h-4 text-sky-400" />
+                        </div>
+                        <div className="min-w-0">
+                          <div className="text-xs font-bold flex items-center gap-1.5">
+                            <span className="truncate">Kian Santang Server</span>
+                            <span className="text-[9px] px-1 py-0.2 rounded font-black bg-sky-500/20 text-sky-400 shrink-0">Azure</span>
+                          </div>
+                          <div className="text-[10px] text-zinc-400 truncate">MS Azure Neural (Protokoler)</div>
+                        </div>
+                      </div>
+                      {activeEngine === 'azure' && (
+                        <Check className="w-4 h-4 text-sky-400 shrink-0" />
+                      )}
+                    </button>
 
-                <div className={`h-9 px-3 rounded-full border text-[11px] font-bold flex items-center gap-1.5 shrink-0 ${
-                  isDarkTheme 
-                    ? 'bg-[#14231b] border-emerald-900/80 text-zinc-200' 
-                    : 'bg-zinc-100 border-zinc-200/80 text-zinc-700'
-                }`}>
-                  <User className="w-3.5 h-3.5 text-[#0C4E34]" />
-                  <span className="max-w-[110px] truncate">{user?.name || 'TIM PRODUKSI'}</span>
-                </div>
+                    {/* 3. Pajajaran (ElevenLabs) */}
+                    <button
+                      type="button"
+                      onClick={() => {
+                        if (onSelectEngine) onSelectEngine('elevenlabs');
+                        setIsServerDropdownOpen(false);
+                      }}
+                      className={`w-full text-left px-3 py-2.5 rounded-xl transition-all flex items-center justify-between gap-2.5 mt-1 ${
+                        activeEngine === 'elevenlabs'
+                          ? isDarkTheme ? 'bg-purple-950/70 border border-purple-500/50 text-purple-300' : 'bg-purple-50 border border-purple-300 text-purple-900'
+                          : isDarkTheme ? 'hover:bg-[#14231b] text-zinc-300 hover:text-white' : 'hover:bg-zinc-100 text-zinc-700'
+                      }`}
+                    >
+                      <div className="flex items-center gap-2.5 min-w-0">
+                        <div className="w-7 h-7 rounded-lg bg-purple-500/20 flex items-center justify-center shrink-0">
+                          <Sparkles className="w-4 h-4 text-purple-400" />
+                        </div>
+                        <div className="min-w-0">
+                          <div className="text-xs font-bold flex items-center gap-1.5">
+                            <span className="truncate">Pajajaran Server</span>
+                            <span className="text-[9px] px-1 py-0.2 rounded font-black bg-purple-500/20 text-purple-400 shrink-0">Studio</span>
+                          </div>
+                          <div className="text-[10px] text-zinc-400 truncate">ElevenLabs Multilingual V2</div>
+                        </div>
+                      </div>
+                      {activeEngine === 'elevenlabs' && (
+                        <Check className="w-4 h-4 text-purple-400 shrink-0" />
+                      )}
+                    </button>
 
-                <button
-                  onClick={onLogout}
-                  className={`h-9 px-3.5 rounded-full text-xs font-bold border transition-all shrink-0 ${
-                    isDarkTheme 
-                      ? 'text-zinc-400 hover:text-red-400 hover:bg-red-950/30 border-emerald-950' 
-                      : 'text-zinc-600 hover:text-red-700 hover:bg-red-50 border-zinc-200'
-                  }`}
-                  title="Kembali ke Landing Page / Keluar"
-                >
-                  Keluar
-                </button>
+                    {/* Footer: Detail Server Modal trigger */}
+                    <div className="mt-2 pt-1.5 border-t border-zinc-100 dark:border-emerald-950">
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setIsServerDropdownOpen(false);
+                          if (onOpenEngineModal) onOpenEngineModal();
+                        }}
+                        className={`w-full text-center py-1.5 px-2 rounded-lg text-[11px] font-bold transition-colors ${
+                          isDarkTheme 
+                            ? 'text-emerald-400 hover:bg-emerald-950/50 hover:text-emerald-300' 
+                            : 'text-[#0C4E34] hover:bg-emerald-50'
+                        }`}
+                      >
+                        Lihat Detail & Perbandingan Server →
+                      </button>
+                    </div>
+                  </div>
+                )}
               </div>
+
+              {/* Tombol Switch Tema Gelap/Terang (Cukup Satu Tombol Switch) */}
+              <button 
+                type="button"
+                onClick={toggleTheme}
+                className={`h-9 w-9 rounded-full border transition-all flex items-center justify-center shrink-0 shadow-xs ${
+                  isDarkTheme 
+                    ? 'bg-[#14231b] border-emerald-900/80 text-[#F59E0B] hover:bg-[#1b2f24] hover:scale-105' 
+                    : 'bg-zinc-100 border-zinc-200 text-amber-600 hover:bg-zinc-200 hover:scale-105'
+                }`}
+                title={isDarkTheme ? "Mode Studio Gelap Aktif (Klik untuk beralih ke Mode Terang)" : "Mode Terang Aktif (Klik untuk beralih ke Studio Gelap)"}
+              >
+                {isDarkTheme ? <Moon className="w-4 h-4 fill-current text-[#F59E0B]" /> : <Sun className="w-4 h-4 fill-current text-amber-500" />}
+              </button>
+
+              {/* Indikator Lampu Hijau API (Singkat: Simbol Button Hijau Saja) */}
+              <button
+                type="button"
+                onClick={() => setShowVoiceLabModal(true)}
+                className={`h-9 w-9 rounded-full border transition-all flex items-center justify-center relative shrink-0 shadow-xs ${
+                  apiQuotaStatus === 'limited'
+                    ? 'bg-rose-950/80 border-rose-500 text-rose-300 hover:bg-rose-900 animate-pulse'
+                    : apiQuotaStatus === 'active'
+                    ? isDarkTheme ? 'bg-[#14231b] border-emerald-600/80 hover:bg-[#1b2f24]' : 'bg-emerald-50 border-emerald-400 hover:bg-emerald-100'
+                    : apiQuotaStatus === 'unconfigured'
+                    ? 'bg-amber-950/40 border-amber-500/60 hover:bg-amber-900/40'
+                    : 'bg-zinc-800 border-zinc-700'
+                }`}
+                title={
+                  apiQuotaStatus === 'limited' ? "PERINGATAN: Kuota API Limit (Klik untuk kelola kunci)" :
+                  apiQuotaStatus === 'active' ? "Lampu Hijau: API Siap Digunakan (Klik untuk kelola kunci)" :
+                  apiQuotaStatus === 'unconfigured' ? "Kunci API Belum Dikonfigurasi" : "Status API Key"
+                }
+              >
+                <span className="relative flex h-3 w-3 items-center justify-center">
+                  {apiQuotaStatus === 'limited' && (
+                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-rose-400 opacity-75"></span>
+                  )}
+                  {apiQuotaStatus === 'active' && (
+                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                  )}
+                  <span className={`relative inline-flex rounded-full h-2.5 w-2.5 ${
+                    apiQuotaStatus === 'limited' ? 'bg-rose-500 shadow-[0_0_8px_rgba(244,63,94,0.9)]' :
+                    apiQuotaStatus === 'active' ? 'bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.9)]' :
+                    apiQuotaStatus === 'unconfigured' ? 'bg-amber-400' : 'bg-zinc-400'
+                  }`}></span>
+                </span>
+              </button>
+
+              {/* Tombol Laboratorium Suara & Backend (Hide/Unhide, Ganti Nama & Biaya Rupiah) */}
+              <button 
+                type="button"
+                onClick={() => setShowVoiceLabModal(true)}
+                className={`h-9 px-3 rounded-full border transition-all flex items-center gap-2 shrink-0 shadow-xs font-bold text-xs ${
+                  isDarkTheme 
+                    ? 'bg-[#14231b] hover:bg-[#1b2f24] border-emerald-900/80 text-emerald-300 hover:text-white' 
+                    : 'bg-zinc-100 hover:bg-zinc-200/80 border-zinc-200 text-[#0C4E34]'
+                }`}
+                title="Laboratorium Pengembangan Suara, Hide/Unhide Karakter, & Catatan Biaya Rupiah (Klik untuk buka)"
+              >
+                <FlaskConical className="w-3.5 h-3.5 text-[#F59E0B]" />
+                <span className="hidden xl:inline">Lab Suara</span>
+                <span className="text-[10px] px-1.5 py-0.5 rounded-full font-black bg-amber-500/20 text-amber-400 border border-amber-500/30 flex items-center gap-0.5">
+                  <Coins className="w-2.5 h-2.5" />
+                  IDR 99.1k
+                </span>
+              </button>
+
+              <div className={`h-9 px-3 rounded-full border text-[11px] font-bold flex items-center gap-1.5 shrink-0 ${
+                isDarkTheme 
+                  ? 'bg-[#14231b] border-emerald-900/80 text-zinc-200' 
+                  : 'bg-zinc-100 border-zinc-200/80 text-zinc-700'
+              }`}>
+                <User className="w-3.5 h-3.5 text-[#0C4E34]" />
+                <span className="max-w-[100px] truncate">{user?.name || 'TIM PRODUKSI'}</span>
+              </div>
+
+              <button
+                onClick={onLogout}
+                className={`h-9 px-3.5 rounded-full text-xs font-bold border transition-all shrink-0 ${
+                  isDarkTheme 
+                    ? 'text-zinc-400 hover:text-red-400 hover:bg-red-950/30 border-emerald-950' 
+                    : 'text-zinc-600 hover:text-red-700 hover:bg-red-50 border-zinc-200'
+                }`}
+                title="Kembali ke Landing Page / Keluar"
+              >
+                Keluar
+              </button>
             </div>
 
             {/* Mobile Toggle */}
-            <div className="flex md:hidden items-center gap-2">
+            <div className="flex md:hidden items-center gap-2 z-20">
               <button 
-                onClick={() => setShowApiKeyModal(true)} 
+                onClick={() => setShowVoiceLabModal(true)} 
+                className="relative p-2 text-amber-400 hover:text-amber-300"
+                title="Lab Suara & Backend (Biaya IDR & Hide/Unhide)"
+              >
+                <FlaskConical className="w-5 h-5" />
+              </button>
+              <button 
+                onClick={() => setShowVoiceLabModal(true)} 
                 className="relative p-2 text-zinc-400 hover:text-white"
                 title="Pengaturan API"
               >
@@ -2153,6 +2185,15 @@ PENTING: Langsung bacakan naskah berikut dari kata pertama persis menjiwai usia,
             </button>
             <button onClick={() => { setIsMenuOpen(false); if (onOpenEngineModal) onOpenEngineModal(); }} className={`w-full px-4 py-3 rounded-2xl text-sm font-bold flex items-center gap-3 text-emerald-400 ${isDarkTheme ? 'hover:bg-[#14231b]' : 'hover:bg-zinc-100'}`}>
               <Server className="w-4 h-4 text-[#F59E0B]" /> Server: {activeEngine === 'azure' ? 'Kian Santang' : activeEngine === 'elevenlabs' ? 'Pajajaran' : 'Gatot Kaca'} (Ganti)
+            </button>
+            <button onClick={() => { setIsMenuOpen(false); setShowVoiceLabModal(true); }} className={`w-full px-4 py-3 rounded-2xl text-sm font-bold flex items-center justify-between text-amber-400 ${isDarkTheme ? 'hover:bg-[#14231b]' : 'hover:bg-zinc-100'}`}>
+              <div className="flex items-center gap-3">
+                <FlaskConical className="w-4 h-4 text-[#F59E0B]" />
+                <span>Lab Suara & Backend</span>
+              </div>
+              <span className="text-[10px] px-2 py-0.5 rounded-full font-bold bg-amber-500/20 text-amber-400">
+                IDR 99.1k
+              </span>
             </button>
             <button onClick={() => handleSwitchView('history')} className={`w-full px-4 py-3 rounded-2xl text-sm font-bold flex items-center gap-3 ${view === 'history' ? 'bg-[#0C4E34] text-white' : isDarkTheme ? 'text-zinc-300 hover:bg-[#14231b]' : 'text-zinc-700 hover:bg-zinc-100'}`}>
               <History className="w-4 h-4" /> Riwayat ({history.length})
@@ -2665,7 +2706,7 @@ PENTING: Langsung bacakan naskah berikut dari kata pertama persis menjiwai usia,
                         <span className={`text-[10px] px-2 py-0.5 rounded-full font-bold border shrink-0 ${
                           isDarkTheme ? 'bg-blue-500/15 text-blue-300 border-blue-400/30' : 'bg-blue-50 text-blue-800 border-blue-200'
                         }`}>
-                          {voices.filter(v => v.category === 'Nasional').length} Karakter
+                          {voices.filter(v => v.category === 'Nasional' && !v.isHidden).length} Karakter
                         </span>
                       </div>
                       <p className={`text-xs mt-0.5 ${subTextColor}`}>
@@ -2684,7 +2725,7 @@ PENTING: Langsung bacakan naskah berikut dari kata pertama persis menjiwai usia,
                 {isBlock1Open && (
                   <div className="p-5">
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-                      {voices.filter(v => v.category === 'Nasional').map(v => {
+                      {voices.filter(v => v.category === 'Nasional' && !v.isHidden).map(v => {
                         const isSelected = selectedVoice.name === v.name;
                         const hasAudio = checkVoiceHasPreview(v, previewAudioCache.current);
                         const isPlaying = previewingVoice === v.name;
@@ -2793,7 +2834,7 @@ PENTING: Langsung bacakan naskah berikut dari kata pertama persis menjiwai usia,
                         <span className={`text-[10px] px-2 py-0.5 rounded-full font-bold border shrink-0 ${
                           isDarkTheme ? 'bg-emerald-500/15 text-emerald-300 border-emerald-400/30' : 'bg-emerald-50 text-emerald-800 border-emerald-200'
                         }`}>
-                          {voices.filter(v => v.category === 'Sunda').length} Karakter
+                          {voices.filter(v => v.category === 'Sunda' && !v.isHidden).length} Karakter
                         </span>
                       </div>
                       <p className={`text-xs mt-0.5 ${subTextColor}`}>
@@ -2812,7 +2853,7 @@ PENTING: Langsung bacakan naskah berikut dari kata pertama persis menjiwai usia,
                 {isBlock2Open && (
                   <div className="p-5">
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-                      {voices.filter(v => v.category === 'Sunda').map(v => {
+                      {voices.filter(v => v.category === 'Sunda' && !v.isHidden).map(v => {
                         const isSelected = selectedVoice.name === v.name;
                         const hasAudio = checkVoiceHasPreview(v, previewAudioCache.current);
                         return (
@@ -3321,363 +3362,31 @@ PENTING: Langsung bacakan naskah berikut dari kata pertama persis menjiwai usia,
         </div>
       )}
 
-      {/* MODAL: PENGATURAN API TERPROTEKSI MASTER ADMIN (FAIL-SAFE 8 SLOT) */}
-      {showApiKeyModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-in fade-in duration-200">
-          <div className={`border w-full max-w-2xl rounded-3xl p-6 md:p-8 shadow-2xl space-y-6 max-h-[90vh] overflow-y-auto transition-colors ${
-            isDarkTheme ? 'bg-[#0e1713] border-emerald-900/80 text-zinc-100' : 'bg-white border-zinc-200 text-zinc-900'
-          }`}>
-            
-            {/* Header Modal */}
-            <div className={`flex justify-between items-start border-b pb-4 ${isDarkTheme ? 'border-emerald-950' : 'border-zinc-200'}`}>
-              <div className="flex items-center gap-3">
-                <div className={`p-2.5 rounded-2xl shrink-0 ${
-                  isAdminUnlocked 
-                    ? isDarkTheme ? 'bg-amber-950/60 text-amber-300 border border-amber-800/60' : 'bg-amber-100 text-amber-800'
-                    : isDarkTheme ? 'bg-emerald-950/80 text-emerald-400 border border-emerald-900/60' : 'bg-[#0C4E34]/10 text-[#0C4E34]'
-                }`}>
-                  {isAdminUnlocked ? <Unlock className="w-5 h-5 text-[#F59E0B]" /> : <Lock className="w-5 h-5 text-[#10b981]" />}
-                </div>
-                <div>
-                  <div className="flex items-center gap-2 flex-wrap">
-                    <h3 className={`text-base font-bold ${isDarkTheme ? 'text-white' : 'text-zinc-900'}`}>
-                      Pengaturan Kredensial & Kunci API
-                    </h3>
-                    {isAdminUnlocked ? (
-                      <span className="text-[10px] bg-amber-500/20 text-amber-300 border border-amber-400/40 px-2.5 py-0.5 rounded-full font-bold shrink-0">
-                        Akses Master Admin Aktif
-                      </span>
-                    ) : (
-                      <span className={`text-[10px] px-2.5 py-0.5 rounded-full font-bold border shrink-0 ${
-                        isDarkTheme ? 'bg-zinc-800 text-zinc-300 border-zinc-700' : 'bg-zinc-100 text-zinc-600 border-zinc-200'
-                      }`}>
-                        🔒 Terkunci
-                      </span>
-                    )}
-                  </div>
-                  <p className={`text-xs mt-1 ${subTextColor}`}>
-                    {isAdminUnlocked 
-                      ? "Konfigurasi multi-slot fail-safe API Key untuk memastikan produksi audio tidak terputus quota limit."
-                      : "Area terproteksi: Masukkan kunci master admin untuk membuka konfigurasi kunci API sistem."}
-                  </p>
-                </div>
-              </div>
-
-              <button 
-                onClick={() => {
-                  setShowApiKeyModal(false);
-                  setAdminPinError('');
-                  setAdminPinInput('');
-                }} 
-                className={`p-1.5 rounded-lg transition-colors shrink-0 ${isDarkTheme ? 'text-zinc-400 hover:text-white hover:bg-[#16251d]' : 'text-zinc-400 hover:text-black hover:bg-zinc-100'}`}
-              >
-                <X className="w-5 h-5" />
-              </button>
-            </div>
-
-            {/* KONDISI 1: JIKA MASIH TERKUNCI */}
-            {!isAdminUnlocked ? (
-              <div className="space-y-5 py-1">
-                
-                {/* Ringkasan Status Pool API */}
-                <div className={`p-4 rounded-2xl space-y-3 transition-colors ${subCardBg}`}>
-                  <span className={`text-[11px] font-bold uppercase tracking-wider block ${subTextColor}`}>
-                    Status Pool Kunci API Gemini Saat Ini:
-                  </span>
-                  
-                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-xs">
-                    {geminiKeys.map((k, i) => (
-                      <div 
-                        key={i}
-                        className={`p-2.5 rounded-xl border flex flex-col justify-between ${
-                          k ? 'bg-emerald-950/40 border-emerald-800/60 text-emerald-300' : 'bg-zinc-900/60 border-zinc-800 text-zinc-500'
-                        }`}
-                      >
-                        <span className="font-mono text-[10px] font-bold">Slot {i + 1}</span>
-                        <span className="text-[11px] font-bold mt-1">
-                          {k ? '● Siaga' : '○ Kosong'}
-                        </span>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Form Buka Kunci Master Admin */}
-                <form 
-                  onSubmit={(e) => {
-                    e.preventDefault();
-                    setAdminPinError('');
-                    const currentMasterKey = localStorage.getItem('gentra_master_key') || 'admin2026';
-                    if (adminPinInput.trim() === currentMasterKey || adminPinInput.trim() === 'GENTRA-MASTER-ADMIN') {
-                      setIsAdminUnlocked(true);
-                      setAdminPinInput('');
-                    } else {
-                      setAdminPinError('Kunci Master Admin tidak valid. Hanya Master Admin yang dapat membuka menu ini.');
-                    }
-                  }}
-                  className="space-y-3 pt-1"
-                >
-                  {adminPinError && (
-                    <div className="p-3 bg-red-950/50 border border-red-800 text-red-300 text-xs rounded-xl font-medium">
-                      {adminPinError}
-                    </div>
-                  )}
-
-                  <div className="space-y-1.5">
-                    <label className={`text-xs font-bold uppercase tracking-wider flex items-center gap-1.5 ${isDarkTheme ? 'text-zinc-200' : 'text-zinc-700'}`}>
-                      <Key className="w-3.5 h-3.5 text-[#F59E0B]" /> Masukkan Kunci Akses Master Admin:
-                    </label>
-                    <input 
-                      type="password"
-                      placeholder="Masukkan kata sandi master admin..."
-                      value={adminPinInput}
-                      onChange={(e) => setAdminPinInput(e.target.value)}
-                      className={`w-full p-3.5 rounded-xl text-sm outline-none transition-all ${inputBg}`}
-                    />
-                    <span className={`text-[11px] block pt-0.5 ${subTextColor}`}>
-                      Kunci default: <code className={`px-1.5 py-0.5 rounded font-mono font-bold ${
-                        isDarkTheme ? 'bg-zinc-800 text-amber-300' : 'bg-zinc-100 text-zinc-700'
-                      }`}>admin2026</code>
-                    </span>
-                  </div>
-
-                  <button
-                    type="submit"
-                    className="w-full py-3.5 bg-[#0C4E34] hover:bg-[#0e5c3e] text-white font-bold text-xs rounded-xl flex items-center justify-center gap-2 shadow-md transition-all mt-3"
-                  >
-                    <Unlock className="w-4 h-4 text-[#F59E0B]" />
-                    BUKA KUNCI PENGATURAN API (MASTER ADMIN)
-                  </button>
-                </form>
-
-              </div>
-            ) : (
-              /* KONDISI 2: JIKA SUDAH TERBUKA (POOL 8 KUNCI GEMINI FAIL-SAFE) */
-              <div className="space-y-6 animate-in fade-in duration-200">
-                
-                {/* Banner Status */}
-                <div className={`p-3.5 rounded-2xl flex items-center justify-between text-xs font-bold border ${
-                  isDarkTheme ? 'bg-emerald-950/70 border-emerald-800/80 text-emerald-300' : 'bg-emerald-50 border-emerald-200 text-[#0C4E34]'
-                }`}>
-                  <span className="flex items-center gap-2">
-                    <Shield className="w-4 h-4 text-[#F59E0B]" />
-                    Mode Konfigurasi Master Admin Aktif ({activeKeyPool.length} dari 8 Kunci Terpasang)
-                  </span>
-                  <button
-                    type="button"
-                    onClick={() => setIsAdminUnlocked(false)}
-                    className="text-[11px] text-red-400 hover:underline font-bold"
-                  >
-                    Kunci Sekarang
-                  </button>
-                </div>
-
-                {/* Section: Pool 8 Kunci Gemini */}
-                <div className="space-y-3">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2">
-                      <Sparkles className="w-4 h-4 text-[#F59E0B]" />
-                      <span className={`text-xs font-black uppercase tracking-wider ${isDarkTheme ? 'text-zinc-200' : 'text-zinc-800'}`}>
-                        Pool Kunci API Google Gemini (Fail-Safe 8 Slot)
-                      </span>
-                    </div>
-                    <button
-                      type="button"
-                      onClick={handleTestAllKeys}
-                      disabled={isTestingAll || activeKeyPool.length === 0}
-                      className="flex items-center gap-1.5 px-3 py-1 rounded-xl text-[11px] font-bold bg-emerald-600 hover:bg-emerald-500 text-white transition-all disabled:opacity-40 disabled:cursor-not-allowed shadow-sm"
-                    >
-                      <RefreshCw className={`w-3 h-3 ${isTestingAll ? 'animate-spin' : ''}`} />
-                      {isTestingAll ? 'Menguji Semua...' : 'Tes Semua Kuota'}
-                    </button>
-                  </div>
-
-                  <p className={`text-xs ${subTextColor}`}>
-                    Masukkan hingga 8 API Key dari proyek Google AI Studio yang berbeda. Jika kuota gratis (limit 10 request/hari) pada Kunci #1 habis, sistem otomatis beralih ke Kunci #2, #3, dst tanpa memutus proses generate.
-                  </p>
-
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
-                    {geminiKeys.map((keyVal, idx) => {
-                      const isPrimary = idx === 0;
-                      const isFilled = Boolean(keyVal && keyVal.trim());
-                      const isVisible = keyVisibility[idx];
-
-                      return (
-                        <div 
-                          key={idx}
-                          className={`p-3 rounded-2xl border transition-all ${
-                            isFilled
-                              ? isDarkTheme ? 'bg-[#0e1b15] border-emerald-800/80' : 'bg-emerald-50/60 border-emerald-200'
-                              : isDarkTheme ? 'bg-[#09110d] border-zinc-800/80' : 'bg-zinc-50 border-zinc-200'
-                          }`}
-                        >
-                          <div className="flex items-center justify-between mb-1.5">
-                            <span className={`text-[11px] font-bold flex items-center gap-1.5 ${
-                              isPrimary ? 'text-amber-400' : isDarkTheme ? 'text-zinc-300' : 'text-zinc-700'
-                            }`}>
-                              <Key className="w-3 h-3 text-[#F59E0B]" />
-                              {isPrimary ? 'Slot 1: Kunci Utama (Primary)' : `Slot ${idx + 1}: Kunci Cadangan ${idx}`}
-                            </span>
-                            <span className={`text-[9px] font-bold px-1.5 py-0.5 rounded-full border ${
-                              isFilled 
-                                ? 'bg-emerald-500/15 text-emerald-300 border-emerald-400/30' 
-                                : 'bg-zinc-800 text-zinc-500 border-zinc-700'
-                            }`}>
-                              {isFilled ? '● Terpasang' : '○ Kosong'}
-                            </span>
-                          </div>
-
-                          <div className="relative flex items-center">
-                            <input 
-                              type={isVisible ? "text" : "password"}
-                              placeholder={isPrimary ? "AIzaSy... (Kunci Utama)" : `AIzaSy... (Cadangan ${idx})`}
-                              value={keyVal}
-                              onChange={(e) => handleUpdateGeminiKey(idx, e.target.value)}
-                              className={`w-full py-2 pl-3 pr-8 rounded-xl text-xs font-mono outline-none transition-colors ${
-                                isDarkTheme ? 'bg-[#070d0a] border border-zinc-800 text-zinc-200 focus:border-emerald-500' : 'bg-white border border-zinc-200 text-zinc-900 focus:border-emerald-500'
-                              }`}
-                            />
-                            <button
-                              type="button"
-                              onClick={() => {
-                                setKeyVisibility(prev => {
-                                  const next = [...prev];
-                                  next[idx] = !next[idx];
-                                  return next;
-                                });
-                              }}
-                              className="absolute right-2 p-1 text-zinc-400 hover:text-white"
-                              title={isVisible ? "Sembunyikan Kunci" : "Tampilkan Kunci"}
-                            >
-                              {isVisible ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
-                            </button>
-                          </div>
-
-                          {/* Live Quota Tester Bar */}
-                          <div className="flex items-center justify-between mt-2 pt-1.5 border-t border-zinc-800/40">
-                            <div className="text-[10px] font-medium flex items-center gap-1 min-h-[18px]">
-                              {keyTestStatuses[idx] ? (
-                                <span className={
-                                  keyTestStatuses[idx].status === 'active' ? 'text-emerald-400 font-bold' :
-                                  keyTestStatuses[idx].status === 'quota_limit' ? 'text-rose-400 font-bold' :
-                                  keyTestStatuses[idx].status === 'testing' ? 'text-amber-400 font-bold animate-pulse' :
-                                  keyTestStatuses[idx].status === 'invalid' ? 'text-amber-400 font-bold' :
-                                  'text-zinc-500'
-                                }>
-                                  {keyTestStatuses[idx].message}
-                                </span>
-                              ) : (
-                                <span className="text-zinc-500 text-[10px]">Status: Belum diuji</span>
-                              )}
-                            </div>
-                            {isFilled && (
-                              <button
-                                type="button"
-                                onClick={() => handleTestKey(idx)}
-                                disabled={keyTestStatuses[idx]?.status === 'testing'}
-                                className="text-[10px] font-bold px-2 py-0.5 rounded-lg bg-zinc-800 hover:bg-zinc-700 text-zinc-300 transition-colors flex items-center gap-1 disabled:opacity-50"
-                              >
-                                <Activity className={`w-2.5 h-2.5 text-emerald-400 ${keyTestStatuses[idx]?.status === 'testing' ? 'animate-pulse' : ''}`} />
-                                {keyTestStatuses[idx]?.status === 'testing' ? 'Mengecek...' : 'Tes Kuota'}
-                              </button>
-                            )}
-                          </div>
-                        </div>
-                      );
-                    })}
-                  </div>
-                </div>
-
-                {/* Section: Engine Transkripsi Audio */}
-                <div className="space-y-1.5 pt-2 border-t border-zinc-800/60">
-                  <div className="flex items-center justify-between">
-                    <label className={`text-[11px] font-bold uppercase flex items-center gap-1.5 ${isDarkTheme ? 'text-zinc-200' : 'text-zinc-600'}`}>
-                      <Mic className="w-3.5 h-3.5 text-[#F59E0B]" /> Transkripsi Audio ke Naskah
-                    </label>
-                    <span className="text-[10px] px-2 py-0.5 rounded font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
-                      100% Google Gemini AI
-                    </span>
-                  </div>
-                  <p className={`text-[10px] ${subTextColor}`}>
-                    Fitur transkripsi audio otomatis terintegrasi menggunakan Kunci API Google Gemini (Slot 1-8) tanpa memerlukan pihak ketiga.
-                  </p>
-                </div>
-
-                {/* Section: Ganti Kunci Master Admin */}
-                <div className={`p-4 rounded-2xl border space-y-2.5 ${
-                  isDarkTheme ? 'bg-amber-950/20 border-amber-900/60' : 'bg-amber-50/60 border-amber-200/80'
-                }`}>
-                  <div className="flex items-center justify-between">
-                    <span className={`text-xs font-bold flex items-center gap-1.5 ${isDarkTheme ? 'text-amber-300' : 'text-amber-900'}`}>
-                      <Key className="w-3.5 h-3.5 text-[#F59E0B]" />
-                      Ubah Kunci Akses Master Admin
-                    </span>
-                    {masterKeySuccess && (
-                      <span className="text-[11px] text-emerald-400 font-bold">{masterKeySuccess}</span>
-                    )}
-                  </div>
-
-                  <div className="flex gap-2">
-                    <input 
-                      type="password"
-                      placeholder="Masukkan kunci master admin baru (min 4 karakter)..."
-                      value={newMasterKeyInput}
-                      onChange={(e) => setNewMasterKeyInput(e.target.value)}
-                      className={`flex-1 p-2.5 rounded-xl text-xs outline-none ${
-                        isDarkTheme ? 'bg-[#09110d] border border-amber-800/80 text-amber-200 placeholder-zinc-500' : 'bg-white border border-amber-300'
-                      }`}
-                    />
-                    <button
-                      type="button"
-                      onClick={() => {
-                        if (!newMasterKeyInput.trim() || newMasterKeyInput.trim().length < 4) {
-                          alert('Kunci Master Admin baru minimal 4 karakter.');
-                          return;
-                        }
-                        setMasterKey(newMasterKeyInput.trim());
-                        try {
-                          localStorage.setItem('gentra_master_key', newMasterKeyInput.trim());
-                        } catch (err) {}
-                        setNewMasterKeyInput('');
-                        setMasterKeySuccess('Kunci Master Admin berhasil diubah!');
-                        setTimeout(() => setMasterKeySuccess(''), 3000);
-                      }}
-                      className="px-3.5 py-2.5 bg-amber-600 hover:bg-amber-500 text-white font-bold text-xs rounded-xl shadow-sm transition-colors shrink-0"
-                    >
-                      Perbarui Kunci
-                    </button>
-                  </div>
-                </div>
-
-                {/* Footer Actions */}
-                <div className="flex gap-2 pt-2">
-                  <button
-                    type="button"
-                    onClick={() => setIsAdminUnlocked(false)}
-                    className={`flex-1 py-3 rounded-xl font-bold text-xs transition-colors ${
-                      isDarkTheme ? 'bg-[#15231b] text-zinc-300 hover:bg-[#1f3428]' : 'bg-zinc-100 text-zinc-700 hover:bg-zinc-200'
-                    }`}
-                  >
-                    🔒 Kunci Kembali
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setIsAdminUnlocked(false);
-                      setShowApiKeyModal(false);
-                    }}
-                    className="flex-1 py-3 rounded-xl font-bold text-xs bg-[#0C4E34] text-white hover:bg-[#0e5c3e] shadow-sm transition-colors"
-                  >
-                    ✓ Simpan & Selesai
-                  </button>
-                </div>
-
-              </div>
-            )}
-
-          </div>
-        </div>
-      )}
+      {/* MODAL: LABORATORIUM PENGEMBANGAN SUARA & BACKEND ADMIN LENGKAP */}
+      <VoiceLabModal
+        isOpen={showVoiceLabModal || showApiKeyModal}
+        onClose={() => {
+          setShowVoiceLabModal(false);
+          setShowApiKeyModal(false);
+        }}
+        isDarkTheme={isDarkTheme}
+        voices={voices}
+        onUpdateVoices={handleUpdateVoices}
+        activeKeyPool={activeKeyPool}
+        geminiKeys={geminiKeys}
+        handleUpdateGeminiKey={handleUpdateGeminiKey}
+        handleTestKey={handleTestKey}
+        handleTestAllKeys={handleTestAllKeys}
+        keyTestStatuses={keyTestStatuses}
+        isTestingAll={isTestingAll}
+        keyVisibility={keyVisibility}
+        setKeyVisibility={setKeyVisibility}
+        isAdminUnlocked={isAdminUnlocked}
+        setIsAdminUnlocked={setIsAdminUnlocked}
+        user={user}
+        TTS_MODEL={TTS_MODEL}
+        initialVoicesDefaults={INITIAL_VOICES}
+      />
 
       {/* MODAL: TRANSKRIPSI SUARA GEMINI AI (SPEECH-TO-TEXT) */}
       {showWhisperModal && (
