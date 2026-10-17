@@ -43,7 +43,9 @@ import {
   ChevronDown,
   ChevronUp,
   Eye,
-  EyeOff
+  EyeOff,
+  RefreshCw,
+  Activity
 } from 'lucide-react';
 
 // --- Konfigurasi Model (Sama Persis dengan Nusa Voice Bawaan) ---
@@ -580,7 +582,7 @@ const createSilenceBuffer = (durationMs = 220, sampleRate = 24000) => {
   return new Int16Array(sampleCount);
 };
 
-const buildWavBlobFromPCM = (mergedPCM, sampleRate = 48000) => {
+const buildWavBlobFromPCM = (mergedPCM, sampleRate = 24000) => {
   const buffer = new ArrayBuffer(44 + mergedPCM.length * 2);
   const view = new DataView(buffer);
   
@@ -712,6 +714,90 @@ export const GentraStudio = ({
   });
 
   const [keyVisibility, setKeyVisibility] = useState([false, false, false, false, false, false, false, false]);
+  const [keyTestStatuses, setKeyTestStatuses] = useState(Array(8).fill(null));
+  const [isTestingAll, setIsTestingAll] = useState(false);
+
+  const handleTestKey = async (index) => {
+    const targetKey = geminiKeys[index]?.trim();
+    if (!targetKey) {
+      setKeyTestStatuses(prev => {
+        const next = [...prev];
+        next[index] = { status: 'empty', message: 'Slot kosong' };
+        return next;
+      });
+      return;
+    }
+
+    setKeyTestStatuses(prev => {
+      const next = [...prev];
+      next[index] = { status: 'testing', message: 'Memeriksa kuota...' };
+      return next;
+    });
+
+    try {
+      const res = await fetch(
+        `https://generativelanguage.googleapis.com/v1beta/models/${TTS_MODEL}:generateContent?key=${targetKey}`,
+        {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            contents: [{ parts: [{ text: 'tes' }] }],
+            generationConfig: {
+              responseModalities: ["AUDIO"],
+              speechConfig: { voiceConfig: { prebuiltVoiceConfig: { voiceName: 'Aoede' } } }
+            }
+          })
+        }
+      );
+
+      if (res.ok) {
+        setKeyTestStatuses(prev => {
+          const next = [...prev];
+          next[index] = { status: 'active', message: '🟢 Kuota Aktif & Siap Pakai' };
+          return next;
+        });
+      } else {
+        const errJson = await res.json().catch(() => ({}));
+        const code = res.status;
+        const errMsg = errJson?.error?.message || '';
+        if (code === 429 || errMsg.toLowerCase().includes('quota') || errMsg.toLowerCase().includes('exceeded')) {
+          setKeyTestStatuses(prev => {
+            const next = [...prev];
+            next[index] = { status: 'quota_limit', message: '🔴 Kuota Habis (HTTP 429 Limit)' };
+            return next;
+          });
+        } else if (code === 400 || code === 403 || errMsg.toLowerCase().includes('api key') || errMsg.toLowerCase().includes('not valid')) {
+          setKeyTestStatuses(prev => {
+            const next = [...prev];
+            next[index] = { status: 'invalid', message: '🟡 Kunci Tidak Valid / Salah' };
+            return next;
+          });
+        } else {
+          setKeyTestStatuses(prev => {
+            const next = [...prev];
+            next[index] = { status: 'error', message: `⚠️ HTTP ${code}` };
+            return next;
+          });
+        }
+      }
+    } catch (netErr) {
+      setKeyTestStatuses(prev => {
+        const next = [...prev];
+        next[index] = { status: 'error', message: '⚠️ Gagal terhubung' };
+        return next;
+      });
+    }
+  };
+
+  const handleTestAllKeys = async () => {
+    setIsTestingAll(true);
+    for (let i = 0; i < 8; i++) {
+      if (geminiKeys[i]?.trim()) {
+        await handleTestKey(i);
+      }
+    }
+    setIsTestingAll(false);
+  };
 
   const handleUpdateGeminiKey = (index, value) => {
     setGeminiKeys(prev => {
@@ -722,6 +808,12 @@ export const GentraStudio = ({
         if (index === 0) localStorage.setItem('gentra_gemini_key', value);
         if (index === 1) localStorage.setItem('gentra_gemini_backup_key', value);
       } catch (e) {}
+      return next;
+    });
+    // Reset status uji slot yang diubah
+    setKeyTestStatuses(prev => {
+      const next = [...prev];
+      next[index] = null;
       return next;
     });
   };
@@ -843,12 +935,12 @@ export const GentraStudio = ({
   const [audioUrl, setAudioUrl] = useState(null);
   const [history, setHistory] = useState([]);
 
-  // Studio Audio Resampling State (Standar Studio Broadcast 48kHz & 44.1kHz)
+  // Studio Audio Resampling State (Standar Studio Broadcast 48kHz & 44.1kHz, default 24kHz Native Vocoder)
   const [audioSampleRate, setAudioSampleRate] = useState(() => {
     try {
-      return parseInt(localStorage.getItem('gentra_sample_rate')) || 48000;
+      return parseInt(localStorage.getItem('gentra_sample_rate')) || 24000;
     } catch (e) {
-      return 48000;
+      return 24000;
     }
   });
   const rawPcmRef = useRef(null);
@@ -1309,16 +1401,15 @@ PENTING:
       ? "Patuhi tag ekspresi emosi bahasa Indonesia dalam tanda kurung siku seperti [tertawa], [berbisik], [jeda 1 detik], [bersemangat], [hela napas], [tegas], [tersenyum]. Wujudkan ekspresi tersebut dalam intonasi suara dan jangan melafalkan kata kurung sikunya secara harafiah."
       : "";
 
-    // System Instruction Ketat: Menjamin TIDAK ADA INTRO ("Tentu", "Baik", dll), langsung membaca naskah dari kata pertama
-    const systemInstructionText = `You are a professional Indonesian text-to-speech voice synthesis engine.
-Task: Directly speak aloud ONLY the exact user text provided.
-Persona: ${selectedVoice.gender === 'Male' ? 'Pria' : 'Wanita'} bernama ${selectedVoice.name} (${selectedVoice.desc}).
-Tone and Accent: Emosi ${emotion}, ${speedText}, ${pitchText}. ${dialectInstruction} ${personaInstruction} ${clonePromptAddon} ${emotionTagGuidance}
+    // Instruksi Persona Bahasa Indonesia (Sama Persis dengan Nusa Voice tapi Bebas Intro)
+    const systemInstructionText = `Sebagai pengisi suara ${selectedVoice.gender === 'Male' ? 'Pria' : 'Wanita'} Indonesia bernama ${selectedVoice.name}, Anda adalah pembaca naskah profesional dengan karakter vokal ${selectedVoice.desc}.
+Emosi: ${emotion}, tempo: ${speedText}, nada: ${pitchText}. ${dialectInstruction} ${personaInstruction} ${clonePromptAddon} ${emotionTagGuidance}
+Intonasi vokal Anda harus terdengar sangat alami, hidup, hangat, ekspresif, dan persis sesuai karakter ${selectedVoice.name}.
 
-ABSOLUTE MANDATORY RULES:
-1. Speak ONLY the exact words of the provided text.
-2. DO NOT utter any intro, greeting, commentary, or conversational filler (such as "Tentu", "Baik", "Baiklah", "Berikut adalah pembacaan naskah", "Halo", or "Oke").
-3. Begin speaking the very first word of the user text immediately with ZERO delay.`;
+ATURAN WAJIB & MUTLAK:
+1. Bacakan HANYA teks naskah yang diminta.
+2. DILARANG KERAS mengucapkan intro, sapaan, atau basa-basi apa pun (jangan sebut "Tentu", "Baik", "Baiklah", "Halo", "Berikut adalah pembacaan naskah", atau "Oke").
+3. Mulai bersuara langsung dari kata pertama teks naskah tanpa jeda.`;
 
     const pcmResults = [];
 
@@ -1331,14 +1422,18 @@ ABSOLUTE MANDATORY RULES:
 
         const chunkText = chunks[i];
 
-        // Payload murni teks naskah pada contents, seluruh instruksi persona & larangan intro di systemInstruction
+        // Format prompt naskah yang mengarahkan timbre persona Gemini persis seperti Nusa Voice
+        const userPromptText = selectedVoice.category === 'Nasional'
+          ? `Sebagai pengisi suara ${selectedVoice.gender === 'Male' ? 'Pria' : 'Wanita'} Indonesia bernama ${selectedVoice.name}, langsung bacakan naskah berikut dari kata pertama tanpa kata pengantar apa pun dengan emosi ${emotion}, ${speedText}, dan ${pitchText}. Pastikan suara terdengar seperti ${selectedVoice.desc} dan intonasi natural:\n\n"${chunkText}"`
+          : chunkText;
+
         const payload = {
           systemInstruction: {
             parts: [{ text: systemInstructionText }]
           },
           contents: [{ 
             role: "user",
-            parts: [{ text: chunkText }] 
+            parts: [{ text: userPromptText }] 
           }],
           generationConfig: {
             responseModalities: ["AUDIO"],
@@ -1347,7 +1442,8 @@ ABSOLUTE MANDATORY RULES:
                 prebuiltVoiceConfig: { voiceName: selectedVoice.id || 'Aoede' } 
               } 
             }
-          }
+          },
+          model: TTS_MODEL
         };
 
         let response;
@@ -3056,9 +3152,15 @@ ABSOLUTE MANDATORY RULES:
                         Pool Kunci API Google Gemini (Fail-Safe 8 Slot)
                       </span>
                     </div>
-                    <span className="text-[11px] font-mono text-emerald-400 font-bold">
-                      Rotasi Otomatis Aktif
-                    </span>
+                    <button
+                      type="button"
+                      onClick={handleTestAllKeys}
+                      disabled={isTestingAll || activeKeyPool.length === 0}
+                      className="flex items-center gap-1.5 px-3 py-1 rounded-xl text-[11px] font-bold bg-emerald-600 hover:bg-emerald-500 text-white transition-all disabled:opacity-40 disabled:cursor-not-allowed shadow-sm"
+                    >
+                      <RefreshCw className={`w-3 h-3 ${isTestingAll ? 'animate-spin' : ''}`} />
+                      {isTestingAll ? 'Menguji Semua...' : 'Tes Semua Kuota'}
+                    </button>
                   </div>
 
                   <p className={`text-xs ${subTextColor}`}>
@@ -3120,6 +3222,36 @@ ABSOLUTE MANDATORY RULES:
                             >
                               {isVisible ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
                             </button>
+                          </div>
+
+                          {/* Live Quota Tester Bar */}
+                          <div className="flex items-center justify-between mt-2 pt-1.5 border-t border-zinc-800/40">
+                            <div className="text-[10px] font-medium flex items-center gap-1 min-h-[18px]">
+                              {keyTestStatuses[idx] ? (
+                                <span className={
+                                  keyTestStatuses[idx].status === 'active' ? 'text-emerald-400 font-bold' :
+                                  keyTestStatuses[idx].status === 'quota_limit' ? 'text-rose-400 font-bold' :
+                                  keyTestStatuses[idx].status === 'testing' ? 'text-amber-400 font-bold animate-pulse' :
+                                  keyTestStatuses[idx].status === 'invalid' ? 'text-amber-400 font-bold' :
+                                  'text-zinc-500'
+                                }>
+                                  {keyTestStatuses[idx].message}
+                                </span>
+                              ) : (
+                                <span className="text-zinc-500 text-[10px]">Status: Belum diuji</span>
+                              )}
+                            </div>
+                            {isFilled && (
+                              <button
+                                type="button"
+                                onClick={() => handleTestKey(idx)}
+                                disabled={keyTestStatuses[idx]?.status === 'testing'}
+                                className="text-[10px] font-bold px-2 py-0.5 rounded-lg bg-zinc-800 hover:bg-zinc-700 text-zinc-300 transition-colors flex items-center gap-1 disabled:opacity-50"
+                              >
+                                <Activity className={`w-2.5 h-2.5 text-emerald-400 ${keyTestStatuses[idx]?.status === 'testing' ? 'animate-pulse' : ''}`} />
+                                {keyTestStatuses[idx]?.status === 'testing' ? 'Mengecek...' : 'Tes Kuota'}
+                              </button>
+                            )}
                           </div>
                         </div>
                       );

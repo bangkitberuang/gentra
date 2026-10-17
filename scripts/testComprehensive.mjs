@@ -154,9 +154,9 @@ assert(rotResult.visitedKeys.length === 3, `Key rotation visited exactly 3 keys 
 
 // 4. TEST SPOKEN INTRO PREVENTION GUARANTEE
 console.log('\n--- 4. Testing Spoken Intro Elimination Rules ---');
-assert(gentraCode.includes('DO NOT utter any intro, greeting, commentary'), 'SystemInstruction explicitly forbids greetings and filler preamble');
-assert(gentraCode.includes('Begin speaking the very first word of the user text immediately with ZERO delay'), 'SystemInstruction mandates zero-delay text speech');
-assert(gentraCode.includes('contents: [{ \n            role: "user",\n            parts: [{ text: chunkText }] \n          }]'), 'Contents payload contains RAW chunkText only without prefix');
+assert(gentraCode.includes('DILARANG KERAS mengucapkan intro, sapaan, atau basa-basi apa pun'), 'SystemInstruction explicitly forbids greetings and filler preamble in Indonesian');
+assert(gentraCode.includes('Mulai bersuara langsung dari kata pertama teks naskah tanpa jeda'), 'SystemInstruction mandates zero-delay text speech');
+assert(gentraCode.includes('userPromptText'), 'Contents payload contains persona-acting prompt without conversational filler');
 
 // 5. TEST TEXT CHUNKING LOGIC
 console.log('\n--- 5. Testing Natural Text Splitting & Chunking ---');
