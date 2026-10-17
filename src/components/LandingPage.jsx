@@ -936,141 +936,187 @@ export const LandingPage = ({ onOpenLogin }) => {
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
             
             {/* Card 1: Gemini 2.5 Flash Audio (Vibrant Deep Emerald & Gold) */}
-            <div className="relative rounded-3xl p-8 bg-gradient-to-b from-[#0C4E34] via-[#093523] to-[#041a11] border-2 border-emerald-400/80 shadow-2xl shadow-emerald-950/60 hover:shadow-emerald-500/20 hover:scale-[1.02] transition-all duration-300 flex flex-col justify-between group overflow-hidden">
-              <div className="absolute top-0 right-0 p-6 opacity-10 group-hover:opacity-20 transition-opacity pointer-events-none">
-                <Sparkles className="w-24 h-24 text-[#F59E0B]" />
+            <div className="relative rounded-3xl p-6 md:p-7 bg-gradient-to-b from-[#0C4E34] via-[#093523] to-[#041a11] border-2 border-emerald-400/80 shadow-2xl shadow-emerald-950/60 hover:shadow-emerald-500/20 hover:scale-[1.02] transition-all duration-300 flex flex-col justify-between group overflow-hidden">
+              <div className="absolute top-0 right-0 p-5 opacity-10 group-hover:opacity-20 transition-opacity pointer-events-none">
+                <Sparkles className="w-20 h-20 text-[#F59E0B]" />
               </div>
 
               <div>
-                <div className="flex items-center justify-between mb-5">
-                  <span className="text-[10px] font-black uppercase text-black bg-[#F59E0B] px-3 py-1 rounded-full shadow-md tracking-wider flex items-center gap-1.5">
+                <div className="flex items-center justify-between mb-4">
+                  <span className="text-[10px] font-black uppercase text-black bg-[#F59E0B] px-2.5 py-1 rounded-full shadow-md tracking-wider flex items-center gap-1.5">
                     <Sparkles className="w-3 h-3" />
-                    ENGINE AUDIO UTAMA FLAGSHIP
+                    FLAGSHIP CLOUD
                   </span>
-                  <div className="w-10 h-10 rounded-2xl bg-emerald-400/20 border border-emerald-400/40 flex items-center justify-center text-[#F59E0B]">
-                    <Zap className="w-5 h-5 fill-current" />
+                  <div className="w-9 h-9 rounded-xl bg-emerald-400/20 border border-emerald-400/40 flex items-center justify-center text-[#F59E0B]">
+                    <Zap className="w-4 h-4 fill-current" />
                   </div>
                 </div>
 
-                <h3 className="text-2xl font-black text-white tracking-tight">Gemini 2.5 Flash Audio</h3>
-                <p className="text-xs text-[#F59E0B] font-bold mt-1">Google DeepMind Multimodal Audio Engine</p>
+                <h3 className="text-xl font-black text-white tracking-tight">Gemini 2.5 Flash</h3>
+                <p className="text-[11px] text-[#F59E0B] font-bold mt-1">Google DeepMind Audio Engine</p>
                 
-                <p className="text-xs text-emerald-100/90 mt-4 leading-relaxed">
-                  Paling ekspresif dan natural! Memiliki kemampuan akting emosi dinamis (gembira, haru, bisikan, tempo santai), serta cengkok vokal otentik khas Sunda Priangan dan karakter vokal nasional.
+                <p className="text-xs text-emerald-100/90 mt-3 leading-relaxed">
+                  Paling ekspresif dan natural! Memiliki kemampuan akting emosi dinamis, serta cengkok vokal otentik khas Sunda Priangan dan karakter vokal nasional.
                 </p>
 
-                <div className="mt-6 pt-5 border-t border-emerald-700/50 space-y-2.5 text-xs text-emerald-100 font-medium">
+                <div className="mt-5 pt-4 border-t border-emerald-700/50 space-y-2 text-xs text-emerald-100 font-medium">
                   <div className="flex items-center gap-2">
-                    <CheckCircle2 className="w-4 h-4 text-[#F59E0B] shrink-0" />
-                    <span>22 Persona Sunda & Nasional Eksklusif</span>
+                    <CheckCircle2 className="w-3.5 h-3.5 text-[#F59E0B] shrink-0" />
+                    <span>22 Persona Sunda & Nasional</span>
                   </div>
                   <div className="flex items-center gap-2">
-                    <CheckCircle2 className="w-4 h-4 text-[#F59E0B] shrink-0" />
-                    <span>Kontrol Emosi & Modulasi Tempo Penuh</span>
+                    <CheckCircle2 className="w-3.5 h-3.5 text-[#F59E0B] shrink-0" />
+                    <span>Kontrol Emosi & Tempo Penuh</span>
                   </div>
                   <div className="flex items-center gap-2">
-                    <CheckCircle2 className="w-4 h-4 text-[#F59E0B] shrink-0" />
-                    <span>Mastering Studio 48kHz / 44.1kHz Lossless</span>
+                    <CheckCircle2 className="w-3.5 h-3.5 text-[#F59E0B] shrink-0" />
+                    <span>Mastering 48kHz / 44.1kHz WAV</span>
                   </div>
                 </div>
               </div>
 
-              <div className="mt-8 pt-4 border-t border-emerald-700/50 flex items-center justify-between text-[11px] font-mono text-emerald-300">
-                <span>Latensi Sintesis</span>
-                <span className="font-bold text-[#F59E0B] bg-black/40 px-2 py-0.5 rounded">&lt; 600ms Ultra-Fast</span>
+              <div className="mt-6 pt-3 border-t border-emerald-700/50 flex items-center justify-between text-[11px] font-mono text-emerald-300">
+                <span>Latensi</span>
+                <span className="font-bold text-[#F59E0B] bg-black/40 px-2 py-0.5 rounded">&lt; 600ms Flash</span>
               </div>
             </div>
 
-            {/* Card 2: Google Cloud TTS (Vibrant Blue & Cyan) */}
-            <div className="relative rounded-3xl p-8 bg-gradient-to-b from-[#0F3866] via-[#0B2545] to-[#061426] border-2 border-blue-400/60 shadow-2xl shadow-blue-950/60 hover:shadow-blue-500/20 hover:scale-[1.02] transition-all duration-300 flex flex-col justify-between group overflow-hidden">
-              <div className="absolute top-0 right-0 p-6 opacity-10 group-hover:opacity-20 transition-opacity pointer-events-none">
-                <Globe2 className="w-24 h-24 text-blue-300" />
+            {/* Card 2: Voicebox Local AI Workstation (Teal & Emerald Tech Theme) */}
+            <div className="relative rounded-3xl p-6 md:p-7 bg-gradient-to-b from-[#0D3B36] via-[#092926] to-[#041715] border-2 border-teal-400/80 shadow-2xl shadow-teal-950/60 hover:shadow-teal-500/20 hover:scale-[1.02] transition-all duration-300 flex flex-col justify-between group overflow-hidden">
+              <div className="absolute top-0 right-0 p-5 opacity-10 group-hover:opacity-20 transition-opacity pointer-events-none">
+                <Cpu className="w-20 h-20 text-teal-300" />
               </div>
 
               <div>
-                <div className="flex items-center justify-between mb-5">
-                  <span className="text-[10px] font-black uppercase text-white bg-blue-600 px-3 py-1 rounded-full shadow-md tracking-wider flex items-center gap-1.5">
-                    <Cpu className="w-3 h-3" />
-                    ENGINE AUDIO PENDUKUNG RESMI
+                <div className="flex items-center justify-between mb-4">
+                  <span className="text-[10px] font-black uppercase text-white bg-teal-600 px-2.5 py-1 rounded-full shadow-md tracking-wider flex items-center gap-1.5">
+                    <ShieldCheck className="w-3 h-3 text-amber-300" />
+                    100% OFFLINE PRIVASI
                   </span>
-                  <div className="w-10 h-10 rounded-2xl bg-blue-500/20 border border-blue-400/40 flex items-center justify-center text-blue-300">
-                    <Globe2 className="w-5 h-5" />
+                  <div className="w-9 h-9 rounded-xl bg-teal-500/20 border border-teal-400/40 flex items-center justify-center text-teal-300">
+                    <Cpu className="w-4 h-4" />
                   </div>
                 </div>
 
-                <h3 className="text-2xl font-black text-white tracking-tight">Google Cloud TTS</h3>
-                <p className="text-xs text-blue-300 font-bold mt-1">Wavenet, Neural2 & Journey Architecture</p>
+                <h3 className="text-xl font-black text-white tracking-tight">Voicebox Local AI</h3>
+                <p className="text-[11px] text-teal-300 font-bold mt-1">Zero-Shot Cloning & Kokoro Engine</p>
 
-                <p className="text-xs text-blue-100/90 mt-4 leading-relaxed">
-                  Stabilitas nada dan artikulasi sangat terukur. Pilihan tepat untuk pembacaan buku panjang, regulasi formal pemerintah, instruksi perizinan, dan audio dokumentasi teknis.
+                <p className="text-xs text-teal-100/90 mt-3 leading-relaxed">
+                  Sintesis vokal dan kloning suara 100% lokal di perangkat pengguna. Mendukung tag emosi paralinguistik manusiawi ([tertawa], [berbisik], [jeda]) tanpa kuota internet.
                 </p>
 
-                <div className="mt-6 pt-5 border-t border-blue-700/50 space-y-2.5 text-xs text-blue-100 font-medium">
+                <div className="mt-5 pt-4 border-t border-teal-700/50 space-y-2 text-xs text-teal-100 font-medium">
                   <div className="flex items-center gap-2">
-                    <CheckCircle2 className="w-4 h-4 text-blue-400 shrink-0" />
+                    <CheckCircle2 className="w-3.5 h-3.5 text-teal-300 shrink-0" />
+                    <span>Zero-Shot Cloning (Referensi 5–30s)</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <CheckCircle2 className="w-3.5 h-3.5 text-teal-300 shrink-0" />
+                    <span>Tag Emosi Paralinguistik Indonesia</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <CheckCircle2 className="w-3.5 h-3.5 text-teal-300 shrink-0" />
+                    <span>Privasi Total: Model Berjalan di GPU/CPU</span>
+                  </div>
+                </div>
+              </div>
+
+              <div className="mt-6 pt-3 border-t border-teal-700/50 flex items-center justify-between text-[11px] font-mono text-teal-300">
+                <span>Infrastruktur</span>
+                <span className="font-bold text-teal-200 bg-black/40 px-2 py-0.5 rounded">Localhost:17493 / Offline</span>
+              </div>
+            </div>
+
+            {/* Card 3: Google Cloud TTS (Vibrant Blue & Cyan) */}
+            <div className="relative rounded-3xl p-6 md:p-7 bg-gradient-to-b from-[#0F3866] via-[#0B2545] to-[#061426] border-2 border-blue-400/60 shadow-2xl shadow-blue-950/60 hover:shadow-blue-500/20 hover:scale-[1.02] transition-all duration-300 flex flex-col justify-between group overflow-hidden">
+              <div className="absolute top-0 right-0 p-5 opacity-10 group-hover:opacity-20 transition-opacity pointer-events-none">
+                <Globe2 className="w-20 h-20 text-blue-300" />
+              </div>
+
+              <div>
+                <div className="flex items-center justify-between mb-4">
+                  <span className="text-[10px] font-black uppercase text-white bg-blue-600 px-2.5 py-1 rounded-full shadow-md tracking-wider flex items-center gap-1.5">
+                    <Cpu className="w-3 h-3" />
+                    RESMI PENDUKUNG
+                  </span>
+                  <div className="w-9 h-9 rounded-xl bg-blue-500/20 border border-blue-400/40 flex items-center justify-center text-blue-300">
+                    <Globe2 className="w-4 h-4" />
+                  </div>
+                </div>
+
+                <h3 className="text-xl font-black text-white tracking-tight">Google Cloud TTS</h3>
+                <p className="text-[11px] text-blue-300 font-bold mt-1">Wavenet & Neural2 Architecture</p>
+
+                <p className="text-xs text-blue-100/90 mt-3 leading-relaxed">
+                  Stabilitas nada dan artikulasi sangat terukur. Pilihan tepat untuk pembacaan regulasi formal, instruksi publik, dan dokumentasi teknis kedinasan.
+                </p>
+
+                <div className="mt-5 pt-4 border-t border-blue-700/50 space-y-2 text-xs text-blue-100 font-medium">
+                  <div className="flex items-center gap-2">
+                    <CheckCircle2 className="w-3.5 h-3.5 text-blue-400 shrink-0" />
                     <span>Model Neural2 & Journey High-Fidelity</span>
                   </div>
                   <div className="flex items-center gap-2">
-                    <CheckCircle2 className="w-4 h-4 text-blue-400 shrink-0" />
+                    <CheckCircle2 className="w-3.5 h-3.5 text-blue-400 shrink-0" />
                     <span>Dukungan SSML Audio Tag Standar</span>
                   </div>
                   <div className="flex items-center gap-2">
-                    <CheckCircle2 className="w-4 h-4 text-blue-400 shrink-0" />
+                    <CheckCircle2 className="w-3.5 h-3.5 text-blue-400 shrink-0" />
                     <span>Tingkat Kestabilan Durasi & Pitch 99.9%</span>
                   </div>
                 </div>
               </div>
 
-              <div className="mt-8 pt-4 border-t border-blue-700/50 flex items-center justify-between text-[11px] font-mono text-blue-300">
+              <div className="mt-6 pt-3 border-t border-blue-700/50 flex items-center justify-between text-[11px] font-mono text-blue-300">
                 <span>Infrastruktur</span>
                 <span className="font-bold text-blue-200 bg-black/40 px-2 py-0.5 rounded">Google Cloud Global SLA</span>
               </div>
             </div>
 
-            {/* Card 3: Microsoft Azure Speech (Vibrant Indigo, Violet & Cyan) */}
-            <div className="relative rounded-3xl p-8 bg-gradient-to-b from-[#251A5A] via-[#1A123E] to-[#0F0A24] border-2 border-purple-400/60 shadow-2xl shadow-purple-950/60 hover:shadow-purple-500/20 hover:scale-[1.02] transition-all duration-300 flex flex-col justify-between group overflow-hidden">
-              <div className="absolute top-0 right-0 p-6 opacity-10 group-hover:opacity-20 transition-opacity pointer-events-none">
-                <Radio className="w-24 h-24 text-purple-300" />
+            {/* Card 4: Microsoft Azure Speech (Vibrant Indigo, Violet & Cyan) */}
+            <div className="relative rounded-3xl p-6 md:p-7 bg-gradient-to-b from-[#251A5A] via-[#1A123E] to-[#0F0A24] border-2 border-purple-400/60 shadow-2xl shadow-purple-950/60 hover:shadow-purple-500/20 hover:scale-[1.02] transition-all duration-300 flex flex-col justify-between group overflow-hidden">
+              <div className="absolute top-0 right-0 p-5 opacity-10 group-hover:opacity-20 transition-opacity pointer-events-none">
+                <Radio className="w-20 h-20 text-purple-300" />
               </div>
 
               <div>
-                <div className="flex items-center justify-between mb-5">
-                  <span className="text-[10px] font-black uppercase text-white bg-purple-600 px-3 py-1 rounded-full shadow-md tracking-wider flex items-center gap-1.5">
+                <div className="flex items-center justify-between mb-4">
+                  <span className="text-[10px] font-black uppercase text-white bg-purple-600 px-2.5 py-1 rounded-full shadow-md tracking-wider flex items-center gap-1.5">
                     <Radio className="w-3 h-3" />
-                    STANDAR PENYIARAN BERITA
+                    PENYIARAN BERITA
                   </span>
-                  <div className="w-10 h-10 rounded-2xl bg-purple-500/20 border border-purple-400/40 flex items-center justify-center text-purple-300">
-                    <Radio className="w-5 h-5" />
+                  <div className="w-9 h-9 rounded-xl bg-purple-500/20 border border-purple-400/40 flex items-center justify-center text-purple-300">
+                    <Radio className="w-4 h-4" />
                   </div>
                 </div>
 
-                <h3 className="text-2xl font-black text-white tracking-tight">Microsoft Azure Speech</h3>
-                <p className="text-xs text-purple-300 font-bold mt-1">GadisNeural & ArdiNeural Broadcasting</p>
+                <h3 className="text-xl font-black text-white tracking-tight">Azure Speech</h3>
+                <p className="text-[11px] text-purple-300 font-bold mt-1">GadisNeural & ArdiNeural</p>
 
-                <p className="text-xs text-purple-100/90 mt-4 leading-relaxed">
-                  Standar emas industri penyiaran warta berita radio dan audio korporat dengan artikulasi vokal yang sangat lugas, jernih, dan berbobot resmi kenegaraan.
+                <p className="text-xs text-purple-100/90 mt-3 leading-relaxed">
+                  Standar industri penyiaran warta berita radio dan audio korporat dengan artikulasi vokal yang sangat lugas, jernih, dan berbobot resmi.
                 </p>
 
-                <div className="mt-6 pt-5 border-t border-purple-700/50 space-y-2.5 text-xs text-purple-100 font-medium">
+                <div className="mt-5 pt-4 border-t border-purple-700/50 space-y-2 text-xs text-purple-100 font-medium">
                   <div className="flex items-center gap-2">
-                    <CheckCircle2 className="w-4 h-4 text-purple-400 shrink-0" />
+                    <CheckCircle2 className="w-3.5 h-3.5 text-purple-400 shrink-0" />
                     <span>Penyiar Berita GadisNeural & ArdiNeural</span>
                   </div>
                   <div className="flex items-center gap-2">
-                    <CheckCircle2 className="w-4 h-4 text-purple-400 shrink-0" />
-                    <span>Format RIFF PCM 48kHz Broadcast Siap Tayang</span>
+                    <CheckCircle2 className="w-3.5 h-3.5 text-purple-400 shrink-0" />
+                    <span>Format RIFF PCM 48kHz Broadcast</span>
                   </div>
                   <div className="flex items-center gap-2">
-                    <CheckCircle2 className="w-4 h-4 text-purple-400 shrink-0" />
-                    <span>Integrasi Serverless Region Southeast Asia</span>
+                    <CheckCircle2 className="w-3.5 h-3.5 text-purple-400 shrink-0" />
+                    <span>Serverless Region Southeast Asia</span>
                   </div>
                 </div>
               </div>
 
-              <div className="mt-8 pt-4 border-t border-purple-700/50 flex items-center justify-between text-[11px] font-mono text-purple-300">
+              <div className="mt-6 pt-3 border-t border-purple-700/50 flex items-center justify-between text-[11px] font-mono text-purple-300">
                 <span>Optimasi</span>
                 <span className="font-bold text-purple-200 bg-black/40 px-2 py-0.5 rounded">Warta Berita & Radio</span>
               </div>

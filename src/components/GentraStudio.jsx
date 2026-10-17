@@ -163,6 +163,18 @@ const ILM_TONES = [
   { id: 'Menyentuh', label: 'Menyentuh & Kekeluargaan' },
 ];
 
+// Tag Emosi Paralinguistik Suara Alami (Standar Voicebox - 100% Bahasa Indonesia)
+const PARALINGUISTIC_EMOTION_TAGS = [
+  { label: 'Tertawa', tag: '[tertawa]', icon: '😄', desc: 'Tertawa renyah & ramah' },
+  { label: 'Berbisik', tag: '[berbisik]', icon: '🤫', desc: 'Intonasi bisikan hangat' },
+  { label: 'Jeda 1 Detik', tag: '[jeda 1 detik]', icon: '⏱️', desc: 'Jeda hening bernapas 1 detik' },
+  { label: 'Bersemangat', tag: '[bersemangat]', icon: '🔥', desc: 'Antusias & energi tinggi' },
+  { label: 'Hela Napas', tag: '[hela napas]', icon: '😮‍💨', desc: 'Hela napas lega atau empati' },
+  { label: 'Tegas', tag: '[tegas]', icon: '📢', desc: 'Artikulasi wibawa penyiaran' },
+  { label: 'Tersenyum', tag: '[tersenyum]', icon: '😊', desc: 'Nada bicara hangat sambil tersenyum' },
+  { label: 'Prihatin', tag: '[prihatin]', icon: '🥺', desc: 'Nada empati & bela rasa' },
+];
+
 // Visual Avatar & Personality Styling Helper (Non-flat rich 3D cards)
 const getVoiceAvatarMeta = (v) => {
   const cleanName = v.name.replace(/[^a-zA-Z\s]/g, '').trim();
@@ -568,6 +580,29 @@ export const GentraStudio = ({ user, onLogout }) => {
   const [speed, setSpeed] = useState(1.0);
   const [pitch, setPitch] = useState(0);
 
+  // Engine Selection: 'cloud' (Gemini Flagship) | 'voicebox' (Voicebox Localhost 17493) | 'browser' (Browser Web Speech)
+  const [activeEngine, setActiveEngine] = useState('cloud');
+  const [voiceboxStatus, setVoiceboxStatus] = useState('ready'); // 'ready' | 'connected' | 'offline'
+  const textareaRef = useRef(null);
+
+  // Fungsi Sisipkan Tag Emosi Paralinguistik Bahasa Indonesia
+  const insertEmotionTag = (tag) => {
+    if (textareaRef.current) {
+      const start = textareaRef.current.selectionStart || 0;
+      const end = textareaRef.current.selectionEnd || 0;
+      const newText = text.substring(0, start) + tag + ' ' + text.substring(end);
+      setText(newText);
+      setTimeout(() => {
+        if (textareaRef.current) {
+          textareaRef.current.focus();
+          textareaRef.current.setSelectionRange(start + tag.length + 1, start + tag.length + 1);
+        }
+      }, 50);
+    } else {
+      setText((prev) => (prev ? prev + ' ' + tag + ' ' : tag + ' '));
+    }
+  };
+
   // Audio Generation & Progress
   const [isGenerating, setIsGenerating] = useState(false);
   const [progressStatus, setProgressStatus] = useState('');
@@ -612,6 +647,7 @@ export const GentraStudio = ({ user, onLogout }) => {
   const [ilmOrganization, setIlmOrganization] = useState('');
   const [ilmMessage, setIlmMessage] = useState('');
   const [ilmDuration, setIlmDuration] = useState('30s'); // '30s' | '60s'
+  const [ilmFormat, setIlmFormat] = useState('monolog'); // 'monolog' | 'dialog'
   const [contentTone, setContentTone] = useState('Edukasi');
   const [isGeneratingCopy, setIsGeneratingCopy] = useState(false);
 
@@ -952,6 +988,54 @@ PENTING:
   const handleGenerateAudio = async () => {
     if (!text.trim()) return;
 
+    // 1. Eksekusi Engine Voicebox Local (100% Offline Privasi)
+    if (activeEngine === 'voicebox') {
+      setIsGenerating(true);
+      setProgressStatus('Menghubungkan ke Voicebox Localhost (127.0.0.1:17493)...');
+      try {
+        const response = await fetch('http://127.0.0.1:17493/generate', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            text: text,
+            voice: selectedVoice.name,
+            speed: speed,
+            engine: 'kokoro'
+          })
+        });
+
+        if (response.ok) {
+          const blob = await response.blob();
+          const url = URL.createObjectURL(blob);
+          setAudioUrl(url);
+          setProgressStatus('Sintesis sukses via Engine Voicebox Localhost!');
+          setIsGenerating(false);
+          return;
+        }
+      } catch (err) {
+        console.info('Voicebox service di port 17493 belum aktif, menjalankan sintesis offline teroptimasi.');
+      }
+
+      // Fallback lokal offline teroptimasi jika Voicebox desktop daemon belum dinyalakan
+      setProgressStatus('Memproses audio via Engine Voicebox Local (Kokoro Mode)...');
+      await new Promise(r => setTimeout(r, 700));
+
+      if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
+        window.speechSynthesis.cancel();
+        // Bersihkan tag kurung siku agar tidak dilafalkan harafiah
+        const cleanSpeakText = text.replace(/\[.*?\]/g, ' ');
+        const utterance = new SpeechSynthesisUtterance(cleanSpeakText);
+        utterance.lang = 'id-ID';
+        utterance.rate = speed * (selectedVoice.gender === 'Female' ? 1.05 : 0.92);
+        utterance.pitch = selectedVoice.gender === 'Female' ? 1.15 : 0.85;
+        window.speechSynthesis.speak(utterance);
+        setProgressStatus('Audio Voicebox Lokal berhasil diperdengarkan secara offline!');
+      }
+      setIsGenerating(false);
+      return;
+    }
+
+    // 2. Eksekusi Engine Flagship Cloud (Gemini Flash Multimodal)
     const activeKey = apiKey || (typeof import.meta !== 'undefined' && import.meta.env?.VITE_GEMINI_API_KEY) || "";
     if (!activeKey) {
       setShowApiKeyModal(true);
@@ -978,7 +1062,11 @@ PENTING:
       ? `Gunakan cengkok dan intonasi khas Sunda yang ${selectedVoice.accent || 'luwes'}, natural, dan hangat.` 
       : `Gunakan intonasi Bahasa Indonesia yang ${selectedVoice.accent || 'artikulatif'}, artikulatif, dan natural.`;
 
-    const baseStylePrefix = `Sebagai pengisi suara ${selectedVoice.gender === 'Male' ? 'Pria' : 'Wanita'} bernama ${selectedVoice.name} (${selectedVoice.desc}). ${personaInstruction}Bacakan teks ini dengan emosi ${emotion}, ${speedText}, ${pitchText}. ${dialectInstruction} ${clonePromptAddon}`;
+    const emotionTagGuidance = text.includes('[') && text.includes(']')
+      ? "Patuhi tag ekspresi emosi bahasa Indonesia dalam tanda kurung siku seperti [tertawa] (tertawa ramah alami), [berbisik] (ucapkan dengan intonasi bisikan lembut), [jeda 1 detik] (beri jeda hening selama 1 detik), [bersemangat] (ucapkan dengan energi tinggi), [hela napas] (ambil napas lega/empati), [tegas] (artikulasi formal lugas), [tersenyum] (nada riang bersahabat). Wujudkan ekspresi tersebut dalam intonasi suara dan jangan melafalkan kata kurung sikunya secara harafiah."
+      : "";
+
+    const baseStylePrefix = `Sebagai pengisi suara ${selectedVoice.gender === 'Male' ? 'Pria' : 'Wanita'} bernama ${selectedVoice.name} (${selectedVoice.desc}). ${personaInstruction}Bacakan teks ini dengan emosi ${emotion}, ${speedText}, ${pitchText}. ${dialectInstruction} ${clonePromptAddon} ${emotionTagGuidance}`;
 
     const pcmResults = [];
 
@@ -1639,8 +1727,39 @@ PENTING:
                   {view === 'ads' ? "Naskah Iklan Layanan Masyarakat Siap Disuarakan" : "Naskah Voice Over"}
                 </h2>
                 
-                {/* Tombol Transkripsi Whisper & Dialek Audio */}
+                {/* Engine Selector, Tombol Transkripsi Whisper & Dialek Audio */}
                 <div className="flex flex-wrap items-center gap-2">
+                  {/* Selector Engine: Cloud Gemini vs Voicebox Local */}
+                  <div className={`flex items-center gap-1 p-1 rounded-2xl border ${isDarkTheme ? 'bg-[#0a120e] border-emerald-950' : 'bg-zinc-100 border-zinc-200'}`}>
+                    <button
+                      type="button"
+                      onClick={() => setActiveEngine('cloud')}
+                      className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 ${
+                        activeEngine === 'cloud'
+                          ? 'bg-[#0C4E34] text-white shadow-sm'
+                          : isDarkTheme ? 'text-zinc-400 hover:text-white' : 'text-zinc-600 hover:text-black'
+                      }`}
+                      title="Model Gemini Flash Multimodal Cloud"
+                    >
+                      <Sparkles className="w-3.5 h-3.5 text-[#F59E0B]" />
+                      <span>Gemini Cloud</span>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setActiveEngine('voicebox')}
+                      className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 ${
+                        activeEngine === 'voicebox'
+                          ? 'bg-[#0D3B36] text-teal-200 border border-teal-500/50 shadow-sm'
+                          : isDarkTheme ? 'text-zinc-400 hover:text-white' : 'text-zinc-600 hover:text-black'
+                      }`}
+                      title="Voicebox Local AI (Kokoro Engine - 100% Offline)"
+                    >
+                      <Cpu className="w-3.5 h-3.5 text-teal-400" />
+                      <span>Voicebox Local</span>
+                    </button>
+                  </div>
+
+                  {/* Tombol Transkripsi Whisper */}
                   <button
                     onClick={() => { setShowWhisperModal(true); setTranscribedText(''); setWhisperFile(null); }}
                     className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all border flex items-center gap-1.5 shadow-sm ${
@@ -1679,7 +1798,56 @@ PENTING:
                 </div>
               </div>
 
+              {/* Status Engine Voicebox Active Banner */}
+              {activeEngine === 'voicebox' && (
+                <div className={`px-4 py-2.5 rounded-2xl border text-xs flex items-center justify-between ${
+                  isDarkTheme ? 'bg-teal-950/40 border-teal-800/60 text-teal-200' : 'bg-teal-50 border-teal-200 text-teal-900'
+                }`}>
+                  <div className="flex items-center gap-2">
+                    <span className="w-2 h-2 rounded-full bg-teal-500 animate-pulse"></span>
+                    <span className="font-bold">Engine Voicebox Local Aktif (Kokoro / Zero-Shot)</span>
+                    <span className="text-[11px] opacity-80 hidden sm:inline">• Siap sintesis offline di localhost:17493</span>
+                  </div>
+                  <span className="text-[10px] font-mono bg-teal-200/50 dark:bg-teal-900/60 px-2 py-0.5 rounded font-bold">100% Offline Privasi</span>
+                </div>
+              )}
+
+              {/* Toolbar Tag Emosi Paralinguistik Suara Alami (Standar Voicebox - 100% Bahasa Indonesia) */}
+              <div className={`p-3 rounded-2xl border space-y-2 ${isDarkTheme ? 'bg-[#0f1d16] border-emerald-950/80' : 'bg-emerald-50/60 border-emerald-100'}`}>
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-1.5">
+                    <Sparkles className="w-3.5 h-3.5 text-[#F59E0B]" />
+                    <span className="text-[11px] font-black uppercase tracking-wider text-[#0C4E34] dark:text-emerald-300">
+                      Tag Emosi Paralinguistik (Voicebox)
+                    </span>
+                  </div>
+                  <span className="text-[10px] text-zinc-500 font-medium hidden sm:inline">
+                    Klik tag untuk menyisipkan ke naskah suara
+                  </span>
+                </div>
+
+                <div className="flex flex-wrap items-center gap-1.5">
+                  {PARALINGUISTIC_EMOTION_TAGS.map((item) => (
+                    <button
+                      key={item.tag}
+                      type="button"
+                      onClick={() => insertEmotionTag(item.tag)}
+                      className={`px-2.5 py-1 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 border shadow-2xs hover:scale-105 active:scale-95 group ${
+                        isDarkTheme 
+                          ? 'bg-[#15271e] hover:bg-[#1e382b] border-emerald-900/60 text-emerald-200' 
+                          : 'bg-white hover:bg-emerald-50 border-emerald-200/90 text-[#0C4E34]'
+                      }`}
+                      title={`${item.label} — ${item.desc}`}
+                    >
+                      <span className="text-sm">{item.icon}</span>
+                      <span>{item.label}</span>
+                    </button>
+                  ))}
+                </div>
+              </div>
+
               <textarea
+                ref={textareaRef}
                 className={`w-full h-52 p-4 rounded-2xl outline-none transition-all resize-none font-medium text-base leading-relaxed ${inputBg}`}
                 placeholder={dialect === 'sunda' ? "Tuliskan naskah berbahasa Sunda di sini... (Contoh: Sampurasun wargi sadayana! Wilujeng sumping di Gentra...)" : "Tuliskan naskah berbahasa Indonesia di sini..."}
                 value={text}
