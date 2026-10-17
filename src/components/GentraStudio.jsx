@@ -266,7 +266,97 @@ export const checkVoiceHasPreview = (voice, cache = {}) => {
   if (voice.isCloned) return true; // Suara kloningan pengguna selalu memiliki sampel rekaman
   if (STATIC_AUDIO_PREVIEWS[voice.name]) return true;
   if (cache && cache[voice.name]) return true;
-  return false;
+  return true; // Semua karakter bawaan didukung
+};
+
+// Persona instruction builder for Gemini Audio synthesis
+export const getVoicePersonaInstruction = (voice) => {
+  if (!voice) {
+    return {
+      role: 'pembaca naskah profesional',
+      timbre: 'vokal ramah dan jernih',
+      dialect: 'Gunakan intonasi Bahasa Indonesia yang alami'
+    };
+  }
+
+  if (voice.category === 'Sunda') {
+    if (voice.name.includes('Eneng') || voice.name.includes('Budak Leutik (Eneng)')) {
+      return {
+        role: 'anak perempuan kecil Sunda berusia 6-7 tahun bernama Eneng (Budak Leutik)',
+        timbre: 'vokal anak perempuan kecil bernada tinggi (high-pitched), imut, cempreng menggemaskan, polos, riang dan ceria',
+        dialect: 'Gunakan cengkok, dialek, dan intonasi anak-anak khas Sunda Jawa Barat yang manis dan alami'
+      };
+    }
+    if (voice.name.includes('Ujang Alit') || voice.name.includes('Budak Leutik (Ujang Alit)')) {
+      return {
+        role: 'anak kecil laki-laki Sunda berusia 7 tahun bernama Ujang Alit (Budak Leutik)',
+        timbre: 'vokal anak laki-laki kecil yang lincah, aktif, polos, riang dan bersemangat',
+        dialect: 'Gunakan cengkok, dialek, dan intonasi anak-anak khas Sunda Jawa Barat yang riang dan bersahaja'
+      };
+    }
+    if (voice.name.includes('Abah')) {
+      return {
+        role: 'kakek / sesepuh Sunda yang bijaksana bernama Abah',
+        timbre: 'vokal kakek sepuh yang berat berwibawa, tempo tenang bersahaja, parau hangat penuh kearifan khas sesepuh Priangan',
+        dialect: 'Gunakan cengkok, dialek, dan intonasi khas sesepuh Sunda Jawa Barat yang sangat tenang, teduh, dan berwibawa'
+      };
+    }
+    if (voice.name.includes('Nini')) {
+      return {
+        role: 'nenek Sunda sepuh yang penuh welas asih bernama Nini',
+        timbre: 'vokal nenek sepuh yang lembut menenangkan, penuh kasih sayang, keibuan dan teduh',
+        dialect: 'Gunakan cengkok dan intonasi khas nenek Sunda Jawa Barat yang lembut, penuh kasih sayang dan mengayomi'
+      };
+    }
+    if (voice.name.includes('Ceu Edah') || voice.name.includes('Bibi')) {
+      return {
+        role: 'ibu-ibu / ceu-ceu Sunda yang heboh, guyub dan akrab bernama Ceu Edah (Bibi)',
+        timbre: 'vokal ibu-ibu Sunda yang ekspresif, medok renyah, ceria, renyah dan bersahabat',
+        dialect: 'Gunakan cengkok dan intonasi medok khas ceu-ceu Sunda Jawa Barat yang guyub dan heboh bersahabat'
+      };
+    }
+    if (voice.name.includes('Kang Asep')) {
+      return {
+        role: 'pria dewasa Sunda yang bersahabat dan komunikatif bernama Kang Asep',
+        timbre: 'vokal pria dewasa Sunda yang santai, luwes, bersahabat, hangat dan komunikatif',
+        dialect: 'Gunakan cengkok dan intonasi khas pria Sunda Parahyangan yang luwes dan ramah'
+      };
+    }
+    if (voice.name.includes('Teh Neng')) {
+      return {
+        role: 'gadis / mojang Priangan bernama Teh Neng',
+        timbre: 'vokal mojang Priangan yang bertutur kata halus, santun, berayun lembut, merdu dan anggun',
+        dialect: 'Gunakan cengkok dan intonasi khas Mojang Sunda Priangan yang santun, halus, dan berayun merdu'
+      };
+    }
+    if (voice.name.includes('Ujang')) {
+      return {
+        role: 'pemuda Sunda yang lincah dan bersemangat bernama Ujang',
+        timbre: 'vokal pemuda Sunda yang segar, ceria, gaul nyunda dan penuh energi positif',
+        dialect: 'Gunakan cengkok dan intonasi khas pemuda Sunda Jawa Barat yang lincah dan bersemangat'
+      };
+    }
+    return {
+      role: `karakter Sunda ${voice.name}`,
+      timbre: voice.desc || 'vokal khas Pasundan',
+      dialect: 'Gunakan cengkok dan intonasi khas Sunda Jawa Barat yang luwes dan alami'
+    };
+  }
+
+  if (voice.category === 'Dialek Nusantara') {
+    return {
+      role: `pengisi suara berlogat ${voice.accent || voice.name}`,
+      timbre: voice.desc || 'vokal berkarakter daerah Nusantara',
+      dialect: `Gunakan cengkok, dialek, dan intonasi daerah ${voice.accent || voice.name} yang kental, ekspresif, dan alami`
+    };
+  }
+
+  // Default / Nasional
+  return {
+    role: `pengisi suara ${voice.gender === 'Male' ? 'Pria' : 'Wanita'} Indonesia bernama ${voice.name}`,
+    timbre: voice.desc || 'vokal penyiaran profesional',
+    dialect: `Gunakan intonasi Bahasa Indonesia yang ${voice.accent || 'artikulatif'}, jernih, dan natural`
+  };
 };
 
 const EMOTIONS = [
@@ -1146,25 +1236,60 @@ export const GentraStudio = ({
       }
     }
 
-    // 2. Jika ada API Key Gemini aktif dan karakter Blok 1 (Nasional), buat preview vokal ASLI Gemini Neural secara instan!
-    if (activeKey && v.category === 'Nasional') {
+    // 2. Jika ada API Key Gemini aktif, buat preview vokal ASLI Gemini Neural secara instan untuk SEMUA karakter!
+    if (activeKey) {
       try {
-        const previewPrompt = `Sebagai pengisi suara ${v.gender === 'Male' ? 'Pria' : 'Wanita'} Indonesia bernama ${v.name}, langsung bacakan kalimat ini dari kata pertama tanpa kata pengantar apa pun. Suara terdengar sangat alami, hidup, hangat, seperti ${v.desc}:\n\n"Halo, saya ${v.name}. Senang bisa mengisi suara untuk Anda."`;
-        
+        const persona = getVoicePersonaInstruction(v);
+        let sampleSentence = `Halo, saya ${v.name}. Senang bisa mengisi suara untuk Anda.`;
+        if (v.category === 'Sunda') {
+          if (v.name.includes('Eneng') || v.name.includes('Budak Leutik (Eneng)')) {
+            sampleSentence = `Sampurasun! Eneng hoyong diajar maca sareng ngadongeng sasarengan nya!`;
+          } else if (v.name.includes('Ujang Alit') || v.name.includes('Budak Leutik (Ujang Alit)')) {
+            sampleSentence = `Sampurasun! Horeee, hayu urang ulin ka buruan bari diajar elmu anyar!`;
+          } else if (v.name.includes('Abah')) {
+            sampleSentence = `Sampurasun anaking jimat awaking. Pancegkeun hate dina kahadean tur silih asih.`;
+          } else if (v.name.includes('Nini')) {
+            sampleSentence = `Wilujeng sumping hidep anaking kasep geulis. Sing sabar tawekal mayunan hirup huripna nya.`;
+          } else if (v.name.includes('Ceu Edah') || v.name.includes('Bibi')) {
+            sampleSentence = `Aduh euy wargi sadayana, wilujeng tepang sareng Ceu Edah! Tong hilap jaga kaberesihan lingkungan nya!`;
+          } else if (v.name.includes('Kang Asep')) {
+            sampleSentence = `Sampurasun baraya sadaya! Hayu urang silih rojong ngawangun tatar Pasundan anu maju tur berakhlak.`;
+          } else if (v.name.includes('Teh Neng')) {
+            sampleSentence = `Wilujeng sumping di tatar Parahyangan, nagri asri pinuh ku katengtreman sareng kabagjaan.`;
+          } else if (v.name.includes('Ujang')) {
+            sampleSentence = `Sampurasun wargi Jabar! Hayu urang babarengan ngamumule Jawa Barat Juara!`;
+          } else {
+            sampleSentence = `Sampurasun wargi Jabar! Sim kuring ${v.name}, siap ngarojong komunikasi publik Jawa Barat Juara.`;
+          }
+        } else if (v.category === 'Dialek Nusantara') {
+          if (v.name.includes('Ucok')) {
+            sampleSentence = `Horas kawan! Saya ${v.name}, siap menyuarakan naskah dengan penuh semangat dan integritas!`;
+          } else if (v.name.includes('Tejo')) {
+            sampleSentence = `Nggih monggo sedulur, kulo ${v.name}, siap makarya sesarengan kanthi guyub rukun.`;
+          } else if (v.name.includes('Babe')) {
+            sampleSentence = `Nah ini dia Betawi Babe, salam kenal buat lu semua warga yang asyik-asyik!`;
+          } else {
+            sampleSentence = `Halo saudaraku semua, saya ${v.name}. Senang bisa mengisi suara untuk Anda.`;
+          }
+        }
+
+        const previewPrompt = `Sebagai ${persona.role}. ${persona.timbre}. ${persona.dialect}.
+Langsung bacakan kalimat perkenalan ini dari kata pertama tanpa intro atau basa-basi apa pun:\n\n"${sampleSentence}"`;
+
         const payload = {
           contents: [{ parts: [{ text: previewPrompt }] }],
           generationConfig: {
             responseModalities: ["AUDIO"],
             speechConfig: {
               voiceConfig: {
-                prebuiltVoiceConfig: { voiceName: v.id || 'Autonoe' }
+                prebuiltVoiceConfig: { voiceName: v.id || 'Aoede' }
               }
             }
           },
           model: TTS_MODEL
         };
 
-        const res = await fetch(
+        let res = await fetch(
           `https://generativelanguage.googleapis.com/v1beta/models/${TTS_MODEL}:generateContent?key=${activeKey}`,
           {
             method: 'POST',
@@ -1172,6 +1297,17 @@ export const GentraStudio = ({
             body: JSON.stringify(payload)
           }
         );
+
+        if (!res.ok) {
+          res = await fetch(
+            `https://generativelanguage.googleapis.com/v1beta/models/${TTS_FALLBACK_MODEL}:generateContent?key=${activeKey}`,
+            {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify(payload)
+            }
+          );
+        }
 
         if (res.ok) {
           const data = await res.json();
@@ -1576,13 +1712,16 @@ PENTING:
       ? "Patuhi tag ekspresi emosi bahasa Indonesia dalam tanda kurung siku seperti [tertawa], [berbisik], [jeda 1 detik], [bersemangat], [hela napas], [tegas], [tersenyum]. Wujudkan ekspresi tersebut dalam intonasi suara dan jangan melafalkan kata kurung sikunya secara harafiah."
       : "";
 
-    // Instruksi Persona Bahasa Indonesia (Sama Persis dengan Nusa Voice tapi Bebas Intro)
-    const systemInstructionText = `Sebagai pengisi suara ${selectedVoice.gender === 'Male' ? 'Pria' : 'Wanita'} Indonesia bernama ${selectedVoice.name}, Anda adalah pembaca naskah profesional dengan karakter vokal ${selectedVoice.desc}.
-Emosi: ${emotion}, tempo: ${speedText}, nada: ${pitchText}. ${dialectInstruction} ${personaInstruction} ${clonePromptAddon} ${emotionTagGuidance}
-Intonasi vokal Anda harus terdengar sangat alami, hidup, hangat, ekspresif, dan persis sesuai karakter ${selectedVoice.name}.
+    const persona = getVoicePersonaInstruction(selectedVoice);
+
+    // Instruksi Persona Menyeluruh Sesuai Karakter Vokal Asli
+    const systemInstructionText = `Sebagai ${persona.role}, Anda memiliki warna vokal dan karakter suara khas: ${persona.timbre}.
+${persona.dialect}.
+Emosi saat ini: ${emotion}, tempo pembacaan: ${speedText}, nada dasar: ${pitchText}. ${personaInstruction} ${clonePromptAddon} ${emotionTagGuidance}
+Wajib menjiwai karakter ${selectedVoice.name} (${persona.timbre}) secara konsisten, alami, hangat, dan ekspresif.
 
 ATURAN WAJIB & MUTLAK:
-1. Bacakan HANYA teks naskah yang diminta.
+1. Bacakan HANYA teks naskah yang diminta persis dengan penjiwaan karakter ${selectedVoice.name}.
 2. DILARANG KERAS mengucapkan intro, sapaan, atau basa-basi apa pun (jangan sebut "Tentu", "Baik", "Baiklah", "Halo", "Berikut adalah pembacaan naskah", atau "Oke").
 3. Mulai bersuara langsung dari kata pertama teks naskah tanpa jeda.`;
 
@@ -1597,10 +1736,12 @@ ATURAN WAJIB & MUTLAK:
 
         const chunkText = chunks[i];
 
-        // Format prompt naskah yang mengarahkan timbre persona Gemini persis seperti Nusa Voice
-        const userPromptText = selectedVoice.category === 'Nasional'
-          ? `Sebagai pengisi suara ${selectedVoice.gender === 'Male' ? 'Pria' : 'Wanita'} Indonesia bernama ${selectedVoice.name}, langsung bacakan naskah berikut dari kata pertama tanpa kata pengantar apa pun dengan emosi ${emotion}, ${speedText}, dan ${pitchText}. Pastikan suara terdengar seperti ${selectedVoice.desc} dan intonasi natural:\n\n"${chunkText}"`
-          : chunkText;
+        // Format prompt naskah yang mengarahkan timbre persona Gemini persis menjiwai karakter aslinya
+        const userPromptText = `Peran: ${persona.role}. Karakter vokal: ${persona.timbre}. ${persona.dialect}.
+Emosi: ${emotion}, tempo: ${speedText}, nada: ${pitchText}. ${emotionTagGuidance}
+PENTING: Langsung bacakan naskah berikut dari kata pertama persis menjiwai usia, gaya, dan karakter vokal tersebut tanpa intro atau basa-basi apa pun:
+
+"${chunkText}"`;
 
         const payload = {
           systemInstruction: {
