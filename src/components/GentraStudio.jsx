@@ -36,7 +36,8 @@ import {
   Sun,
   Sliders,
   Radio,
-  Headphones
+  Headphones,
+  Cpu
 } from 'lucide-react';
 
 // --- Konfigurasi Model ---
