@@ -51,8 +51,9 @@ import {
 // --- Konfigurasi Model (Google Gemini AI v1beta) ---
 const TTS_MODEL = "gemini-2.5-flash-preview-tts";
 const TTS_FALLBACK_MODEL = "gemini-2.0-flash";
-const TEXT_MODEL = "gemini-2.0-flash";
-const TEXT_FALLBACK_MODEL = "gemini-1.5-flash";
+const TEXT_MODELS = ["gemini-2.5-flash", "gemini-2.0-flash", "gemini-2.5-pro", "gemini-2.0-flash-lite"];
+const TEXT_MODEL = "gemini-2.5-flash";
+const TEXT_FALLBACK_MODEL = "gemini-2.0-flash";
 
 // --- Karakter Suara Bawaan GENTRA (14 Persona Awal + 8 Persona Khas Sunda) ---
 const INITIAL_VOICES = [
@@ -1505,46 +1506,36 @@ Langsung bacakan kalimat perkenalan ini dari kata pertama tanpa intro atau basa-
           ? "Dengarkan rekaman audio ini. Transkripsikan seluruh isi percakapan kata demi kata ke dalam teks bahasa Sunda atau Indonesia secara rapi dan akurat. Hanya berikan teks transkripsi saja tanpa tambahan kata pengantar atau penutup."
           : "Dengarkan rekaman audio ini. Transkripsikan seluruh isi percakapan kata demi kata ke dalam teks secara akurat dengan ejaan dan tanda baca yang tepat. Hanya berikan teks transkripsi saja tanpa komentar apapun.";
 
-        let result;
-        try {
-          result = await fetchWithRetry(
-            `https://generativelanguage.googleapis.com/v1beta/models/${TEXT_MODEL}:generateContent?key=${activeKey}`,
-            {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({
-                contents: [{
-                  parts: [
-                    { inlineData: { mimeType: mimeType, data: base64Data } },
-                    { text: promptText }
-                  ]
-                }]
-              })
-            },
-            3,
-            1000,
-            activeKeyPool
-          );
-        } catch (transErr) {
-          console.warn(`Model ${TEXT_MODEL} transkripsi gagal, mencoba fallback ke ${TEXT_FALLBACK_MODEL}:`, transErr);
-          result = await fetchWithRetry(
-            `https://generativelanguage.googleapis.com/v1beta/models/${TEXT_FALLBACK_MODEL}:generateContent?key=${activeKey}`,
-            {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({
-                contents: [{
-                  parts: [
-                    { inlineData: { mimeType: mimeType, data: base64Data } },
-                    { text: promptText }
-                  ]
-                }]
-              })
-            },
-            3,
-            1000,
-            activeKeyPool
-          );
+        let result = null;
+        let lastTransErr = null;
+        for (const modelName of TEXT_MODELS) {
+          try {
+            result = await fetchWithRetry(
+              `https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent?key=${activeKey}`,
+              {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                  contents: [{
+                    parts: [
+                      { inlineData: { mimeType: mimeType, data: base64Data } },
+                      { text: promptText }
+                    ]
+                  }]
+                })
+              },
+              3,
+              800,
+              activeKeyPool
+            );
+            if (result?.candidates?.[0]?.content?.parts?.[0]?.text) break;
+          } catch (tErr) {
+            console.warn(`Transkripsi model ${modelName} gagal:`, tErr.message);
+            lastTransErr = tErr;
+          }
+        }
+        if (!result || !result.candidates?.[0]?.content?.parts?.[0]?.text) {
+          throw lastTransErr || new Error("Gagal mentranskripsikan audio.");
         }
 
         const textOutput = result.candidates?.[0]?.content?.parts?.[0]?.text || "";
@@ -1590,40 +1581,42 @@ PENTING:
 
     try {
       const activeKey = apiKey || (typeof import.meta !== 'undefined' && import.meta.env?.VITE_GEMINI_API_KEY) || "";
-      let result;
-      try {
-        result = await fetchWithRetry(
-          `https://generativelanguage.googleapis.com/v1beta/models/${TEXT_MODEL}:generateContent?key=${activeKey}`,
-          {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              contents: [{ parts: [{ text: prompt }] }],
-              systemInstruction: { parts: [{ text: "Pakar komunikasi publik dan naskah Iklan Layanan Masyarakat (ILM)." }] }
-            })
-          },
-          3,
-          1000,
-          activeKeyPool
-        );
-      } catch (err1) {
-        console.warn(`Model ${TEXT_MODEL} gagal, mencoba fallback ke ${TEXT_FALLBACK_MODEL}:`, err1);
-        result = await fetchWithRetry(
-          `https://generativelanguage.googleapis.com/v1beta/models/${TEXT_FALLBACK_MODEL}:generateContent?key=${activeKey}`,
-          {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              contents: [{ parts: [{ text: prompt }] }],
-              systemInstruction: { parts: [{ text: "Pakar komunikasi publik dan naskah Iklan Layanan Masyarakat (ILM)." }] }
-            })
-          },
-          3,
-          1000,
-          activeKeyPool
-        );
+      if (!activeKey) {
+        setShowApiKeyModal(true);
+        throw new Error("Kunci Google Gemini API belum terpasang. Silakan masukkan API Key di menu kunci.");
       }
-      const textResult = result.candidates?.[0]?.content?.parts?.[0]?.text || "";
+
+      let result = null;
+      let lastErr = null;
+
+      for (const modelName of TEXT_MODELS) {
+        try {
+          result = await fetchWithRetry(
+            `https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent?key=${activeKey}`,
+            {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                contents: [{ parts: [{ text: prompt }] }],
+                systemInstruction: { parts: [{ text: "Pakar komunikasi publik dan naskah Iklan Layanan Masyarakat (ILM)." }] }
+              })
+            },
+            3,
+            800,
+            activeKeyPool
+          );
+          if (result?.candidates?.[0]?.content?.parts?.[0]?.text) break;
+        } catch (errM) {
+          console.warn(`Model ${modelName} pembuatan naskah gagal:`, errM.message);
+          lastErr = errM;
+        }
+      }
+
+      if (!result || !result.candidates?.[0]?.content?.parts?.[0]?.text) {
+        throw lastErr || new Error("Tidak dapat menghasilkan naskah ILM.");
+      }
+
+      const textResult = result.candidates[0].content.parts[0].text;
       setText(textResult.trim());
     } catch (err) {
       alert("Gagal membuat naskah ILM: " + err.message);
@@ -2061,35 +2054,40 @@ PENTING: Langsung bacakan naskah berikut dari kata pertama persis menjiwai usia,
                     </div>
                   )}
                 </div>
-                {/* Dark Studio Mode Toggle Button */}
+                {/* Tombol Switch Tema Gelap/Terang (Cukup Satu Tombol Switch) */}
                 <button 
+                  type="button"
                   onClick={toggleTheme}
-                  className={`h-9 px-3 rounded-full border transition-all flex items-center gap-1.5 text-xs font-bold shrink-0 ${
+                  className={`h-9 w-9 rounded-full border transition-all flex items-center justify-center shrink-0 shadow-xs ${
                     isDarkTheme 
-                      ? 'bg-[#14231b] border-emerald-900/80 text-[#F59E0B] hover:bg-[#1b2f24]' 
-                      : 'bg-zinc-100 border-zinc-200 text-zinc-700 hover:bg-zinc-200'
+                      ? 'bg-[#14231b] border-emerald-900/80 text-[#F59E0B] hover:bg-[#1b2f24] hover:scale-105' 
+                      : 'bg-zinc-100 border-zinc-200 text-amber-600 hover:bg-zinc-200 hover:scale-105'
                   }`}
-                  title="Beralih Mode Studio (Gelap / Terang)"
+                  title={isDarkTheme ? "Mode Studio Gelap Aktif (Klik untuk beralih ke Mode Terang)" : "Mode Terang Aktif (Klik untuk beralih ke Studio Gelap)"}
                 >
-                  {isDarkTheme ? <Moon className="w-3.5 h-3.5 fill-current text-[#F59E0B]" /> : <Sun className="w-3.5 h-3.5 text-[#F59E0B]" />}
-                  <span className="hidden sm:inline">{isDarkTheme ? 'Studio Gelap' : 'Terang'}</span>
+                  {isDarkTheme ? <Moon className="w-4 h-4 fill-current text-[#F59E0B]" /> : <Sun className="w-4 h-4 fill-current text-amber-500" />}
                 </button>
 
-                {/* Indikator Lampu Status Kuota API Real-Time (Hijau / Merah) */}
+                {/* Indikator Lampu Hijau API (Singkat: Simbol Button Hijau Saja) */}
                 <button
+                  type="button"
                   onClick={() => setShowApiKeyModal(true)}
-                  className={`h-9 px-3 rounded-full border text-[11px] font-bold flex items-center gap-2 transition-all shadow-sm shrink-0 ${
+                  className={`h-9 w-9 rounded-full border transition-all flex items-center justify-center relative shrink-0 shadow-xs ${
                     apiQuotaStatus === 'limited'
-                      ? 'bg-rose-950/80 border-rose-500 text-rose-200 hover:bg-rose-900 animate-pulse'
+                      ? 'bg-rose-950/80 border-rose-500 text-rose-300 hover:bg-rose-900 animate-pulse'
                       : apiQuotaStatus === 'active'
-                      ? isDarkTheme ? 'bg-emerald-950/60 border-emerald-500/70 text-emerald-300 hover:bg-emerald-900/60' : 'bg-emerald-50 border-emerald-400 text-emerald-800 hover:bg-emerald-100'
+                      ? isDarkTheme ? 'bg-[#14231b] border-emerald-600/80 hover:bg-[#1b2f24]' : 'bg-emerald-50 border-emerald-400 hover:bg-emerald-100'
                       : apiQuotaStatus === 'unconfigured'
-                      ? 'bg-amber-950/40 border-amber-500/60 text-amber-300'
-                      : 'bg-zinc-800 border-zinc-700 text-zinc-400'
+                      ? 'bg-amber-950/40 border-amber-500/60 hover:bg-amber-900/40'
+                      : 'bg-zinc-800 border-zinc-700'
                   }`}
-                  title={apiQuotaStatus === 'limited' ? "PERINGATAN: Kuota API Limit (Klik untuk ganti kunci di Slot 2-8)" : "Status API Key (Klik untuk buka pengaturan)"}
+                  title={
+                    apiQuotaStatus === 'limited' ? "PERINGATAN: Kuota API Limit (Klik untuk kelola kunci)" :
+                    apiQuotaStatus === 'active' ? "Lampu Hijau: API Siap Digunakan (Klik untuk kelola kunci)" :
+                    apiQuotaStatus === 'unconfigured' ? "Kunci API Belum Dikonfigurasi" : "Status API Key"
+                  }
                 >
-                  <span className="relative flex h-2.5 w-2.5">
+                  <span className="relative flex h-3 w-3 items-center justify-center">
                     {apiQuotaStatus === 'limited' && (
                       <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-rose-400 opacity-75"></span>
                     )}
@@ -2101,11 +2099,6 @@ PENTING: Langsung bacakan naskah berikut dari kata pertama persis menjiwai usia,
                       apiQuotaStatus === 'active' ? 'bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.9)]' :
                       apiQuotaStatus === 'unconfigured' ? 'bg-amber-400' : 'bg-zinc-400'
                     }`}></span>
-                  </span>
-                  <span className="hidden sm:inline">
-                    {apiQuotaStatus === 'limited' ? 'Lampu Merah: API Limit' :
-                     apiQuotaStatus === 'active' ? 'Lampu Hijau: API Siap' :
-                     apiQuotaStatus === 'unconfigured' ? 'Kunci Kosong' : 'Cek Kuota...'}
                   </span>
                 </button>
 
@@ -2650,10 +2643,10 @@ PENTING: Langsung bacakan naskah berikut dari kata pertama persis menjiwai usia,
                   <div>
                     <h2 className={`text-xl font-black flex items-center gap-2.5 ${headingColor}`}>
                       <Headphones className="w-5 h-5 text-[#F59E0B]" />
-                      Pilih Karakter Suara Natural (35 Persona Aktif)
+                      Pilih Karakter Suara — {activeEngine === 'azure' ? 'Microsoft Azure Neural (Engine B: 2 Karakter)' : activeEngine === 'elevenlabs' ? 'ElevenLabs Studio (Engine C: 11 Karakter)' : 'Google Gemini Flash Neural (Engine A: 22 Karakter Resmi)'}
                     </h2>
                     <p className={`text-xs mt-0.5 ${subTextColor}`}>
-                      Karakter telah dikelompokkan ke dalam 3 Blok Pemisah resmi. Klik header masing-masing blok untuk membuka atau mengecilkan daftar.
+                      {activeEngine === 'azure' ? 'Khusus model suara resmi Microsoft Azure Cognitive Speech.' : activeEngine === 'elevenlabs' ? 'Khusus model suara ElevenLabs Multilingual Studio.' : 'Engine A khusus menggunakan model vokal resmi Google Gemini AI (Blok 1 Nasional & Blok 2 Pasundan).'}
                     </p>
                   </div>
                   <div className="flex items-center gap-2">

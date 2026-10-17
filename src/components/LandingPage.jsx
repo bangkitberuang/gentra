@@ -425,7 +425,7 @@ export const LandingPage = ({ onOpenLogin }) => {
       </header>
 
       {/* 2. Hero Section with Responsive Gedung Sate Parahyangan Background */}
-      <section className="relative flex flex-col items-center justify-center pt-10 pb-12 sm:pt-14 sm:pb-16 md:pt-16 md:pb-20 overflow-hidden bg-[#F8FAF9]">
+      <section className="relative flex flex-col items-center justify-center pt-14 pb-16 sm:pt-18 sm:pb-20 md:pt-20 md:pb-24 lg:pt-24 lg:pb-28 overflow-hidden bg-[#F8FAF9]">
         {/* Background Image: Gedung Sate & Pegunungan Parahyangan - Full Panorama */}
         <div className="absolute inset-0 w-full h-full pointer-events-none overflow-hidden z-0">
           <img 
@@ -434,38 +434,38 @@ export const LandingPage = ({ onOpenLogin }) => {
             className="w-full h-full object-cover object-[center_65%] opacity-90 sm:opacity-95 select-none pointer-events-none" 
           />
           {/* Gentle atmospheric balance: lets Gedung Sate & Parahyangan mountains shine brightly while keeping typography 100% readable */}
-          <div className="absolute inset-0 bg-gradient-to-b from-[#FBFBFA]/80 via-white/55 to-[#FBFBFA]/85" />
+          <div className="absolute inset-0 bg-gradient-to-b from-[#FBFBFA]/75 via-white/50 to-[#FBFBFA]/85" />
           {/* Central diffuse glow: softens the bright sunset directly behind text so it doesn't clash */}
-          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(255,255,255,0.8)_0%,transparent_70%)]" />
-          <div className="absolute bottom-0 inset-x-0 h-10 bg-gradient-to-t from-white to-transparent" />
+          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(255,255,255,0.75)_0%,transparent_75%)]" />
+          <div className="absolute bottom-0 inset-x-0 h-12 bg-gradient-to-t from-white to-transparent" />
         </div>
         
         {/* Ambient Top Blend */}
-        <div className="absolute top-0 inset-x-0 h-8 bg-gradient-to-b from-[#FBFBFA]/90 to-transparent pointer-events-none z-10" />
+        <div className="absolute top-0 inset-x-0 h-10 bg-gradient-to-b from-[#FBFBFA]/90 to-transparent pointer-events-none z-10" />
 
-        <div className="relative z-10 max-w-4xl mx-auto px-4 text-center flex flex-col items-center space-y-4 sm:space-y-5">
+        <div className="relative z-10 max-w-6xl lg:max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center flex flex-col items-center space-y-5 sm:space-y-6">
           
-          {/* Typography - Balanced, Impactful & Without Awkward Wraps */}
-          <div className="space-y-3 flex flex-col items-center">
-            <h1 className="text-4xl sm:text-5xl md:text-6xl font-black tracking-tight text-zinc-950 leading-[1.15] drop-shadow-sm">
+          {/* Typography - Balanced, Impactful & Wide */}
+          <div className="space-y-3.5 flex flex-col items-center max-w-4xl mx-auto">
+            <h1 className="text-4xl sm:text-6xl md:text-7xl font-black tracking-tight text-zinc-950 leading-[1.1] drop-shadow-sm">
               Ti Téks Jadi Sora.
             </h1>
-            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/90 backdrop-blur-md border border-amber-300/60 shadow-xs">
-              <span className="w-2 h-2 rounded-full bg-[#D97706] animate-pulse" />
-              <p className="text-xs sm:text-sm font-black tracking-wider text-[#B45309] uppercase">
+            <div className="inline-flex items-center gap-2.5 px-5 py-2 rounded-full bg-white/90 backdrop-blur-md border border-amber-300/70 shadow-sm">
+              <span className="w-2.5 h-2.5 rounded-full bg-[#D97706] animate-pulse" />
+              <p className="text-xs sm:text-sm md:text-base font-black tracking-wider text-[#B45309] uppercase">
                 Gentra Produksi Audio • Standar Penyiaran & Studio Rekaman
               </p>
             </div>
           </div>
 
-          <p className="max-w-3xl mx-auto text-xs sm:text-sm md:text-base text-zinc-800 font-semibold leading-relaxed bg-white/70 backdrop-blur-xs px-4 py-2.5 rounded-2xl border border-white/80 shadow-2xs">
+          <p className="max-w-4xl mx-auto text-xs sm:text-sm md:text-base lg:text-[17px] text-zinc-800 font-semibold leading-relaxed bg-white/80 backdrop-blur-md px-6 sm:px-8 py-3.5 sm:py-4 rounded-2xl border border-white/90 shadow-xs">
             Platform sintesis suara natural berstandar studio untuk Tim Komunikasi Publik Pemprov Jawa Barat. Menghadirkan karakter vokal unik <strong className="text-[#0C4E34]">Khas Sunda & Nasional</strong>, mesin mastering <strong className="text-[#0C4E34]">Broadcast 48kHz / 44.1kHz</strong>, dan generator naskah <strong className="text-[#0C4E34]">Iklan Layanan Masyarakat (ILM)</strong> berbasis kearifan lokal.
           </p>
 
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-1 w-full sm:w-auto">
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-3.5 pt-2 w-full sm:w-auto">
             <button
               onClick={onOpenLogin}
-              className="w-full sm:w-auto px-7 py-3 rounded-2xl bg-[#0C4E34] hover:bg-[#083B27] text-white text-xs sm:text-sm font-bold shadow-lg shadow-[#0C4E34]/25 hover:shadow-xl transition-all flex items-center justify-center gap-2 group ring-2 ring-emerald-600/30"
+              className="w-full sm:w-auto px-8 py-3.5 rounded-2xl bg-[#0C4E34] hover:bg-[#083B27] text-white text-xs sm:text-sm md:text-base font-bold shadow-lg shadow-[#0C4E34]/25 hover:shadow-xl transition-all flex items-center justify-center gap-2.5 group ring-2 ring-emerald-600/30 hover:scale-[1.02]"
             >
               <span>BUKA STUDIO VOICE OVER</span>
               <ArrowRight className="w-4 h-4 text-[#F59E0B] group-hover:translate-x-1 transition-transform" />
@@ -473,30 +473,30 @@ export const LandingPage = ({ onOpenLogin }) => {
 
             <a
               href="#persona"
-              className="w-full sm:w-auto px-7 py-3 rounded-2xl bg-white/95 hover:bg-white backdrop-blur-md border border-zinc-300 text-zinc-800 text-xs sm:text-sm font-bold shadow-xs hover:shadow-sm transition-all flex items-center justify-center gap-2"
+              className="w-full sm:w-auto px-8 py-3.5 rounded-2xl bg-white/95 hover:bg-white backdrop-blur-md border border-zinc-300 text-zinc-800 text-xs sm:text-sm md:text-base font-bold shadow-xs hover:shadow-sm transition-all flex items-center justify-center gap-2 hover:scale-[1.02]"
             >
               <Volume2 className="w-4 h-4 text-[#0C4E34]" />
               <span>Dengarkan 22 Persona Suara</span>
             </a>
           </div>
 
-          {/* Quick Metrics in Frosted Glass - Tighter Spacing */}
-          <div className="pt-3 sm:pt-4 grid grid-cols-2 md:grid-cols-4 gap-3 max-w-4xl mx-auto w-full text-left">
-            <div className="bg-white/85 backdrop-blur-md p-3 sm:p-3.5 rounded-2xl border border-white/90 shadow-sm hover:shadow-md transition-all">
-              <span className="text-xl sm:text-2xl font-black text-[#0C4E34] block">22 Karakter</span>
-              <span className="text-[11px] text-zinc-700 font-medium">14 Nasional + 8 Khas Sunda</span>
+          {/* Quick Metrics in Frosted Glass - Expansive Wide Layout */}
+          <div className="pt-4 sm:pt-6 grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5 max-w-5xl lg:max-w-6xl mx-auto w-full text-left">
+            <div className="bg-white/90 backdrop-blur-md p-4 sm:p-5 rounded-2xl border border-white/95 shadow-sm hover:shadow-md transition-all hover:-translate-y-0.5">
+              <span className="text-2xl sm:text-3xl font-black text-[#0C4E34] block">22 Karakter</span>
+              <span className="text-xs sm:text-[13px] text-zinc-700 font-semibold mt-0.5 block">14 Nasional + 8 Khas Sunda</span>
             </div>
-            <div className="bg-white/85 backdrop-blur-md p-3 sm:p-3.5 rounded-2xl border border-white/90 shadow-sm hover:shadow-md transition-all">
-              <span className="text-xl sm:text-2xl font-black text-[#0C4E34] block">48 & 44.1 kHz</span>
-              <span className="text-[11px] text-zinc-700 font-medium">Standar DAW & Broadcast WAV</span>
+            <div className="bg-white/90 backdrop-blur-md p-4 sm:p-5 rounded-2xl border border-white/95 shadow-sm hover:shadow-md transition-all hover:-translate-y-0.5">
+              <span className="text-2xl sm:text-3xl font-black text-[#0C4E34] block">48 & 44.1 kHz</span>
+              <span className="text-xs sm:text-[13px] text-zinc-700 font-semibold mt-0.5 block">Standar DAW & Broadcast WAV</span>
             </div>
-            <div className="bg-white/85 backdrop-blur-md p-3 sm:p-3.5 rounded-2xl border border-white/90 shadow-sm hover:shadow-md transition-all">
-              <span className="text-xl sm:text-2xl font-black text-[#F59E0B] block">Mode ILM</span>
-              <span className="text-[11px] text-zinc-700 font-medium">Generator Kampanye 30s & 60s</span>
+            <div className="bg-white/90 backdrop-blur-md p-4 sm:p-5 rounded-2xl border border-white/95 shadow-sm hover:shadow-md transition-all hover:-translate-y-0.5">
+              <span className="text-2xl sm:text-3xl font-black text-[#F59E0B] block">Mode ILM</span>
+              <span className="text-xs sm:text-[13px] text-zinc-700 font-semibold mt-0.5 block">Generator Kampanye 30s & 60s</span>
             </div>
-            <div className="bg-white/85 backdrop-blur-md p-3 sm:p-3.5 rounded-2xl border border-white/90 shadow-sm hover:shadow-md transition-all">
-              <span className="text-xl sm:text-2xl font-black text-[#0C4E34] block">Whisper Audio</span>
-              <span className="text-[11px] text-zinc-700 font-medium">Transkripsi Naskah Otomatis</span>
+            <div className="bg-white/90 backdrop-blur-md p-4 sm:p-5 rounded-2xl border border-white/95 shadow-sm hover:shadow-md transition-all hover:-translate-y-0.5">
+              <span className="text-2xl sm:text-3xl font-black text-[#0C4E34] block">Whisper Audio</span>
+              <span className="text-xs sm:text-[13px] text-zinc-700 font-semibold mt-0.5 block">Transkripsi Naskah Otomatis</span>
             </div>
           </div>
 
