@@ -1500,7 +1500,7 @@ ABSOLUTE MANDATORY RULES:
                   <span>STUDIO</span>
                 </button>
 
-                {/* Posisi 2: IKLAN LAYANAN MASYARAKAT */}
+                {/* Posisi 2: ILM */}
                 <button 
                   onClick={() => setView('ads')} 
                   className={`h-9 px-3.5 sm:px-4 rounded-full text-xs font-bold transition-all flex items-center gap-2 whitespace-nowrap shrink-0 ${
@@ -1508,11 +1508,10 @@ ABSOLUTE MANDATORY RULES:
                       ? 'bg-[#0C4E34] text-white shadow-xs' 
                       : isDarkTheme ? 'text-zinc-300 hover:text-white hover:bg-[#1a2c22]' : 'text-zinc-600 hover:text-[#0C4E34] hover:bg-zinc-200/60'
                   }`}
-                  title="Generator Iklan Layanan Masyarakat"
+                  title="Iklan Layanan Masyarakat (ILM)"
                 >
                   <Megaphone className="w-3.5 h-3.5" />
-                  <span className="hidden xl:inline">IKLAN LAYANAN MASYARAKAT</span>
-                  <span className="xl:hidden">IKLAN LAYANAN (ILM)</span>
+                  <span>ILM</span>
                 </button>
 
                 {/* Posisi 3: PILIHAN SERVER ENGINE (Gatot Kaca / Kian Santang / Pajajaran) */}
@@ -1934,7 +1933,7 @@ ABSOLUTE MANDATORY RULES:
                   }`}
                 >
                   {isGeneratingCopy ? <Loader2 className="animate-spin w-4 h-4" /> : <Sparkles className="w-4 h-4 text-[#F59E0B]" />}
-                  BUAT NASKAH IKLAN LAYANAN MASYARAKAT OTOMATIS
+                  BUAT NASKAH ILM OTOMATIS
                 </button>
               </div>
             )}
@@ -1944,7 +1943,7 @@ ABSOLUTE MANDATORY RULES:
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
                 <h2 className={`text-lg font-bold flex items-center gap-2 ${headingColor}`}>
                   <Type className="w-5 h-5 text-[#F59E0B]" />
-                  {view === 'ads' ? "Naskah Iklan Layanan Masyarakat Siap Disuarakan" : "Naskah Voice Over"}
+                  {view === 'ads' ? "Naskah ILM Siap Disuarakan" : "Naskah Voice Over"}
                 </h2>
                 
                 {/* Tombol Transkripsi Whisper & Dialek Audio */}
