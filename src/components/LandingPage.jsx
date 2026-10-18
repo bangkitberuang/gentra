@@ -898,9 +898,6 @@ export const LandingPage = ({ onOpenLogin }) => {
                               {persona.gender} • {persona.role}
                             </span>
                             <div className="flex items-center gap-1.5 mt-1 flex-wrap">
-                              <span className="text-[9px] font-bold text-zinc-500 bg-zinc-200/80 px-1.5 py-0.5 rounded border border-zinc-300">
-                                Asli: {persona.originalName || persona.name}
-                              </span>
                               <span className="text-[9px] font-mono font-medium text-zinc-400 bg-zinc-200/50 px-1.5 py-0.5 rounded border border-zinc-300">
                                 {persona.backendVoiceId || persona.geminiVoiceId || persona.id}
                               </span>
@@ -992,9 +989,6 @@ export const LandingPage = ({ onOpenLogin }) => {
                             {persona.gender} • {persona.role}
                           </span>
                           <div className="flex items-center gap-1.5 mt-1 flex-wrap">
-                            <span className="text-[9px] font-bold text-emerald-800 bg-emerald-50 px-1.5 py-0.5 rounded border border-emerald-200">
-                              Asli: {persona.originalName || persona.name}
-                            </span>
                             <span className="text-[9px] font-mono font-medium text-zinc-500 bg-zinc-100 px-1.5 py-0.5 rounded border border-zinc-200">
                               {persona.backendVoiceId || persona.geminiVoiceId || persona.id}
                             </span>

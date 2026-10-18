@@ -1293,7 +1293,7 @@ export const VoiceLabModal = ({
                           </h4>
                         </div>
                         <span className={`text-[10px] font-mono ${subText}`}>
-                          Base ID Asli: {editingVoice.id} • Nama Bawaan: {editingVoice.originalName || editingVoice.name}
+                          Base Model: {editingVoice.id}
                         </span>
                       </div>
 
@@ -1387,7 +1387,7 @@ export const VoiceLabModal = ({
                           className="text-xs text-amber-400 hover:underline font-bold flex items-center gap-1"
                         >
                           <RotateCcw className="w-3 h-3" />
-                          <span>Kembalikan ke Nama Asli ({editingVoice.originalName || editingVoice.name})</span>
+                          <span>Reset ke Pengaturan Awal</span>
                         </button>
 
                         <div className="flex gap-2">
@@ -1483,10 +1483,8 @@ export const VoiceLabModal = ({
                                     )}
                                   </div>
 
-                                  {/* Subtitle Original Name & Model Base */}
+                                  {/* Subtitle Model Base */}
                                   <p className={`text-[11px] mt-0.5 flex items-center gap-1.5 flex-wrap ${subText}`}>
-                                    <span>Nama Asli: <strong className={isDarkTheme ? 'text-zinc-300' : 'text-zinc-700'}>{v.originalName || v.name}</strong></span>
-                                    <span>•</span>
                                     <span>Base Model: <code className="font-mono text-amber-400 font-bold">{v.id}</code></span>
                                     <span>•</span>
                                     <span className="font-medium">{v.gender === 'Male' ? 'Pria' : 'Wanita'}</span>

@@ -1643,12 +1643,13 @@ PENTING:
       setText(finalGeneratedText);
       try {
         logAccountActivity({
-          userEmail: user?.email || 'admin@gentra.internal',
-          userName: user?.name || 'Admin',
+          userEmail: user?.email || 'tim@gentra.internal',
+          userName: user?.name || user?.email || 'TIM PRODUKSI',
           type: 'SCRIPT_GENERATION',
+          action: 'Pembuatan Naskah ILM',
           voiceName: selectedVoice?.name || 'Umum',
-          originalVoiceName: selectedVoice?.originalName || selectedVoice?.name || 'Umum',
           backendVoiceId: selectedVoice?.backendVoiceId || selectedVoice?.id || 'gemini',
+          scriptText: finalGeneratedText,
           script: finalGeneratedText,
           charCount: finalGeneratedText.length,
           wordCount: finalGeneratedText.split(/\s+/).filter(Boolean).length,
@@ -1662,12 +1663,13 @@ PENTING:
       setText(fallbackText);
       try {
         logAccountActivity({
-          userEmail: user?.email || 'admin@gentra.internal',
-          userName: user?.name || 'Admin',
+          userEmail: user?.email || 'tim@gentra.internal',
+          userName: user?.name || user?.email || 'TIM PRODUKSI',
           type: 'SCRIPT_GENERATION',
+          action: 'Pembuatan Naskah ILM',
           voiceName: selectedVoice?.name || 'Umum',
-          originalVoiceName: selectedVoice?.originalName || selectedVoice?.name || 'Umum',
           backendVoiceId: selectedVoice?.backendVoiceId || selectedVoice?.id || 'gemini',
+          scriptText: fallbackText,
           script: fallbackText,
           charCount: fallbackText.length,
           wordCount: fallbackText.split(/\s+/).filter(Boolean).length,
@@ -1848,12 +1850,13 @@ ATURAN WAJIB & MUTLAK:
 
       try {
         logAccountActivity({
-          userEmail: user?.email || 'admin@gentra.internal',
-          userName: user?.name || 'Admin',
+          userEmail: user?.email || 'tim@gentra.internal',
+          userName: user?.name || user?.email || 'TIM PRODUKSI',
           type: 'AUDIO_GENERATION',
+          action: 'Sintesis Audio Voice Over',
           voiceName: selectedVoice.name,
-          originalVoiceName: selectedVoice.originalName || selectedVoice.name,
           backendVoiceId: selectedVoice.backendVoiceId || selectedVoice.id,
+          scriptText: text,
           script: text,
           charCount: text.length,
           wordCount: text.trim().split(/\s+/).filter(Boolean).length,
@@ -2900,11 +2903,6 @@ ATURAN WAJIB & MUTLAK:
                               : isDarkTheme ? 'text-zinc-100' : 'text-slate-900'
                           }`}>
                             <span>{v.name}</span>
-                            {v.originalName && v.originalName !== v.name && (
-                              <span className="text-[10px] font-normal opacity-75">
-                                (Asli: {v.originalName})
-                              </span>
-                            )}
                           </h4>
                           <p className={`text-xs truncate mt-0.5 ${isDarkTheme ? 'text-zinc-400' : 'text-slate-500'}`}>
                             {v.desc} <span className="font-mono text-[10px] opacity-70">• {v.backendVoiceId || v.id}</span>

@@ -82,9 +82,9 @@ export const UserManagementModal = ({
   };
 
   const [activeTab, setActiveTab] = useState('users'); // 'users' | 'activities' | 'stats'
-  const [users, setUsers] = useState(() => getRegisteredUsers());
+  const [users, setUsers] = useState(() => getRegisteredUsers(currentUser));
   const [activities, setActivities] = useState(() => getAccountActivities());
-  const [summary, setSummary] = useState(() => getAccountMetricsSummary());
+  const [summary, setSummary] = useState(() => getAccountMetricsSummary(currentUser));
 
   // Filter & Search State
   const [userSearch, setUserSearch] = useState('');
@@ -111,9 +111,9 @@ export const UserManagementModal = ({
 
   // Sinkronisasi data real-time
   const refreshData = () => {
-    setUsers(getRegisteredUsers());
+    setUsers(getRegisteredUsers(currentUser));
     setActivities(getAccountActivities());
-    setSummary(getAccountMetricsSummary());
+    setSummary(getAccountMetricsSummary(currentUser));
   };
 
   useEffect(() => {
@@ -124,7 +124,7 @@ export const UserManagementModal = ({
       window.removeEventListener(USERS_EVENT, refreshData);
       window.removeEventListener(ACTIVITIES_EVENT, refreshData);
     };
-  }, []);
+  }, [currentUser]);
 
   const handleStartCreate = () => {
     setIsEditing(true);
@@ -225,7 +225,7 @@ export const UserManagementModal = ({
   const filteredActivities = activities.filter(a => {
     const matchesUser = selectedUserFilter === 'all' || a.userEmail?.toLowerCase() === selectedUserFilter.toLowerCase();
     const matchesSearch = !activitySearch ||
-      (a.scriptText || '').toLowerCase().includes(activitySearch.toLowerCase()) ||
+      (a.scriptText || a.script || '').toLowerCase().includes(activitySearch.toLowerCase()) ||
       (a.voiceUsed || '').toLowerCase().includes(activitySearch.toLowerCase()) ||
       (a.userName || '').toLowerCase().includes(activitySearch.toLowerCase()) ||
       (a.action || '').toLowerCase().includes(activitySearch.toLowerCase());
@@ -789,16 +789,13 @@ export const UserManagementModal = ({
                       {/* Naskah / Script Preview */}
                       <div className={`p-3 rounded-xl border text-xs leading-relaxed font-sans ${subBg}`}>
                         <p className="line-clamp-2 italic text-zinc-200">
-                          "{act.scriptText}"
+                          "{act.scriptText || act.script || '(Sintesis Audio Voice Over)'}"
                         </p>
                       </div>
 
                       <div className="flex items-center justify-between text-xs pt-1 flex-wrap gap-2">
                         <div className="flex items-center gap-2 text-[11px] text-zinc-400 flex-wrap">
                           <span>Karakter: <strong className="text-emerald-400">{act.voiceUsed}</strong></span>
-                          {act.originalVoiceName && act.originalVoiceName !== act.voiceUsed && (
-                            <span className="text-[10px] text-zinc-400">(Asli: {act.originalVoiceName})</span>
-                          )}
                           <span>•</span>
                           <span>Panjang: <strong className="text-amber-400">{act.charCount}</strong> karakter ({act.wordCount} kata)</span>
                           <span>•</span>
@@ -928,7 +925,7 @@ export const UserManagementModal = ({
               </div>
 
               <div className="p-4 rounded-2xl border bg-black/40 border-zinc-800 space-y-2 max-h-72 overflow-y-auto font-sans leading-relaxed text-sm text-zinc-200 whitespace-pre-wrap">
-                {selectedScriptDetail.scriptText}
+                {selectedScriptDetail.scriptText || selectedScriptDetail.script || ''}
               </div>
 
               <div className="flex items-center justify-between text-xs text-zinc-400 pt-2 flex-wrap gap-2">
@@ -943,7 +940,7 @@ export const UserManagementModal = ({
                 <div className="flex items-center gap-2">
                   <button
                     type="button"
-                    onClick={() => handleCopyScript(selectedScriptDetail.scriptText)}
+                    onClick={() => handleCopyScript(selectedScriptDetail.scriptText || selectedScriptDetail.script || '')}
                     className="px-4 py-2 rounded-xl text-xs font-bold bg-[#F59E0B] hover:bg-[#d97706] text-black flex items-center gap-1.5 transition-colors"
                   >
                     {copySuccess ? <Check className="w-3.5 h-3.5" /> : <Copy className="w-3.5 h-3.5" />}

@@ -316,6 +316,22 @@ assert(changelogCode.includes('## [v2.6.4]'), 'CHANGELOG.md documents v2.6.4 mil
 const readmeCode = fs.readFileSync('README.md', 'utf8');
 assert(readmeCode.includes('Version-v2.6.4'), 'README.md includes official v2.6.4 release badge');
 
+// 10. TEST PURGING OF ASLI LABELS & WORKLOAD METRICS ATTRIBUTION
+console.log('\n--- 10. Testing Purging of "Asli" Persona Labels & Account Workload Synchronization ---');
+
+// Check that "Asli:" has been purged from LandingPage, GentraStudio, VoiceLabModal, and UserManagementModal
+assert(!landingCode.includes('Asli: {persona.originalName'), 'LandingPage purged "Asli: {persona.originalName}" label');
+assert(!studioCode.includes('(Asli: {v.originalName})'), 'GentraStudio voice cards purged "(Asli: {v.originalName})" label');
+assert(!userModalCode.includes('(Asli: {act.originalVoiceName})'), 'UserManagementModal audit trail purged "(Asli: {act.originalVoiceName})" label');
+assert(!voiceLabCode.includes('Base ID Asli:'), 'VoiceLabModal purged "Base ID Asli:" label');
+assert(!voiceLabCode.includes('<span>Nama Asli:'), 'VoiceLabModal purged "<span>Nama Asli:" label');
+
+// Test userManagement logic
+const userUtilCode = fs.readFileSync('src/utils/userManagement.js', 'utf8');
+assert(userUtilCode.includes('currentUser = null'), 'getRegisteredUsers and getAccountMetricsSummary support currentUser parameter');
+assert(userUtilCode.includes('matchesAccount'), 'getAccountMetricsSummary implements flexible account matching (email, prefix, username)');
+assert(userUtilCode.includes('scriptText || script || text'), 'logAccountActivity gracefully handles both script and scriptText');
+
 console.log('\n======================================================');
 console.log(`TOTAL TESTS: ${passCount + failCount} | PASSED: ${passCount} | FAILED: ${failCount}`);
 console.log('======================================================\n');
@@ -323,3 +339,4 @@ console.log('======================================================\n');
 if (failCount > 0) {
   process.exit(1);
 }
+
