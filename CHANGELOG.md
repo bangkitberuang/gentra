@@ -4,6 +4,22 @@ Dokumen ini mencatat pembaruan dan peningkatan arsitektur pada repositori **GENT
 
 ---
 
+## [v2.6.4] - 2026-10-18: Standardisasi Versi Mandiri GENTRA, Manajemen Akun & Audit Naskah, dan Sinkronisasi Silsilah Suara 3 Pilar
+
+### 🎯 Pokok Pembaruan
+1. **Standardisasi Versi Mandiri GENTRA (`v2.6.4`)**:
+   - Memisahkan dan membersihkan badge versi eksternal (`v1.3.0`) yang sempat terbawa saat penyeragaman tipografi.
+   - Menyelaraskan seluruh branding rilis platform ke **`v2.6.4`** secara utuh dan konsisten di Landing Page, Studio Suite, Modal Login, Voice Lab, Enterprise Manager, hingga `package.json`.
+2. **Silsilah Nama Asli & Backend ID Abadi**:
+   - Menjaga keaslian karakter bawaan pabrik (`originalName`) dan pengenal mesin neural (`backendVoiceId` / `geminiVoiceId`) agar tidak hilang atau terhapus di backend saat dikustomisasi pengguna.
+3. **Keterkaitan Real-Time 3 Permukaan (Landing Page, Studio, Lab Suara)**:
+   - Menggunakan repositori vokal tunggal (`src/utils/voiceRegistry.js`) dengan arsitektur reaktif berbasis event (`gentra_voices_updated`) dan *dual-storage persistence* (localStorage + cookie 365 hari).
+4. **Manajemen Akun, Sandi & Audit Riwayat Naskah**:
+   - Fitur swakelola akun admin & tim produksi (`UserManagementModal.jsx`, `userStore.js`, `api/auth/users.js`, `api/auth/activity.js`).
+   - Audit trail mendalam: mencatat akun pembuat, isi naskah yang digenerate, karakter vokal yang dipakai, jumlah karakter/kata, dan penampil naskah lengkap dengan salin 1-klik.
+
+---
+
 ## [v1.1.0] - 2026-10-17: Migrasi & Dukungan Deployment Cloud Vercel
 
 ### 🎯 Latar Belakang Perubahan

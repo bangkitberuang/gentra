@@ -276,6 +276,35 @@ const apiKeyModalCode = fs.readFileSync('src/components/ApiKeyModal.jsx', 'utf8'
 assert(apiKeyModalCode.includes('autoCapitalize="none"'), 'ApiKeyModal disables iOS autoCapitalize');
 assert(apiKeyModalCode.includes('autoCorrect="off"'), 'ApiKeyModal disables iOS autoCorrect');
 
+// 9. TEST DISTINCT GENTRA VERSIONING (v2.6.4)
+console.log('\n--- 9. Testing Distinct Platform Versioning (GENTRA v2.6.4 Standard) ---');
+const pkg = JSON.parse(fs.readFileSync('package.json', 'utf8'));
+assert(pkg.version === '2.6.4', `package.json is standardized to authentic version 2.6.4 (Found: ${pkg.version})`);
+
+const landingCode = fs.readFileSync('src/components/LandingPage.jsx', 'utf8');
+assert(landingCode.includes('v2.6.4'), 'LandingPage header and footer display GENTRA v2.6.4');
+assert(!landingCode.includes('v1.3.0'), 'LandingPage completely purged external v1.3.0 badge');
+
+const studioCode = fs.readFileSync('src/components/GentraStudio.jsx', 'utf8');
+assert(studioCode.includes('v2.6.4'), 'GentraStudio header and footer display GENTRA v2.6.4');
+assert(!studioCode.includes('v1.3.0'), 'GentraStudio completely purged external v1.3.0 badge');
+
+const loginModalCode = fs.readFileSync('src/components/LoginModal.jsx', 'utf8');
+assert(loginModalCode.includes('v2.6.4'), 'LoginModal displays GENTRA v2.6.4');
+assert(!loginModalCode.includes('v1.3.0'), 'LoginModal completely purged external v1.3.0 badge');
+
+const voiceLabCode = fs.readFileSync('src/components/VoiceLabModal.jsx', 'utf8');
+assert(voiceLabCode.includes('v2.6.4'), 'VoiceLabModal displays GENTRA Lab v2.6.4');
+
+const userModalCode = fs.readFileSync('src/components/UserManagementModal.jsx', 'utf8');
+assert(userModalCode.includes('v2.6.4'), 'UserManagementModal displays GENTRA Enterprise v2.6.4');
+
+const changelogCode = fs.readFileSync('CHANGELOG.md', 'utf8');
+assert(changelogCode.includes('## [v2.6.4]'), 'CHANGELOG.md documents v2.6.4 milestone release');
+
+const readmeCode = fs.readFileSync('README.md', 'utf8');
+assert(readmeCode.includes('Version-v2.6.4'), 'README.md includes official v2.6.4 release badge');
+
 console.log('\n======================================================');
 console.log(`TOTAL TESTS: ${passCount + failCount} | PASSED: ${passCount} | FAILED: ${failCount}`);
 console.log('======================================================\n');

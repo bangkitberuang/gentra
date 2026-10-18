@@ -1,6 +1,7 @@
 # GENTRA — Generator Voice Over Natural 🎙️
 
 [![Live Website](https://img.shields.io/badge/Live%20Website-gentra.kitt.lt-0C4E34?style=flat-square&logo=vercel)](https://gentra.kitt.lt)
+[![Version](https://img.shields.io/badge/Version-v2.6.4%20Release-0C4E34?style=flat-square)](#)
 [![BANGKIT Beruang Ecosystem](https://img.shields.io/badge/Ecosystem-BANGKIT%20Beruang-0C4E34?style=flat-square)](https://github.com/bangkitberuang)
 [![Pemprov Jabar](https://img.shields.io/badge/Provinsi-Jawa%20Barat-F59E0B?style=flat-square)](https://jabarprov.go.id)
 [![Audio Standard](https://img.shields.io/badge/Broadcast%20WAV-48kHz%20%7C%2044.1kHz-0C4E34?style=flat-square)](#standar-audio-broadcast)

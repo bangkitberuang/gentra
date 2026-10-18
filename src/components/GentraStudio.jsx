@@ -3569,11 +3569,21 @@ ATURAN MUTLAK: Langsung bacakan teks naskah dari kata pertama tanpa intro, tanpa
         isDarkTheme ? 'bg-[#0A0B10] border-[#1E2230] text-zinc-400' : 'bg-white border-slate-200 text-slate-600'
       }`}>
         <div className="max-w-7xl mx-auto px-4 flex flex-col items-center gap-1.5">
-          <p className="text-xs font-bold tracking-wider uppercase">
-            © 2026 <span className={isDarkTheme ? 'text-[#CCFF00]' : 'text-[#064E3B] font-bold'}>GENTRA</span> — <span className={isDarkTheme ? 'text-zinc-400' : 'text-[#526170]'}>Ti Téks Jadi Sora</span>
-          </p>
+          <div className="flex items-center gap-2">
+            <span className={`text-base font-black ${isDarkTheme ? 'text-[#CCFF00]' : 'text-[#064E3B]'}`}>GENTRA</span>
+            <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold border ${
+              isDarkTheme 
+                ? 'bg-[#14231A] text-[#4ADE80] border-[#166534]' 
+                : 'bg-[#ECFDF5] text-[#064E3B] border-[#6EE7B7]'
+            }`}>
+              <span className="w-1.5 h-1.5 rounded-full bg-[#10B981]"></span>
+              v2.6.4
+            </span>
+            <span className="text-zinc-400 font-mono">|</span>
+            <span className={`text-xs font-semibold ${isDarkTheme ? 'text-zinc-400' : 'text-[#526170]'}`}>Ti Téks Jadi Sora</span>
+          </div>
           <p className="text-[11px] text-zinc-500 font-medium">
-            Digital Audio Voice-Over Synthesis Platform
+            © 2026 GENTRA • Digital Audio Voice-Over Synthesis Platform
           </p>
         </div>
       </footer>
