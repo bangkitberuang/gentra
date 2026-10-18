@@ -65,7 +65,7 @@ const INITIAL_VOICES = [
   // --- 14 Persona Bawaan Awal (Nasional) ---
   { id: 'Aoede', name: 'Anita', desc: 'Ramah & Ceria (Wanita)', gender: 'Female', category: 'Nasional', accent: 'Nasional (Ramah)', isCustom: false },
   { id: 'Leda', name: 'Siti', desc: 'Lembut & Sopan (Wanita)', gender: 'Female', category: 'Nasional', accent: 'Nasional (Lembut)', isCustom: false },
-  { id: 'Charon', name: 'Agus', desc: 'Deep & Naratif (Pria)', gender: 'Male', category: 'Nasional', accent: 'Nasional (Naratif)', isCustom: false },
+  { id: 'Charon', name: 'Mugi', desc: 'Deep & Naratif (Pria)', gender: 'Male', category: 'Nasional', accent: 'Nasional (Naratif)', isCustom: false },
   { id: 'Despina', name: 'Dewi', desc: 'Energik & Lugas (Wanita)', gender: 'Female', category: 'Nasional', accent: 'Nasional (Energik)', isCustom: false },
   { id: 'Callirrhoe', name: 'Tina', desc: 'Profesional & Jelas (Wanita)', gender: 'Female', category: 'Nasional', accent: 'Nasional (Formal)', isCustom: false },
   { id: 'Autonoe', name: 'Maya', desc: 'Inspiratif & Hangat (Wanita)', gender: 'Female', category: 'Nasional', accent: 'Nasional (Inspiratif)', isCustom: false },
@@ -160,20 +160,6 @@ const INITIAL_VOICES = [
   }
 ];
 
-// --- Karakter Suara Khusus ElevenLabs (Studio Hyper-Realistic) ---
-const ELEVENLABS_VOICES = [
-  { id: 'EXAVITQu4vr4xnSDxMaL', name: 'Sarah', desc: 'Dewasa, Menenangkan & Elegan (Wanita)', gender: 'Female', category: 'ElevenLabs', accent: 'Studio Global', isCustom: false },
-  { id: 'JBFqnCBsd6RMkjVDRZzb', name: 'George', desc: 'Hangat & Wibawa Narator (Pria)', gender: 'Male', category: 'ElevenLabs', accent: 'Studio Global', isCustom: false },
-  { id: 'IKne3meq5aSn9XLyUdCD', name: 'Charlie', desc: 'Deep, Percaya Diri & Enerjik (Pria)', gender: 'Male', category: 'ElevenLabs', accent: 'Studio Global', isCustom: false },
-  { id: 'Xb7hH8MSUJpSbSDYk0k2', name: 'Alice', desc: 'Jernih, Komunikatif & Edukator (Wanita)', gender: 'Female', category: 'ElevenLabs', accent: 'Studio Global', isCustom: false },
-  { id: 'N2lVS1w4EtoT3dr4eOWO', name: 'Callum', desc: 'Serak Khas Medsos & Kreatif (Pria)', gender: 'Male', category: 'ElevenLabs', accent: 'Studio Global', isCustom: false },
-  { id: 'CwhRBWXzGAHq8TQ4Fs17', name: 'Roger', desc: 'Santai, Kasual & Resonansi Alami (Pria)', gender: 'Male', category: 'ElevenLabs', accent: 'Studio Global', isCustom: false },
-  { id: 'FGY2WhTYpPnrIDTdsKH5', name: 'Laura', desc: 'Antusias, Ceria & Bersemangat (Wanita)', gender: 'Female', category: 'ElevenLabs', accent: 'Studio Global', isCustom: false },
-  { id: 'XrExE9yKIg1WjnnlVkGX', name: 'Matilda', desc: 'Profesional & Berpengetahuan (Wanita)', gender: 'Female', category: 'ElevenLabs', accent: 'Studio Global', isCustom: false },
-  { id: 'cgSgspJ2msm6clMCkdW9', name: 'Jessica', desc: 'Hangat, Ceria & Bersahabat (Wanita)', gender: 'Female', category: 'ElevenLabs', accent: 'Studio Global', isCustom: false },
-  { id: 'cjVigY5qzO86Huf0OWal', name: 'Eric', desc: 'Halus, Tenang & Terpercaya (Pria)', gender: 'Male', category: 'ElevenLabs', accent: 'Studio Global', isCustom: false },
-  { id: 'hpp4J3VqNfWAUOO0d1Us', name: 'Bella', desc: 'Cerah, Ramah & Artikulatif (Wanita)', gender: 'Female', category: 'ElevenLabs', accent: 'Studio Global', isCustom: false }
-];
 
 // --- Karakter Suara Khusus Microsoft Azure Neural ---
 const AZURE_VOICES = [
@@ -212,7 +198,8 @@ export const STATIC_AUDIO_PREVIEWS = {
   // 14 Persona Nasional (Blok 1 - NUSA VOICE)
   'Anita': '/audio/previews/anita.wav',
   'Siti': '/audio/previews/siti.wav',
-  'Agus': '/audio/previews/agus.wav',
+  'Mugi': '/audio/previews/mugi.wav',
+  'Agus': '/audio/previews/mugi.wav',
   'Dewi': '/audio/previews/dewi.wav',
   'Tina': '/audio/previews/tina.wav',
   'Maya': '/audio/previews/maya.wav',
@@ -391,11 +378,11 @@ const getVoiceAvatarMeta = (v) => {
     if (v.name.includes('Eneng') || v.name.includes('Budak Leutik')) {
       return {
         initials: '👧 EN',
-        gradient: 'from-pink-400 via-rose-500 to-purple-600',
+        gradient: 'from-pink-400 via-rose-500 to-amber-500',
         badge: 'Budak Awewe',
-        roleColor: 'bg-pink-100 text-pink-900 border-pink-300',
+        roleColor: 'bg-rose-100 text-rose-900 border-rose-300',
         genderIcon: '♀ Anak',
-        glow: 'shadow-pink-500/20'
+        glow: 'shadow-rose-500/20'
       };
     }
     if (v.name.includes('Ujang')) {
@@ -452,23 +439,11 @@ const getVoiceAvatarMeta = (v) => {
   if (v.isCloned) {
     return {
       initials: '⚡ ' + initials,
-      gradient: 'from-purple-600 via-indigo-600 to-fuchsia-700',
+      gradient: 'from-amber-500 via-orange-600 to-red-600',
       badge: 'Kloning Suara',
-      roleColor: 'bg-purple-100 text-purple-900 border-purple-300',
+      roleColor: 'bg-amber-100 text-amber-900 border-amber-300',
       genderIcon: v.gender === 'Female' ? '♀ Wanita' : '♂ Pria',
-      glow: 'shadow-purple-500/20'
-    };
-  }
-
-  // ElevenLabs Studio
-  if (v.category === 'ElevenLabs') {
-    return {
-      initials: '🎙️ ' + initials,
-      gradient: v.gender === 'Female' ? 'from-purple-500 via-pink-600 to-indigo-700' : 'from-indigo-600 via-purple-700 to-slate-800',
-      badge: 'ElevenLabs',
-      roleColor: 'bg-purple-50 text-purple-700 border-purple-200',
-      genderIcon: v.gender === 'Female' ? '♀ Wanita' : '♂ Pria',
-      glow: 'shadow-purple-500/20'
+      glow: 'shadow-amber-500/20'
     };
   }
 
@@ -476,7 +451,7 @@ const getVoiceAvatarMeta = (v) => {
   if (v.category === 'Azure') {
     return {
       initials: '🔷 ' + initials,
-      gradient: v.gender === 'Female' ? 'from-cyan-500 via-blue-600 to-indigo-700' : 'from-blue-600 via-indigo-700 to-slate-800',
+      gradient: v.gender === 'Female' ? 'from-cyan-500 via-blue-600 to-slate-700' : 'from-blue-600 via-slate-700 to-slate-800',
       badge: 'Azure Neural',
       roleColor: 'bg-blue-50 text-blue-700 border-blue-200',
       genderIcon: v.gender === 'Female' ? '♀ Wanita' : '♂ Pria',
@@ -488,7 +463,7 @@ const getVoiceAvatarMeta = (v) => {
   if (v.category === 'Google Cloud') {
     return {
       initials: '☁️ ' + initials,
-      gradient: 'from-sky-500 via-blue-600 to-indigo-700',
+      gradient: 'from-sky-500 via-blue-600 to-slate-700',
       badge: 'Google Cloud',
       roleColor: 'bg-sky-50 text-sky-700 border-sky-200',
       genderIcon: v.gender === 'Female' ? '♀ Wanita' : '♂ Pria',
@@ -511,14 +486,14 @@ const getVoiceAvatarMeta = (v) => {
   // Nasional Females
   if (v.gender === 'Female') {
     const palette = {
-      'Anita': 'from-rose-500 via-pink-600 to-purple-600',
+      'Anita': 'from-rose-500 via-pink-600 to-amber-600',
       'Siti': 'from-emerald-500 via-teal-600 to-cyan-700',
       'Dewi': 'from-amber-500 via-orange-600 to-red-600',
-      'Tina': 'from-cyan-500 via-blue-600 to-indigo-700',
-      'Maya': 'from-purple-500 via-indigo-600 to-blue-700',
+      'Tina': 'from-cyan-500 via-blue-600 to-slate-700',
+      'Maya': 'from-teal-500 via-blue-600 to-slate-700',
       'Indah': 'from-teal-500 via-emerald-600 to-teal-800',
       'Shinta': 'from-red-500 via-rose-600 to-pink-700',
-      'Laras': 'from-fuchsia-500 via-purple-600 to-indigo-700'
+      'Laras': 'from-amber-500 via-rose-600 to-slate-700'
     };
     return {
       initials,
@@ -532,16 +507,17 @@ const getVoiceAvatarMeta = (v) => {
 
   // Nasional Males
   const malePalette = {
-    'Agus': 'from-blue-600 via-indigo-700 to-slate-800',
-    'Rian': 'from-sky-500 via-blue-600 to-indigo-700',
+    'Mugi': 'from-blue-600 via-slate-700 to-slate-800',
+    'Agus': 'from-blue-600 via-slate-700 to-slate-800',
+    'Rian': 'from-sky-500 via-blue-600 to-slate-700',
     'Gading': 'from-slate-700 via-zinc-800 to-stone-900',
     'Bayu': 'from-emerald-600 via-teal-700 to-cyan-800',
     'Adi': 'from-amber-600 via-yellow-600 to-orange-700',
-    'Eko': 'from-indigo-600 via-blue-700 to-slate-800'
+    'Eko': 'from-blue-700 via-slate-700 to-slate-900'
   };
   return {
     initials,
-    gradient: malePalette[v.name] || 'from-indigo-600 to-slate-800',
+    gradient: malePalette[v.name] || 'from-slate-700 to-slate-900',
     badge: 'Nasional',
     roleColor: 'bg-blue-50 text-blue-700 border-blue-200',
     genderIcon: '♂ Pria',
@@ -1016,10 +992,7 @@ export const GentraStudio = ({
   const [isBlock2Open, setIsBlock2Open] = useState(false); // PASUNDAN VOICE (Sunda - 8)
 
   // Multi-Engine TTS State
-  const [ttsEngine, setTtsEngine] = useState('gemini'); // 'gemini' | 'elevenlabs' | 'azure' | 'google' | 'voicebox'
-  const [elevenApiKey, setElevenApiKey] = useState(() => {
-    try { return localStorage.getItem('gentra_eleven_key') || ''; } catch (e) { return ''; }
-  });
+  const [ttsEngine, setTtsEngine] = useState('gemini'); // 'gemini' | 'azure' | 'google'
   const [googleApiKey, setGoogleApiKey] = useState(() => {
     try { return localStorage.getItem('gentra_google_key') || ''; } catch (e) { return ''; }
   });
@@ -1229,9 +1202,7 @@ export const GentraStudio = ({
     if (activeEngine === 'azure') {
       setVoices(AZURE_VOICES);
       setSelectedVoice(AZURE_VOICES[0]);
-    } else if (activeEngine === 'elevenlabs') {
-      setVoices(ELEVENLABS_VOICES);
-      setSelectedVoice(ELEVENLABS_VOICES[0]);
+    
     } else {
       setVoices(INITIAL_VOICES);
       setSelectedVoice(INITIAL_VOICES[0]);
@@ -1977,36 +1948,7 @@ ATURAN MUTLAK: Langsung bacakan teks naskah dari kata pertama tanpa intro, tanpa
                       )}
                     </button>
 
-                    {/* 3. Pajajaran (Studio) */}
-                    <button
-                      type="button"
-                      onClick={() => {
-                        if (onSelectEngine) onSelectEngine('elevenlabs');
-                        setIsServerDropdownOpen(false);
-                      }}
-                      className={`w-full text-left px-3 py-2.5 rounded-xl transition-all flex items-center justify-between gap-2.5 mt-1 ${
-                        activeEngine === 'elevenlabs'
-                          ? isDarkTheme ? 'bg-[#181A20] border border-purple-500/50 text-purple-300' : 'bg-purple-50 border border-purple-300 text-purple-900'
-                          : isDarkTheme ? 'hover:bg-[#181A20] text-zinc-300 hover:text-white' : 'hover:bg-zinc-100 text-zinc-700'
-                      }`}
-                    >
-                      <div className="flex items-center gap-2.5 min-w-0">
-                        <div className="w-7 h-7 rounded-lg bg-purple-500/20 flex items-center justify-center shrink-0">
-                          <Sparkles className="w-4 h-4 text-purple-400" />
-                        </div>
-                        <div className="min-w-0">
-                          <div className="text-xs font-bold flex items-center gap-1.5">
-                            <span className="truncate">Pajajaran Server</span>
-                            <span className="text-[9px] px-1 py-0.2 rounded font-black bg-purple-500/20 text-purple-400 shrink-0">Studio</span>
-                          </div>
-                          <div className="text-[10px] text-zinc-400 truncate">Neural Ultra HD Studio Master</div>
-                        </div>
-                      </div>
-                      {activeEngine === 'elevenlabs' && (
-                        <Check className="w-4 h-4 text-purple-400 shrink-0" />
-                      )}
-                    </button>
-
+                    
                     {/* Footer: Detail Server Modal trigger */}
                     <div className="mt-2 pt-1.5 border-t border-zinc-100 dark:border-zinc-800">
                       <button
@@ -2034,12 +1976,12 @@ ATURAN MUTLAK: Langsung bacakan teks naskah dari kata pertama tanpa intro, tanpa
                 onClick={toggleTheme}
                 className={`h-9 w-9 rounded-full border transition-all flex items-center justify-center shrink-0 shadow-xs ${
                   isDarkTheme 
-                    ? 'bg-[#14161B] border-[#20232B] text-indigo-400 hover:bg-[#181A20] hover:scale-105' 
+                    ? 'bg-[#14161B] border-[#20232B] text-[#CCFF00] hover:bg-[#181A20] hover:scale-105' 
                     : 'bg-zinc-100 border-zinc-200 text-amber-600 hover:bg-zinc-200 hover:scale-105'
                 }`}
                 title={isDarkTheme ? "Mode Studio Gelap Aktif (Klik untuk beralih ke Mode Terang)" : "Mode Terang Aktif (Klik untuk beralih ke Studio Gelap)"}
               >
-                {isDarkTheme ? <Moon className="w-4 h-4 fill-current text-indigo-400" /> : <Sun className="w-4 h-4 fill-current text-amber-500" />}
+                {isDarkTheme ? <Moon className="w-4 h-4 fill-current text-[#CCFF00]" /> : <Sun className="w-4 h-4 fill-current text-amber-500" />}
               </button>
 
               {/* Indikator Lampu API */}
@@ -2050,7 +1992,7 @@ ATURAN MUTLAK: Langsung bacakan teks naskah dari kata pertama tanpa intro, tanpa
                   apiQuotaStatus === 'limited'
                     ? 'bg-rose-950/80 border-rose-500 text-rose-300 hover:bg-rose-900 animate-pulse'
                     : apiQuotaStatus === 'active'
-                    ? isDarkTheme ? 'bg-[#14161B] border-[#20232B] hover:bg-[#181A20]' : 'bg-indigo-50 border-indigo-200 hover:bg-indigo-100'
+                    ? isDarkTheme ? 'bg-[#14161B] border-[#20232B] hover:bg-[#181A20]' : 'bg-emerald-50 border-emerald-200 hover:bg-emerald-100'
                     : apiQuotaStatus === 'unconfigured'
                     ? 'bg-amber-950/40 border-amber-500/60 hover:bg-amber-900/40'
                     : 'bg-zinc-800 border-zinc-700'
@@ -2066,11 +2008,11 @@ ATURAN MUTLAK: Langsung bacakan teks naskah dari kata pertama tanpa intro, tanpa
                     <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-rose-400 opacity-75"></span>
                   )}
                   {apiQuotaStatus === 'active' && (
-                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-indigo-400 opacity-75"></span>
+                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#CCFF00] opacity-75"></span>
                   )}
                   <span className={`relative inline-flex rounded-full h-2.5 w-2.5 ${
                     apiQuotaStatus === 'limited' ? 'bg-rose-500 shadow-[0_0_8px_rgba(244,63,94,0.9)]' :
-                    apiQuotaStatus === 'active' ? 'bg-indigo-400 shadow-[0_0_8px_rgba(99,102,241,0.9)]' :
+                    apiQuotaStatus === 'active' ? 'bg-[#CCFF00] shadow-[0_0_8px_#CCFF00]' :
                     apiQuotaStatus === 'unconfigured' ? 'bg-amber-400' : 'bg-zinc-400'
                   }`}></span>
                 </span>
@@ -2087,7 +2029,7 @@ ATURAN MUTLAK: Langsung bacakan teks naskah dari kata pertama tanpa intro, tanpa
                 }`}
                 title="Laboratorium Suara & Konfigurasi Karakter"
               >
-                <FlaskConical className={`w-3.5 h-3.5 ${isDarkTheme ? 'text-indigo-400' : 'text-amber-500'}`} />
+                <FlaskConical className={`w-3.5 h-3.5 ${isDarkTheme ? 'text-[#CCFF00]' : 'text-amber-500'}`} />
                 <span>Lab Suara</span>
               </button>
 
@@ -2096,7 +2038,7 @@ ATURAN MUTLAK: Langsung bacakan teks naskah dari kata pertama tanpa intro, tanpa
                   ? 'bg-[#14161B] border-[#20232B] text-zinc-200' 
                   : 'bg-zinc-100 border-zinc-200/80 text-zinc-700'
               }`}>
-                <User className={`w-3.5 h-3.5 ${isDarkTheme ? 'text-indigo-400' : 'text-slate-700'}`} />
+                <User className={`w-3.5 h-3.5 ${isDarkTheme ? 'text-[#CCFF00]' : 'text-slate-700'}`} />
                 <span className="max-w-[100px] truncate">{user?.name || 'TIM PRODUKSI'}</span>
               </div>
 
@@ -2157,7 +2099,7 @@ ATURAN MUTLAK: Langsung bacakan teks naskah dari kata pertama tanpa intro, tanpa
               <Megaphone className="w-4 h-4" /> Iklan Layanan Masyarakat (ILM)
             </button>
             <button onClick={() => { setIsMenuOpen(false); if (onOpenEngineModal) onOpenEngineModal(); }} className={`w-full px-4 py-3 rounded-2xl text-sm font-bold flex items-center gap-3 ${isDarkTheme ? 'text-zinc-200 hover:bg-[#181A20]' : 'text-emerald-700 hover:bg-zinc-100'}`}>
-              <Server className={`w-4 h-4 ${isDarkTheme ? 'text-[#CCFF00]' : 'text-[#F59E0B]'}`} /> Server: {activeEngine === 'azure' ? 'Kian Santang' : activeEngine === 'elevenlabs' ? 'Pajajaran' : 'Gatot Kaca'} (Ganti)
+              <Server className={`w-4 h-4 ${isDarkTheme ? 'text-[#CCFF00]' : 'text-[#F59E0B]'}`} /> Server: {activeEngine === 'azure' ? 'Kian Santang' : 'Gatot Kaca'} (Ganti)
             </button>
             <button onClick={() => { setIsMenuOpen(false); setShowVoiceLabModal(true); }} className={`w-full px-4 py-3 rounded-2xl text-sm font-bold flex items-center gap-3 ${isDarkTheme ? 'text-zinc-200 hover:bg-[#181A20]' : 'text-amber-700 hover:bg-zinc-100'}`}>
               <FlaskConical className={`w-4 h-4 ${isDarkTheme ? 'text-[#CCFF00]' : 'text-[#F59E0B]'}`} />
@@ -2474,7 +2416,7 @@ ATURAN MUTLAK: Langsung bacakan teks naskah dari kata pertama tanpa intro, tanpa
             <div className={`rounded-3xl p-6 md:p-8 space-y-4 transition-colors ${cardBg}`}>
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                 <div className="flex items-center gap-2.5">
-                  <Sparkles className={`w-5 h-5 ${isDarkTheme ? 'text-indigo-400' : 'text-indigo-600'}`} />
+                  <Sparkles className={`w-5 h-5 ${isDarkTheme ? 'text-[#CCFF00]' : 'text-slate-800'}`} />
                   <h2 className={`text-base sm:text-lg font-bold tracking-wide ${headingColor}`}>
                     Input Teks
                   </h2>
@@ -2487,14 +2429,14 @@ ATURAN MUTLAK: Langsung bacakan teks naskah dari kata pertama tanpa intro, tanpa
                     className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all border flex items-center gap-1.5 ${
                       showEmotionTags
                         ? isDarkTheme 
-                          ? 'bg-indigo-600/20 text-indigo-300 border-indigo-500/40' 
-                          : 'bg-indigo-50 text-indigo-700 border-indigo-300'
+                          ? 'bg-[#CCFF00]/15 text-[#CCFF00] border-[#CCFF00]/40 font-bold' 
+                          : 'bg-emerald-50 text-emerald-800 border-emerald-300'
                         : isDarkTheme 
                           ? 'bg-[#181B26] hover:bg-[#202534] text-zinc-300 border-[#282D3D]' 
                           : 'bg-slate-100 hover:bg-slate-200 text-slate-700 border-slate-200'
                     }`}
                   >
-                    <Sparkles className={`w-3.5 h-3.5 ${isDarkTheme ? 'text-indigo-400' : 'text-indigo-600'}`} />
+                    <Sparkles className={`w-3.5 h-3.5 ${isDarkTheme ? 'text-[#CCFF00]' : 'text-slate-700'}`} />
                     <span>{showEmotionTags ? 'Sembunyikan Tag Emosi' : 'Tag Emosi & Gaya'}</span>
                   </button>
 
@@ -2508,7 +2450,7 @@ ATURAN MUTLAK: Langsung bacakan teks naskah dari kata pertama tanpa intro, tanpa
                     }`}
                     title="Transkripsi Audio ke Naskah AI"
                   >
-                    <Mic className={`w-3.5 h-3.5 ${isDarkTheme ? 'text-indigo-400' : 'text-indigo-600'}`} />
+                    <Mic className={`w-3.5 h-3.5 ${isDarkTheme ? 'text-[#CCFF00]' : 'text-slate-700'}`} />
                     <span>Transkripsi Suara AI</span>
                   </button>
                 </div>
@@ -2604,8 +2546,8 @@ ATURAN MUTLAK: Langsung bacakan teks naskah dari kata pertama tanpa intro, tanpa
                 }`}>
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-1.5">
-                      <Sparkles className={`w-3.5 h-3.5 ${isDarkTheme ? 'text-indigo-400' : 'text-indigo-600'}`} />
-                      <span className={`text-[11px] font-black uppercase tracking-wider ${isDarkTheme ? 'text-indigo-300' : 'text-indigo-700'}`}>
+                      <Sparkles className={`w-3.5 h-3.5 ${isDarkTheme ? 'text-[#CCFF00]' : 'text-slate-700'}`} />
+                      <span className={`text-[11px] font-black uppercase tracking-wider ${isDarkTheme ? 'text-[#CCFF00]' : 'text-slate-800'}`}>
                         Tag Emosi & Gaya Bicara
                       </span>
                     </div>
@@ -2638,8 +2580,8 @@ ATURAN MUTLAK: Langsung bacakan teks naskah dari kata pertama tanpa intro, tanpa
               {/* Textarea Input Naskah */}
               <div className={`rounded-2xl transition-colors p-4 border ${
                 isDarkTheme 
-                  ? 'bg-[#0E1017] border-[#262B3A] focus-within:border-indigo-500/80 focus-within:ring-1 focus-within:ring-indigo-500/30' 
-                  : 'bg-slate-50/70 border-slate-200 focus-within:border-indigo-600 focus-within:bg-white focus-within:ring-1 focus-within:ring-indigo-600/20'
+                  ? 'bg-[#0E1017] border-[#262B3A] focus-within:border-[#CCFF00] focus-within:ring-1 focus-within:ring-[#CCFF00]/30' 
+                  : 'bg-slate-50/70 border-slate-200 focus-within:border-slate-800 focus-within:bg-white focus-within:ring-1 focus-within:ring-slate-800/20'
               }`}>
                 <textarea
                   ref={textareaRef}
@@ -2662,7 +2604,7 @@ ATURAN MUTLAK: Langsung bacakan teks naskah dari kata pertama tanpa intro, tanpa
                   <span>Estimasi: <strong className={`font-bold ${isDarkTheme ? 'text-amber-400' : 'text-amber-600'}`}>~{Math.ceil(text.split(/\s+/).filter(Boolean).length / 2.5)}s</strong> Durasi Siaran</span>
                 </div>
                 <div className="flex items-center gap-2 font-mono text-[11px]">
-                  <span className={`w-2 h-2 rounded-full animate-pulse ${isDarkTheme ? 'bg-indigo-400 shadow-[0_0_8px_#818CF8]' : 'bg-indigo-600 shadow-[0_0_8px_rgba(79,70,229,0.5)]'}`}></span>
+                  <span className={`w-2 h-2 rounded-full animate-pulse ${isDarkTheme ? 'bg-[#CCFF00] shadow-[0_0_8px_#CCFF00]' : 'bg-emerald-600 shadow-[0_0_8px_rgba(5,150,105,0.5)]'}`}></span>
                   <span className={`font-bold ${isDarkTheme ? 'text-zinc-300' : 'text-slate-700'}`}>
                     Neural High-Fidelity Engine • 24 kHz Lossless
                   </span>
@@ -2674,7 +2616,7 @@ ATURAN MUTLAK: Langsung bacakan teks naskah dari kata pertama tanpa intro, tanpa
             <div className={`rounded-3xl p-6 md:p-8 space-y-5 transition-colors ${cardBg}`}>
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                 <div className="flex items-center gap-2.5">
-                  <User className={`w-5 h-5 ${isDarkTheme ? 'text-indigo-400' : 'text-indigo-600'}`} />
+                  <User className={`w-5 h-5 ${isDarkTheme ? 'text-[#CCFF00]' : 'text-slate-800'}`} />
                   <h2 className={`text-base sm:text-lg font-bold tracking-wide ${headingColor}`}>
                     Pilih Karakter Suara ({filteredVoices.length})
                   </h2>
@@ -2812,7 +2754,7 @@ ATURAN MUTLAK: Langsung bacakan teks naskah dari kata pertama tanpa intro, tanpa
             {/* PENGATURAN GAYA BICARA & EMOSI */}
             <div className={`rounded-3xl p-6 md:p-8 space-y-5 transition-colors ${cardBg}`}>
               <div className="flex items-center gap-2.5">
-                <Settings2 className={`w-5 h-5 ${isDarkTheme ? 'text-indigo-400' : 'text-indigo-600'}`} />
+                <Settings2 className={`w-5 h-5 ${isDarkTheme ? 'text-[#CCFF00]' : 'text-slate-800'}`} />
                 <h2 className={`text-base sm:text-lg font-bold tracking-wide ${headingColor}`}>
                   Pengaturan Gaya Bicara & Emosi
                 </h2>
@@ -2830,7 +2772,7 @@ ATURAN MUTLAK: Langsung bacakan teks naskah dari kata pertama tanpa intro, tanpa
                         <span className={`text-[10px] font-medium ${subTextColor}`}>Laju artikulasi tempo pembacaan</span>
                       </div>
                       <span className={`text-xs font-mono tabular-nums font-bold px-2.5 py-1 rounded-lg border ${
-                        isDarkTheme ? 'border-[#282D3D] bg-[#0E1017] text-indigo-400' : 'border-slate-200 bg-white text-indigo-600 shadow-2xs'
+                        isDarkTheme ? 'border-[#282D3D] bg-[#0E1017] text-[#CCFF00] font-bold' : 'border-slate-200 bg-white text-slate-900 shadow-2xs'
                       }`}>
                         {speed.toFixed(1)}x
                       </span>
@@ -2846,7 +2788,7 @@ ATURAN MUTLAK: Langsung bacakan teks naskah dari kata pertama tanpa intro, tanpa
                     />
                     <div className={`flex justify-between text-[10px] font-mono font-medium ${isDarkTheme ? 'text-zinc-500' : 'text-slate-400'}`}>
                       <span>0.6x (Khidmat/Santai)</span>
-                      <span className={`font-bold ${isDarkTheme ? 'text-indigo-400' : 'text-indigo-600'}`}>1.0x (Normal)</span>
+                      <span className={`font-bold ${isDarkTheme ? 'text-[#CCFF00]' : 'text-slate-800'}`}>1.0x (Normal)</span>
                       <span>1.6x (Cepat/Komersial)</span>
                     </div>
                   </div>
@@ -2861,7 +2803,7 @@ ATURAN MUTLAK: Langsung bacakan teks naskah dari kata pertama tanpa intro, tanpa
                         <span className={`text-[10px] font-medium ${subTextColor}`}>Resonansi timbre vokal (-6st s/d +6st)</span>
                       </div>
                       <span className={`text-xs font-mono tabular-nums font-bold px-2.5 py-1 rounded-lg border ${
-                        isDarkTheme ? 'border-[#282D3D] bg-[#0E1017] text-indigo-400' : 'border-slate-200 bg-white text-indigo-600 shadow-2xs'
+                        isDarkTheme ? 'border-[#282D3D] bg-[#0E1017] text-[#CCFF00] font-bold' : 'border-slate-200 bg-white text-slate-900 shadow-2xs'
                       }`}>
                         {pitch > 0 ? `+${pitch}` : pitch} st
                       </span>
@@ -2877,7 +2819,7 @@ ATURAN MUTLAK: Langsung bacakan teks naskah dari kata pertama tanpa intro, tanpa
                     />
                     <div className={`flex justify-between text-[10px] font-mono font-medium ${isDarkTheme ? 'text-zinc-500' : 'text-slate-400'}`}>
                       <span>-6st (Deep Maskulin)</span>
-                      <span className={`font-bold ${isDarkTheme ? 'text-indigo-400' : 'text-indigo-600'}`}>0 (Kalibrasi Asli)</span>
+                      <span className={`font-bold ${isDarkTheme ? 'text-[#CCFF00]' : 'text-slate-800'}`}>0 (Kalibrasi Asli)</span>
                       <span>+6st (Cerah Melengking)</span>
                     </div>
                   </div>
@@ -2895,13 +2837,15 @@ ATURAN MUTLAK: Langsung bacakan teks naskah dari kata pertama tanpa intro, tanpa
                           onClick={() => setEmotion(emo.id)} 
                           className={`flex flex-col items-center justify-center p-3 rounded-xl border text-xs font-bold transition-all ${
                             isEmoSelected 
-                              ? 'bg-indigo-600 border-2 border-indigo-500 text-white shadow-md shadow-indigo-600/20 scale-105' 
+                              ? isDarkTheme 
+                                ? 'bg-[#CCFF00] border-2 border-[#CCFF00] text-black font-black shadow-lg shadow-[#CCFF00]/25 scale-105' 
+                                : 'bg-slate-950 border-2 border-slate-950 text-white shadow-md scale-105'
                               : isDarkTheme 
                                 ? 'bg-[#0E1017] border-[#282D3D] text-zinc-300 hover:border-zinc-700 hover:text-white' 
                                 : 'bg-white border-slate-200 text-slate-700 hover:border-slate-300 hover:bg-slate-100 shadow-2xs'
                           }`}
                         >
-                          <div className={isEmoSelected ? 'text-white' : isDarkTheme ? 'text-zinc-400' : 'text-slate-500'}>
+                          <div className={isEmoSelected ? (isDarkTheme ? 'text-black' : 'text-white') : isDarkTheme ? 'text-zinc-400' : 'text-slate-500'}>
                             {emo.icon}
                           </div>
                           <span className="mt-1 text-[10px] uppercase tracking-wider font-extrabold">{emo.label}</span>
@@ -2946,12 +2890,12 @@ ATURAN MUTLAK: Langsung bacakan teks naskah dari kata pertama tanpa intro, tanpa
                 }`}>
                   <div className="flex items-center justify-between gap-3 text-xs">
                     <div className="flex items-center gap-2.5 truncate">
-                      <Loader2 className={`w-4 h-4 animate-spin shrink-0 ${isDarkTheme ? 'text-[#CCFF00]' : 'text-indigo-600'}`} />
-                      <span className={`font-bold truncate ${isDarkTheme ? 'text-[#CCFF00]' : 'text-indigo-600'}`}>
+                      <Loader2 className={`w-4 h-4 animate-spin shrink-0 ${isDarkTheme ? 'text-[#CCFF00]' : 'text-slate-800'}`} />
+                      <span className={`font-bold truncate ${isDarkTheme ? 'text-[#CCFF00]' : 'text-slate-800'}`}>
                         {progressStatus || "Menyintesis suara..."}
                       </span>
                     </div>
-                    <span className={`font-mono font-black text-sm shrink-0 ${isDarkTheme ? 'text-[#CCFF00]' : 'text-indigo-600'}`}>
+                    <span className={`font-mono font-black text-sm shrink-0 ${isDarkTheme ? 'text-[#CCFF00]' : 'text-slate-800'}`}>
                       {generationProgress}%
                     </span>
                   </div>
@@ -2985,10 +2929,10 @@ ATURAN MUTLAK: Langsung bacakan teks naskah dari kata pertama tanpa intro, tanpa
                     <div>
                       <div className="flex items-center gap-2">
                         <span className={`text-sm font-bold flex items-center gap-2 uppercase tracking-wide ${headingColor}`}>
-                          <CheckCircle className={`w-5 h-5 ${isDarkTheme ? 'text-indigo-400' : 'text-indigo-600'}`} /> Audio Selesai Diproses
+                          <CheckCircle className={`w-5 h-5 ${isDarkTheme ? 'text-[#CCFF00]' : 'text-emerald-600'}`} /> Audio Selesai Diproses
                         </span>
                         <span className={`text-[10px] font-mono font-bold px-2 py-0.5 rounded border ${
-                          isDarkTheme ? 'border-[#282D3D] bg-[#181B26] text-indigo-300' : 'border-slate-200 bg-slate-100 text-indigo-700'
+                          isDarkTheme ? 'border-[#282D3D] bg-[#181B26] text-[#CCFF00]' : 'border-slate-200 bg-slate-100 text-slate-800'
                         }`}>
                           {audioSampleRate === 48000 ? 'WAV 48 kHz (Broadcast)' : audioSampleRate === 44100 ? 'WAV 44.1 kHz (CD Studio)' : 'WAV 24 kHz (Vocoder)'}
                         </span>
@@ -3002,7 +2946,7 @@ ATURAN MUTLAK: Langsung bacakan teks naskah dari kata pertama tanpa intro, tanpa
                       href={audioUrl} 
                       download={`gentra-${selectedVoice.name.toLowerCase().replace(/\s+/g, '-')}-${audioSampleRate / 1000}khz.wav`} 
                       className={`px-5 py-2.5 font-extrabold rounded-xl transition-all flex items-center justify-center gap-2 text-xs shadow-md shrink-0 ${
-                        isDarkTheme ? 'bg-indigo-600 hover:bg-indigo-500 text-white shadow-indigo-600/20' : 'bg-slate-950 hover:bg-slate-800 text-white shadow-slate-950/20'
+                        isDarkTheme ? 'bg-[#CCFF00] hover:bg-[#b8e600] text-black font-black shadow-lg shadow-[#CCFF00]/25' : 'bg-slate-950 hover:bg-slate-800 text-white shadow-slate-950/20'
                       }`}
                     >
                       <Download className="w-4 h-4 stroke-[2.5]" /> UNDUH WAV ({audioSampleRate / 1000} kHz)
@@ -3014,7 +2958,7 @@ ATURAN MUTLAK: Langsung bacakan teks naskah dari kata pertama tanpa intro, tanpa
                     isDarkTheme ? 'border-[#222634] bg-[#0E1017]' : 'border-slate-200 bg-slate-50'
                   }`}>
                     <div className="flex items-center gap-2">
-                      <Sliders className={`w-4 h-4 ${isDarkTheme ? 'text-indigo-400' : 'text-indigo-600'}`} />
+                      <Sliders className={`w-4 h-4 ${isDarkTheme ? 'text-[#CCFF00]' : 'text-slate-700'}`} />
                       <span className={`text-xs font-bold ${isDarkTheme ? 'text-zinc-200' : 'text-slate-800'}`}>Standar Format Master Audio:</span>
                     </div>
 
@@ -3025,7 +2969,7 @@ ATURAN MUTLAK: Langsung bacakan teks naskah dari kata pertama tanpa intro, tanpa
                         onClick={() => handleChangeSampleRate(48000)}
                         className={`px-3 py-1 rounded-lg transition-all ${
                           audioSampleRate === 48000 
-                            ? (isDarkTheme ? 'bg-indigo-600 text-white shadow-xs font-bold' : 'bg-slate-900 text-white shadow-xs font-bold') 
+                            ? (isDarkTheme ? 'bg-[#CCFF00] text-black shadow-xs font-black' : 'bg-slate-900 text-white shadow-xs font-bold') 
                             : (isDarkTheme ? 'text-zinc-400 hover:text-white' : 'text-slate-600 hover:text-slate-900')
                         }`}
                         title="Standar Video Editing: Premiere Pro, DaVinci Resolve, Final Cut Pro"
@@ -3037,7 +2981,7 @@ ATURAN MUTLAK: Langsung bacakan teks naskah dari kata pertama tanpa intro, tanpa
                         onClick={() => handleChangeSampleRate(44100)}
                         className={`px-3 py-1 rounded-lg transition-all ${
                           audioSampleRate === 44100 
-                            ? (isDarkTheme ? 'bg-indigo-600 text-white shadow-xs font-bold' : 'bg-slate-900 text-white shadow-xs font-bold') 
+                            ? (isDarkTheme ? 'bg-[#CCFF00] text-black shadow-xs font-black' : 'bg-slate-900 text-white shadow-xs font-bold') 
                             : (isDarkTheme ? 'text-zinc-400 hover:text-white' : 'text-slate-600 hover:text-slate-900')
                         }`}
                         title="Standar Studio Audio & Mastering: Pro Tools, Logic Pro, FL Studio, CD"
@@ -3049,7 +2993,7 @@ ATURAN MUTLAK: Langsung bacakan teks naskah dari kata pertama tanpa intro, tanpa
                         onClick={() => handleChangeSampleRate(24000)}
                         className={`px-3 py-1 rounded-lg transition-all ${
                           audioSampleRate === 24000 
-                            ? (isDarkTheme ? 'bg-indigo-600 text-white shadow-xs font-bold' : 'bg-slate-900 text-white shadow-xs font-bold') 
+                            ? (isDarkTheme ? 'bg-[#CCFF00] text-black shadow-xs font-black' : 'bg-slate-900 text-white shadow-xs font-bold') 
                             : (isDarkTheme ? 'text-zinc-400 hover:text-white' : 'text-slate-600 hover:text-slate-900')
                         }`}
                         title="Output Asli Mentah Vocoder tanpa Resampling (Hemat Memori)"
@@ -3066,8 +3010,8 @@ ATURAN MUTLAK: Langsung bacakan teks naskah dari kata pertama tanpa intro, tanpa
                     {/* Top Console Bar */}
                     <div className="flex items-center justify-between text-[11px] font-mono border-b border-white/10 pb-2">
                       <div className="flex items-center gap-2">
-                        <span className={`w-2.5 h-2.5 rounded-full ${isMainAudioPlaying ? 'bg-indigo-400 animate-ping' : 'bg-zinc-600'}`} />
-                        <span className="font-bold tracking-wider uppercase text-[10px] text-indigo-400">
+                        <span className={`w-2.5 h-2.5 rounded-full ${isMainAudioPlaying ? 'bg-[#CCFF00] animate-ping' : 'bg-zinc-600'}`} />
+                        <span className="font-bold tracking-wider uppercase text-[10px] text-[#CCFF00]">
                           {isMainAudioPlaying ? '● ON-AIR PLAYBACK' : '○ STANDBY MONITOR'}
                         </span>
                       </div>
@@ -3093,7 +3037,7 @@ ATURAN MUTLAK: Langsung bacakan teks naskah dari kata pertama tanpa intro, tanpa
                                     ? 'bg-rose-500 shadow-[0_0_6px_rgba(244,63,94,0.8)] animate-meter' 
                                     : bIdx > 16 
                                     ? 'bg-amber-400 shadow-[0_0_6px_rgba(245,158,11,0.8)] animate-meter' 
-                                    : 'bg-indigo-400 shadow-[0_0_6px_rgba(99,102,241,0.8)] animate-meter'
+                                    : 'bg-[#CCFF00] shadow-[0_0_6px_rgba(204,255,0,0.8)] animate-meter'
                                   : 'bg-zinc-800/40'
                               }`}
                               style={{ 
@@ -3115,12 +3059,12 @@ ATURAN MUTLAK: Langsung bacakan teks naskah dari kata pertama tanpa intro, tanpa
                             <div 
                               key={i} 
                               className={`flex-1 rounded-[1px] transition-opacity duration-75 ${
-                                i > 20 ? 'bg-rose-500' : i > 15 ? 'bg-amber-400' : 'bg-indigo-400'
+                                i > 20 ? 'bg-rose-500' : i > 15 ? 'bg-amber-400' : 'bg-[#CCFF00]'
                               } ${isMainAudioPlaying && i < 19 ? 'opacity-100 shadow-[0_0_3px_currentColor]' : 'opacity-20'}`} 
                             />
                           ))}
                         </div>
-                        <span className="w-9 text-right font-tabular font-bold text-indigo-400">{isMainAudioPlaying ? '-3.2 dB' : '-inf'}</span>
+                        <span className="w-9 text-right font-tabular font-bold text-[#CCFF00]">{isMainAudioPlaying ? '-3.2 dB' : '-inf'}</span>
                       </div>
                       <div className="flex items-center gap-2">
                         <span className="w-3 font-bold text-zinc-300">R</span>
@@ -3129,12 +3073,12 @@ ATURAN MUTLAK: Langsung bacakan teks naskah dari kata pertama tanpa intro, tanpa
                             <div 
                               key={i} 
                               className={`flex-1 rounded-[1px] transition-opacity duration-75 ${
-                                i > 20 ? 'bg-rose-500' : i > 15 ? 'bg-amber-400' : 'bg-indigo-400'
+                                i > 20 ? 'bg-rose-500' : i > 15 ? 'bg-amber-400' : 'bg-[#CCFF00]'
                               } ${isMainAudioPlaying && i < 18 ? 'opacity-100 shadow-[0_0_3px_currentColor]' : 'opacity-20'}`} 
                             />
                           ))}
                         </div>
-                        <span className="w-9 text-right font-tabular text-indigo-400 font-bold">{isMainAudioPlaying ? '-3.8 dB' : '-inf'}</span>
+                        <span className="w-9 text-right font-tabular text-[#CCFF00] font-bold">{isMainAudioPlaying ? '-3.8 dB' : '-inf'}</span>
                       </div>
                     </div>
                   </div>
@@ -3163,7 +3107,7 @@ ATURAN MUTLAK: Langsung bacakan teks naskah dari kata pertama tanpa intro, tanpa
           <div className={`rounded-3xl p-6 md:p-8 space-y-5 animate-in fade-in duration-300 transition-colors ${cardBg}`}>
             <div className={`flex items-center justify-between border-b pb-4 ${isDarkTheme ? 'border-[#222634]' : 'border-slate-200'}`}>
               <h2 className={`text-xl font-bold flex items-center gap-2.5 ${headingColor}`}>
-                <History className="w-6 h-6 text-indigo-500" /> Riwayat Voice Over Gentra
+                <History className="w-6 h-6 text-[#CCFF00]" /> Riwayat Voice Over Gentra
               </h2>
               {history.length > 0 && (
                 <button 
@@ -3185,7 +3129,7 @@ ATURAN MUTLAK: Langsung bacakan teks naskah dari kata pertama tanpa intro, tanpa
               <div className="space-y-3">
                 {history.map(item => (
                   <div key={item.id} className={`p-4 rounded-2xl flex flex-col md:flex-row items-center justify-between transition-all gap-4 ${subCardBg} ${
-                    isDarkTheme ? 'hover:border-indigo-500/40' : 'hover:border-slate-300'
+                    isDarkTheme ? 'hover:border-[#CCFF00]/40' : 'hover:border-slate-300'
                   }`}>
                     <div className="flex-1 w-full md:w-auto">
                       <p className={`font-medium line-clamp-2 text-sm italic ${isDarkTheme ? 'text-zinc-200' : 'text-slate-800'}`}>
@@ -3193,7 +3137,7 @@ ATURAN MUTLAK: Langsung bacakan teks naskah dari kata pertama tanpa intro, tanpa
                       </p>
                       <div className="flex flex-wrap items-center gap-2 mt-2">
                         <span className={`px-2.5 py-0.5 text-[10px] font-bold rounded-full border ${
-                          isDarkTheme ? 'bg-indigo-950/50 text-indigo-300 border-indigo-800/40' : 'bg-indigo-50 text-indigo-700 border-indigo-200'
+                          isDarkTheme ? 'bg-[#CCFF00]/15 text-[#CCFF00] border-[#CCFF00]/30 font-bold' : 'bg-emerald-50 text-emerald-800 border-emerald-200'
                         }`}>
                           {item.voice}
                         </span>
@@ -3218,7 +3162,7 @@ ATURAN MUTLAK: Langsung bacakan teks naskah dari kata pertama tanpa intro, tanpa
                         download={`gentra-${item.voice.toLowerCase()}.wav`} 
                         className={`p-2 rounded-xl transition-all border ${
                           isDarkTheme 
-                            ? 'bg-[#181B26] hover:bg-indigo-600 text-zinc-300 hover:text-white border-[#2A2E3D]' 
+                            ? 'bg-[#181B26] hover:bg-[#CCFF00] text-zinc-300 hover:text-black font-bold border-[#2A2E3D]' 
                             : 'bg-white hover:bg-slate-900 hover:text-white text-slate-700 border-slate-200'
                         }`}
                         title="Unduh WAV"
@@ -3315,7 +3259,7 @@ ATURAN MUTLAK: Langsung bacakan teks naskah dari kata pertama tanpa intro, tanpa
               </button>
               <button
                 onClick={handleSaveEditVoice}
-                className="flex-1 py-3 rounded-xl font-bold text-xs bg-indigo-600 text-white hover:bg-indigo-500 shadow-sm transition-colors"
+                className="flex-1 py-3 rounded-xl font-bold text-xs bg-[#CCFF00] text-black font-black hover:bg-[#b8e600] shadow-sm transition-colors"
               >
                 SIMPAN PERUBAHAN
               </button>
@@ -3358,8 +3302,8 @@ ATURAN MUTLAK: Langsung bacakan teks naskah dari kata pertama tanpa intro, tanpa
           }`}>
             <div className={`flex justify-between items-center border-b pb-3 ${isDarkTheme ? 'border-[#222634]' : 'border-slate-100'}`}>
               <div className="flex items-center gap-2.5">
-                <div className={`p-2 rounded-xl ${isDarkTheme ? 'bg-indigo-950/60 text-indigo-400 border border-indigo-800/40' : 'bg-indigo-50 text-indigo-600 border border-indigo-100'}`}>
-                  <Mic className="w-5 h-5 text-indigo-500" />
+                <div className={`p-2 rounded-xl ${isDarkTheme ? 'bg-[#CCFF00]/15 text-[#CCFF00] border border-[#CCFF00]/30' : 'bg-emerald-50 text-emerald-800 border border-emerald-100'}`}>
+                  <Mic className="w-5 h-5 text-[#CCFF00]" />
                 </div>
                 <div>
                   <h3 className={`text-base font-bold ${isDarkTheme ? 'text-white' : 'text-slate-900'}`}>Transkripsi Audio ke Naskah (Gemini AI)</h3>
@@ -3374,9 +3318,9 @@ ATURAN MUTLAK: Langsung bacakan teks naskah dari kata pertama tanpa intro, tanpa
             {/* Upload Area */}
             <div className="space-y-3">
               <label className={`border-2 border-dashed rounded-2xl p-5 flex flex-col items-center justify-center cursor-pointer transition-all ${
-                isDarkTheme ? 'border-[#2A2E3D] hover:border-indigo-500 bg-[#0E1017]' : 'border-slate-200 hover:border-indigo-400 bg-slate-50 hover:bg-slate-100/50'
+                isDarkTheme ? 'border-[#2A2E3D] hover:border-[#CCFF00] bg-[#0E1017]' : 'border-slate-200 hover:border-slate-400 bg-slate-50 hover:bg-slate-100/50'
               }`}>
-                <FileAudio className={`w-8 h-8 mb-2 ${isDarkTheme ? 'text-indigo-400' : 'text-slate-400'}`} />
+                <FileAudio className={`w-8 h-8 mb-2 ${isDarkTheme ? 'text-[#CCFF00]' : 'text-slate-400'}`} />
                 <span className={`text-xs font-bold text-center ${isDarkTheme ? 'text-zinc-200' : 'text-slate-700'}`}>
                   {whisperFile ? whisperFile.name : "Pilih File Audio untuk Ditranskripsikan"}
                 </span>
@@ -3411,7 +3355,7 @@ ATURAN MUTLAK: Langsung bacakan teks naskah dari kata pertama tanpa intro, tanpa
                 className={`w-full py-3.5 rounded-xl font-bold text-xs flex items-center justify-center gap-2 transition-all ${
                   !whisperFile || isTranscribing 
                     ? 'bg-zinc-800 text-zinc-500 cursor-not-allowed' 
-                    : 'bg-indigo-600 text-white hover:bg-indigo-500 shadow-sm'
+                    : isDarkTheme ? 'bg-[#CCFF00] text-black font-black hover:bg-[#b8e600] shadow-sm' : 'bg-slate-900 text-white hover:bg-slate-800 shadow-sm'
                 }`}
               >
                 {isTranscribing ? (
@@ -3456,7 +3400,7 @@ ATURAN MUTLAK: Langsung bacakan teks naskah dari kata pertama tanpa intro, tanpa
       }`}>
         <div className="max-w-7xl mx-auto px-4 flex flex-col items-center gap-1.5">
           <p className="text-xs font-bold tracking-wider uppercase">
-            © 2026 <span className={isDarkTheme ? 'text-indigo-400' : 'text-slate-900'}>GENTRA</span> — Ti Téks Jadi Sora
+            © 2026 <span className={isDarkTheme ? 'text-[#CCFF00]' : 'text-slate-900'}>GENTRA</span> — Ti Téks Jadi Sora
           </p>
           <p className="text-[11px] text-zinc-500 font-medium">
             Digital Audio Voice-Over Synthesis Platform

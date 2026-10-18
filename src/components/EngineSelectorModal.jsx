@@ -34,12 +34,12 @@ export const ENGINE_SERVERS = [
     activeTagColor: 'bg-[#CCFF00]/20 text-[#CCFF00] border-[#CCFF00]/30',
     description: 'Server vokal utama dengan prosodi Sunda yang luwes, alami, dan hangat. Dilengkapi fail-safe backup key otomatis dan dukungan artikulasi paralinguistik ekspresif.',
     features: [
-      { label: 'Karakter Utama', value: 'Anita, Agus, Siti, Abah, Teh Neng' },
+      { label: 'Karakter Utama', value: 'Anita, Mugi, Siti, Abah, Teh Neng' },
       { label: 'Dialek & Gaya', value: 'Cengkok Pasundan & Bahasa Indonesia Resmi' },
       { label: 'Kecepatan Latensi', value: 'Ultra-Fast (~1.1 detik)' },
       { label: 'Keamanan Kuota', value: 'Dual-Key Fail-Safe Auto Rotation' }
     ],
-    sampleVoices: ['Anita (Sunda Halus)', 'Agus (Naratif)', 'Abah (Sesepuh)', 'Teh Neng (Ceria)']
+    sampleVoices: ['Anita (Sunda Halus)', 'Mugi (Naratif)', 'Abah (Sesepuh)', 'Teh Neng (Ceria)']
   },
   {
     id: 'azure',
@@ -64,30 +64,6 @@ export const ENGINE_SERVERS = [
       { label: 'Arsitektur', value: 'SSML Compliant & Cognitive Speech' }
     ],
     sampleVoices: ['Gadis Sunda (id-ID)', 'Ardi Priangan (id-ID)']
-  },
-  {
-    id: 'elevenlabs',
-    code: 'ENGINE C',
-    name: 'Prabu Pajajaran Server',
-    engineLabel: 'Neural Ultra Studio Master v2',
-    provider: 'Multilingual Sound Lab',
-    status: 'online',
-    statusText: 'API Key Aktif & Siap Uji',
-    recommended: false,
-    badges: ['Studio Grade', '44.1kHz Master', 'Hyper-Realistic'],
-    accentColor: 'purple',
-    gradientBg: 'from-zinc-900/90 via-[#14161B] to-[#0B0C0E]',
-    borderColor: 'border-purple-500/50',
-    selectedRing: 'ring-purple-400 border-purple-400 shadow-purple-950/80',
-    activeTagColor: 'bg-purple-500/20 text-purple-300 border-purple-500/30',
-    description: 'Server vokal hyper-realistic standar broadcast studio 44.1kHz dengan artikulasi mikro dan kedalaman emosional untuk produksi audio profesional.',
-    features: [
-      { label: 'Karakter Utama', value: 'Sarah, George, Charlie, Alice, Callum' },
-      { label: 'Dialek & Gaya', value: 'Multilingual Master & International Timbre' },
-      { label: 'Kecepatan Latensi', value: 'Studio Rendering (~2.2 detik)' },
-      { label: 'Format Output', value: 'Studio CD 44.1 kHz MP3' }
-    ],
-    sampleVoices: ['Sarah (Elegan)', 'George (Wibawa)', 'Charlie (Deep)', 'Alice (Jernih)']
   }
 ];
 
@@ -146,8 +122,8 @@ export const EngineSelectorModal = ({
           </p>
         </div>
 
-        {/* Cards Grid: 3 Engines (A: Gatot Kaca, B: Kian Santang, C: Pajajaran) */}
-        <div className="p-5 sm:p-7 grid grid-cols-1 md:grid-cols-3 gap-4.5">
+        {/* Cards Grid: 2 Active Engines (A: Gatot Kaca, B: Kian Santang) */}
+        <div className="p-5 sm:p-7 grid grid-cols-1 md:grid-cols-2 gap-5">
           {ENGINE_SERVERS.map((srv) => {
             const isSelected = currentChoice === srv.id;
 

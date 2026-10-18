@@ -58,7 +58,7 @@ const FULL_PERSONAS = [
   },
   { 
     id: 'Charon', 
-    name: 'Agus', 
+    name: 'Mugi', 
     gender: 'Pria', 
     category: 'Nasional', 
     role: 'Naratif Dokumenter', 
@@ -315,7 +315,8 @@ export const LANDING_STATIC_PREVIEWS = {
   // 14 Persona Nasional (Studio-Grade Pure Gemini Neural Pre-rendered - 0 Token)
   'Anita': '/audio/previews/anita.wav',
   'Siti': '/audio/previews/siti.wav',
-  'Agus': '/audio/previews/agus.wav',
+  'Mugi': '/audio/previews/mugi.wav',
+  'Agus': '/audio/previews/mugi.wav',
   'Dewi': '/audio/previews/dewi.wav',
   'Tina': '/audio/previews/tina.wav',
   'Maya': '/audio/previews/maya.wav',
@@ -386,7 +387,7 @@ export const LandingPage = ({ onOpenLogin }) => {
   };
 
   return (
-    <div className="min-h-screen bg-[#FBFBFA] text-zinc-900 font-sans selection:bg-indigo-600 selection:text-white">
+    <div className="min-h-screen bg-[#FBFBFA] text-zinc-900 font-sans selection:bg-amber-400 selection:text-black">
       
       {/* 1. Header / Navbar */}
       <header className="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-zinc-200/80 shadow-xs">
@@ -407,10 +408,10 @@ export const LandingPage = ({ onOpenLogin }) => {
 
           {/* Navigation Links */}
           <nav className="hidden lg:flex items-center space-x-7 text-xs font-bold text-zinc-600">
-            <a href="#fitur" className="hover:text-indigo-600 transition-colors">Fitur Unggulan</a>
-            <a href="#ekosistem" className="hover:text-indigo-600 transition-colors">Bagan Ekosistem</a>
-            <a href="#persona" className="hover:text-indigo-600 transition-colors">22 Karakter Vokal</a>
-            <a href="#ilm" className="hover:text-indigo-600 transition-colors">Mode ILM</a>
+            <a href="#fitur" className="hover:text-amber-600 transition-colors">Fitur Unggulan</a>
+            <a href="#ekosistem" className="hover:text-amber-600 transition-colors">Bagan Ekosistem</a>
+            <a href="#persona" className="hover:text-amber-600 transition-colors">22 Karakter Vokal</a>
+            <a href="#ilm" className="hover:text-amber-600 transition-colors">Mode ILM</a>
           </nav>
 
           {/* Login CTA */}
@@ -448,7 +449,7 @@ export const LandingPage = ({ onOpenLogin }) => {
           {/* Typography - Balanced, Impactful & Wide */}
           <div className="space-y-3.5 flex flex-col items-center max-w-4xl mx-auto">
             <h1 className="text-4xl sm:text-6xl md:text-7xl font-extrabold tracking-tight text-slate-950 leading-[1.08] drop-shadow-sm">
-              Ti Téks <span className="text-indigo-600">Jadi Sora.</span>
+              Ti Téks <span className="text-amber-600">Jadi Sora.</span>
             </h1>
             <div className="inline-flex items-center gap-2.5 px-5 py-2 rounded-full bg-white/90 backdrop-blur-md border border-amber-300/70 shadow-sm">
               <span className="w-2.5 h-2.5 rounded-full bg-amber-500 animate-pulse" />
@@ -475,7 +476,7 @@ export const LandingPage = ({ onOpenLogin }) => {
               href="#persona"
               className="w-full sm:w-auto px-8 py-3.5 rounded-2xl bg-white/95 hover:bg-white backdrop-blur-md border border-zinc-300 text-zinc-800 text-xs sm:text-sm md:text-base font-bold shadow-xs hover:shadow-sm transition-all flex items-center justify-center gap-2 hover:scale-[1.02]"
             >
-              <Volume2 className="w-4 h-4 text-indigo-600" />
+              <Volume2 className="w-4 h-4 text-amber-600" />
               <span>Dengarkan 22 Persona Suara</span>
             </a>
           </div>
@@ -488,7 +489,7 @@ export const LandingPage = ({ onOpenLogin }) => {
             <span className="text-xs sm:text-[13px] text-zinc-700 font-semibold mt-0.5 block">14 Nasional + 8 Khas Sunda</span>
           </div>
           <div className="bg-white/90 backdrop-blur-md p-4 sm:p-5 rounded-2xl border border-white/95 shadow-sm hover:shadow-md transition-all hover:-translate-y-0.5">
-            <span className="text-2xl sm:text-3xl font-extrabold tracking-tight text-indigo-600 block">48 & 44.1 kHz</span>
+            <span className="text-2xl sm:text-3xl font-extrabold tracking-tight text-slate-900 block">48 & 44.1 kHz</span>
             <span className="text-xs sm:text-[13px] text-zinc-700 font-semibold mt-0.5 block">Standar DAW & Broadcast WAV</span>
           </div>
           <div className="bg-white/90 backdrop-blur-md p-4 sm:p-5 rounded-2xl border border-white/95 shadow-sm hover:shadow-md transition-all hover:-translate-y-0.5">
@@ -557,7 +558,7 @@ export const LandingPage = ({ onOpenLogin }) => {
 
             {/* Card 4 */}
             <div className="bg-[#FBFBFA] p-8 rounded-3xl border border-zinc-200 shadow-sm space-y-4 hover:border-[#0C4E34]/40 transition-colors">
-              <div className="w-12 h-12 rounded-2xl bg-purple-100/70 text-purple-700 flex items-center justify-center font-bold">
+              <div className="w-12 h-12 rounded-2xl bg-amber-100/70 text-amber-700 flex items-center justify-center font-bold">
                 <Sliders className="w-6 h-6" />
               </div>
               <h3 className="text-xl font-bold text-zinc-900">Kontrol Emosi & Dinamika Vokal</h3>
@@ -948,7 +949,7 @@ export const LandingPage = ({ onOpenLogin }) => {
                         <div className={`w-12 h-12 rounded-2xl flex items-center justify-center text-2xl shadow-sm border transition-transform group-hover:scale-105 ${
                           persona.badge === 'Sunda' 
                             ? 'bg-gradient-to-tr from-emerald-100 to-amber-50 border-emerald-200' 
-                            : 'bg-gradient-to-tr from-blue-50 to-indigo-50 border-blue-200'
+                            : 'bg-gradient-to-tr from-slate-100 to-zinc-50 border-slate-200'
                         }`}>
                           {persona.avatar}
                         </div>

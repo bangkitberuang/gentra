@@ -100,7 +100,12 @@ function MainApp() {
   const [isEngineModalOpen, setIsEngineModalOpen] = useState(false);
   const [activeEngine, setActiveEngine] = useState(() => {
     try {
-      return localStorage.getItem('gentra_active_engine') || 'gemini';
+      const saved = localStorage.getItem('gentra_active_engine');
+      if (saved === 'elevenlabs') {
+        localStorage.setItem('gentra_active_engine', 'gemini');
+        return 'gemini';
+      }
+      return saved || 'gemini';
     } catch (e) {
       return 'gemini';
     }
@@ -113,7 +118,12 @@ function MainApp() {
         const saved = localStorage.getItem('gentra_auth_user');
         setUser(saved ? JSON.parse(saved) : null);
         const savedEngine = localStorage.getItem('gentra_active_engine');
-        if (savedEngine) setActiveEngine(savedEngine);
+        if (savedEngine && savedEngine !== 'elevenlabs') {
+          setActiveEngine(savedEngine);
+        } else if (savedEngine === 'elevenlabs') {
+          setActiveEngine('gemini');
+          localStorage.setItem('gentra_active_engine', 'gemini');
+        }
       } catch (e) {}
     };
     window.addEventListener('storage', handleStorageChange);
