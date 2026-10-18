@@ -104,10 +104,14 @@ export const LoginModal = ({ isOpen, onClose, onLoginSuccess }) => {
               className="w-[82px] h-[82px] rounded-2xl object-contain shadow-md border border-white/20 shrink-0" 
             />
             <div>
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2.5">
                 <span className="text-2xl font-black tracking-tight text-white leading-none">GENTRA</span>
+                <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-bold bg-white/15 text-emerald-300 border border-emerald-400/30">
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
+                  v1.3.0
+                </span>
               </div>
-              <p className="text-xs text-amber-300 font-bold mt-1">Generator Voice Over Natural</p>
+              <p className="text-xs text-emerald-100/90 font-semibold mt-1">Ti Téks Jadi Sora • Studio Voice Over</p>
             </div>
           </div>
 

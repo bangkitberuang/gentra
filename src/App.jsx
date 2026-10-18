@@ -46,7 +46,7 @@ class ErrorBoundary extends React.Component {
                 <span className="text-2xl font-black">🎙️</span>
               </div>
               <div>
-                <h1 className="text-xl font-black tracking-tight text-white font-serif">GENTRA AUDIO WORKSTATION</h1>
+                <h1 className="text-xl font-black tracking-tight text-white font-sans">GENTRA AUDIO WORKSTATION</h1>
                 <p className="text-xs text-amber-400 font-mono">PEMULIHAN SISTEM • SAFE MODE</p>
               </div>
             </div>

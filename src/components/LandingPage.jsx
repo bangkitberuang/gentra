@@ -400,11 +400,17 @@ export const LandingPage = ({ onOpenLogin }) => {
             <img 
               src="/logo.png" 
               alt="GENTRA Logo" 
-              className="w-12 h-12 rounded-2xl object-cover shadow-sm border border-zinc-200/90 hover:scale-105 transition-transform shrink-0" 
+              className="w-12 h-12 rounded-2xl object-cover shadow-xs border border-zinc-200/90 hover:scale-105 transition-transform shrink-0" 
             />
             <div className="flex flex-col justify-center">
-              <span className="text-2xl sm:text-[27px] font-black tracking-tight text-slate-900 leading-none">GENTRA</span>
-              <span className="text-[11px] sm:text-xs font-bold text-amber-600 tracking-tight mt-0.5 whitespace-nowrap leading-none">Ti Téks Jadi Sora</span>
+              <div className="flex items-center gap-2 sm:gap-2.5">
+                <span className="text-2xl sm:text-[27px] font-black tracking-tight text-[#064E3B] leading-none">GENTRA</span>
+                <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-bold bg-[#ECFDF5] text-[#064E3B] border border-[#6EE7B7] shadow-2xs">
+                  <span className="w-2 h-2 rounded-full bg-[#10B981]"></span>
+                  v1.3.0
+                </span>
+              </div>
+              <span className="text-xs sm:text-[13px] font-semibold text-[#526170] tracking-normal mt-1 whitespace-nowrap leading-tight">Ti Téks Jadi Sora</span>
             </div>
           </div>
 
@@ -1085,9 +1091,13 @@ export const LandingPage = ({ onOpenLogin }) => {
       <footer className="py-6 sm:py-7 bg-white text-center">
         <div className="max-w-7xl mx-auto px-4 flex flex-col items-center gap-1.5">
           <div className="flex items-center gap-2">
-            <span className="text-lg font-black text-[#0C4E34]">GENTRA</span>
-            <span className="text-zinc-400 font-mono">|</span>
-            <span className="text-xs font-bold text-[#D97706]">Ti Téks Jadi Sora</span>
+            <span className="text-lg font-black text-[#064E3B]">GENTRA</span>
+            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-[#ECFDF5] text-[#064E3B] border border-[#6EE7B7]">
+              <span className="w-1.5 h-1.5 rounded-full bg-[#10B981]"></span>
+              v1.3.0
+            </span>
+            <span className="text-zinc-300 font-mono">|</span>
+            <span className="text-xs font-semibold text-[#526170]">Ti Téks Jadi Sora</span>
           </div>
           <p className="text-xs text-zinc-500 font-medium">
             © 2026 GENTRA • BANGKIT Beruang Ecosystem

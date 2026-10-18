@@ -1837,16 +1837,26 @@ ATURAN MUTLAK: Langsung bacakan teks naskah dari kata pertama tanpa intro, tanpa
               <img 
                 src="/logo.png" 
                 alt="GENTRA" 
-                className={`w-11 h-11 rounded-2xl object-cover shadow-sm transition-transform group-hover:scale-105 shrink-0 border ${
+                className={`w-11 h-11 rounded-2xl object-cover shadow-xs transition-transform group-hover:scale-105 shrink-0 border ${
                   isDarkTheme ? 'border-[#222634] shadow-black/40' : 'border-slate-200'
                 }`}
               />
               <div className="flex flex-col justify-center">
-                <span className={`text-2xl font-black tracking-tight leading-none ${isDarkTheme ? 'text-white' : 'text-slate-950'}`}>
-                  GENTRA
-                </span>
-                <span className={`text-[11px] font-bold tracking-tight mt-0.5 whitespace-nowrap leading-none ${
-                  isDarkTheme ? 'text-[#CCFF00]' : 'text-amber-700'
+                <div className="flex items-center gap-2 sm:gap-2.5">
+                  <span className={`text-2xl font-black tracking-tight leading-none ${isDarkTheme ? 'text-white' : 'text-[#064E3B]'}`}>
+                    GENTRA
+                  </span>
+                  <span className={`inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[11px] font-bold border shadow-2xs ${
+                    isDarkTheme 
+                      ? 'bg-[#14231A] text-[#4ADE80] border-[#166534]' 
+                      : 'bg-[#ECFDF5] text-[#064E3B] border-[#6EE7B7]'
+                  }`}>
+                    <span className="w-1.5 h-1.5 rounded-full bg-[#10B981]"></span>
+                    v1.3.0
+                  </span>
+                </div>
+                <span className={`text-[12px] font-semibold mt-1 whitespace-nowrap leading-tight ${
+                  isDarkTheme ? 'text-zinc-400' : 'text-[#526170]'
                 }`}>
                   Ti Téks Jadi Sora
                 </span>
@@ -2204,7 +2214,7 @@ ATURAN MUTLAK: Langsung bacakan teks naskah dari kata pertama tanpa intro, tanpa
                 <p className={`text-xs leading-relaxed ${subTextColor}`}>
                   Bacakan kalimat contoh ini selama 10–15 detik dengan suara artikulatif dan jelas:
                 </p>
-                <div className={`p-4 rounded-2xl border text-xs italic font-serif leading-relaxed ${
+                <div className={`p-4 rounded-2xl border text-xs italic leading-relaxed ${
                   isDarkTheme ? 'bg-[#0E1014] border-[#20232B] text-zinc-300' : 'bg-white border-zinc-200 text-zinc-800'
                 }`}>
                   “Sampurasun, ini adalah sampel rekaman suara asli saya untuk fitur kloning suara di Gentra. Ti teks jadi sora, mengubah teks menjadi audio berkualitas alami.”
@@ -3471,7 +3481,7 @@ ATURAN MUTLAK: Langsung bacakan teks naskah dari kata pertama tanpa intro, tanpa
       }`}>
         <div className="max-w-7xl mx-auto px-4 flex flex-col items-center gap-1.5">
           <p className="text-xs font-bold tracking-wider uppercase">
-            © 2026 <span className={isDarkTheme ? 'text-[#CCFF00]' : 'text-slate-900'}>GENTRA</span> — Ti Téks Jadi Sora
+            © 2026 <span className={isDarkTheme ? 'text-[#CCFF00]' : 'text-[#064E3B] font-bold'}>GENTRA</span> — <span className={isDarkTheme ? 'text-zinc-400' : 'text-[#526170]'}>Ti Téks Jadi Sora</span>
           </p>
           <p className="text-[11px] text-zinc-500 font-medium">
             Digital Audio Voice-Over Synthesis Platform
