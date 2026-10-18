@@ -48,11 +48,15 @@ import {
   Activity,
   FlaskConical,
   Coins,
-  RotateCcw
+  RotateCcw,
+  Users
 } from 'lucide-react';
 import { VoiceLabModal } from './VoiceLabModal.jsx';
 import { ApiKeyModal } from './ApiKeyModal.jsx';
+import { UserManagementModal } from './UserManagementModal.jsx';
 import { safeGetItem, safeSetItem, sanitizeApiKey } from '../utils/safeStorage.js';
+import { getUnifiedVoices, saveUnifiedVoices, GENTRA_VOICES_EVENT } from '../utils/voiceRegistry.js';
+import { logAccountActivity } from '../utils/userManagement.js';
 
 // --- Konfigurasi Model (Google Gemini AI v1beta) ---
 const TTS_MODELS = ["gemini-3.8-flash-tts", "gemini-3.8-flash-lite-tts", "gemini-3.1-flash-tts-preview"];
@@ -65,20 +69,20 @@ const TEXT_FALLBACK_MODEL = "gemini-3.7-flash";
 // --- Karakter Suara Bawaan GENTRA (14 Persona Awal + 8 Persona Khas Sunda) ---
 const INITIAL_VOICES = [
   // --- 14 Persona Bawaan Awal (Nasional) ---
-  { id: 'Aoede', name: 'Anita', desc: 'Ramah & Ceria (Wanita)', gender: 'Female', category: 'Nasional', accent: 'Nasional (Ramah)', isCustom: false },
-  { id: 'Leda', name: 'Siti', desc: 'Lembut & Sopan (Wanita)', gender: 'Female', category: 'Nasional', accent: 'Nasional (Lembut)', isCustom: false },
-  { id: 'Charon', name: 'Mugi', desc: 'Deep & Naratif (Pria)', gender: 'Male', category: 'Nasional', accent: 'Nasional (Naratif)', isCustom: false },
-  { id: 'Despina', name: 'Dewi', desc: 'Energik & Lugas (Wanita)', gender: 'Female', category: 'Nasional', accent: 'Nasional (Energik)', isCustom: false },
-  { id: 'Callirrhoe', name: 'Tina', desc: 'Profesional & Jelas (Wanita)', gender: 'Female', category: 'Nasional', accent: 'Nasional (Formal)', isCustom: false },
-  { id: 'Autonoe', name: 'Maya', desc: 'Inspiratif & Hangat (Wanita)', gender: 'Female', category: 'Nasional', accent: 'Nasional (Inspiratif)', isCustom: false },
-  { id: 'Puck', name: 'Rian', desc: 'Muda & Bersemangat (Pria)', gender: 'Male', category: 'Nasional', accent: 'Nasional (Muda)', isCustom: false },
-  { id: 'Erinome', name: 'Indah', desc: 'Halus & Menenangkan (Wanita)', gender: 'Female', category: 'Nasional', accent: 'Nasional (Menenangkan)', isCustom: false },
-  { id: 'Fenrir', name: 'Gading', desc: 'Berat & Maskulin (Pria)', gender: 'Male', category: 'Nasional', accent: 'Nasional (Berat)', isCustom: false },
-  { id: 'Laomedeia', name: 'Shinta', desc: 'Tegas & Berani (Wanita)', gender: 'Female', category: 'Nasional', accent: 'Nasional (Tegas)', isCustom: false },
-  { id: 'Orus', name: 'Bayu', desc: 'Santai & Sejuk (Pria)', gender: 'Male', category: 'Nasional', accent: 'Nasional (Santai)', isCustom: false },
-  { id: 'Algenib', name: 'Adi', desc: 'Ceria & Bersemangat (Pria)', gender: 'Male', category: 'Nasional', accent: 'Nasional (Ceria)', isCustom: false },
-  { id: 'Iapetus', name: 'Eko', desc: 'Serius & Edukatif (Pria)', gender: 'Male', category: 'Nasional', accent: 'Nasional (Edukatif)', isCustom: false },
-  { id: 'Achernar', name: 'Laras', desc: 'Anggun & Elegan (Wanita)', gender: 'Female', category: 'Nasional', accent: 'Nasional (Elegan)', isCustom: false },
+  { id: 'Aoede', name: 'Anita', desc: 'Ramah & Ceria (Wanita)', gender: 'Female', category: 'Nasional', originalName: 'Anita', backendVoiceId: 'Aoede', geminiVoiceId: 'Aoede', accent: 'Nasional (Ramah)', isCustom: false },
+  { id: 'Leda', name: 'Siti', desc: 'Lembut & Sopan (Wanita)', gender: 'Female', category: 'Nasional', originalName: 'Siti', backendVoiceId: 'Leda', geminiVoiceId: 'Leda', accent: 'Nasional (Lembut)', isCustom: false },
+  { id: 'Charon', name: 'Mugi', desc: 'Deep & Naratif (Pria)', gender: 'Male', category: 'Nasional', originalName: 'Agus', backendVoiceId: 'Charon', geminiVoiceId: 'Charon', accent: 'Nasional (Naratif)', isCustom: false },
+  { id: 'Despina', name: 'Dewi', desc: 'Energik & Lugas (Wanita)', gender: 'Female', category: 'Nasional', originalName: 'Dewi', backendVoiceId: 'Despina', geminiVoiceId: 'Despina', accent: 'Nasional (Energik)', isCustom: false },
+  { id: 'Callirrhoe', name: 'Tina', desc: 'Profesional & Jelas (Wanita)', gender: 'Female', category: 'Nasional', originalName: 'Tina', backendVoiceId: 'Callirrhoe', geminiVoiceId: 'Callirrhoe', accent: 'Nasional (Formal)', isCustom: false },
+  { id: 'Autonoe', name: 'Maya', desc: 'Inspiratif & Hangat (Wanita)', gender: 'Female', category: 'Nasional', originalName: 'Maya', backendVoiceId: 'Autonoe', geminiVoiceId: 'Autonoe', accent: 'Nasional (Inspiratif)', isCustom: false },
+  { id: 'Puck', name: 'Rian', desc: 'Muda & Bersemangat (Pria)', gender: 'Male', category: 'Nasional', originalName: 'Rian', backendVoiceId: 'Puck', geminiVoiceId: 'Puck', accent: 'Nasional (Muda)', isCustom: false },
+  { id: 'Erinome', name: 'Indah', desc: 'Halus & Menenangkan (Wanita)', gender: 'Female', category: 'Nasional', originalName: 'Indah', backendVoiceId: 'Erinome', geminiVoiceId: 'Erinome', accent: 'Nasional (Menenangkan)', isCustom: false },
+  { id: 'Fenrir', name: 'Gading', desc: 'Berat & Maskulin (Pria)', gender: 'Male', category: 'Nasional', originalName: 'Gading', backendVoiceId: 'Fenrir', geminiVoiceId: 'Fenrir', accent: 'Nasional (Berat)', isCustom: false },
+  { id: 'Laomedeia', name: 'Shinta', desc: 'Tegas & Berani (Wanita)', gender: 'Female', category: 'Nasional', originalName: 'Shinta', backendVoiceId: 'Laomedeia', geminiVoiceId: 'Laomedeia', accent: 'Nasional (Tegas)', isCustom: false },
+  { id: 'Orus', name: 'Bayu', desc: 'Santai & Sejuk (Pria)', gender: 'Male', category: 'Nasional', originalName: 'Bayu', backendVoiceId: 'Orus', geminiVoiceId: 'Orus', accent: 'Nasional (Santai)', isCustom: false },
+  { id: 'Algenib', name: 'Adi', desc: 'Ceria & Bersemangat (Pria)', gender: 'Male', category: 'Nasional', originalName: 'Adi', backendVoiceId: 'Algenib', geminiVoiceId: 'Algenib', accent: 'Nasional (Ceria)', isCustom: false },
+  { id: 'Iapetus', name: 'Eko', desc: 'Serius & Edukatif (Pria)', gender: 'Male', category: 'Nasional', originalName: 'Eko', backendVoiceId: 'Iapetus', geminiVoiceId: 'Iapetus', accent: 'Nasional (Edukatif)', isCustom: false },
+  { id: 'Achernar', name: 'Laras', desc: 'Anggun & Elegan (Wanita)', gender: 'Female', category: 'Nasional', originalName: 'Laras', backendVoiceId: 'Achernar', geminiVoiceId: 'Achernar', accent: 'Nasional (Elegan)', isCustom: false },
 
   // --- 8 Persona Khusus Khas Sunda ---
   { 
@@ -87,6 +91,9 @@ const INITIAL_VOICES = [
     desc: 'Kakek / Sesepuh Sunda (Wibawa, Bijak & Parau Hangat)', 
     gender: 'Male', 
     category: 'Sunda', 
+    originalName: 'Abah',
+    backendVoiceId: 'Fenrir',
+    geminiVoiceId: 'Fenrir',
     accent: 'Sepuh Sunda (Bijaksana & Tenang)',
     personaPrompt: 'Karakter Abah (kakek/sesepuh Sunda yang bijaksana, suara berat berwibawa, tempo tenang bersahaja, vokal hangat khas kakek Priangan).',
     isCustom: false 
@@ -97,6 +104,9 @@ const INITIAL_VOICES = [
     desc: 'Nenek Sunda (Penuh Kasih Sayang, Lembut & Keibuan)', 
     gender: 'Female', 
     category: 'Sunda', 
+    originalName: 'Nini',
+    backendVoiceId: 'Erinome',
+    geminiVoiceId: 'Erinome',
     accent: 'Nini Sunda (Halus & Welas Asih)',
     personaPrompt: 'Karakter Nini (nenek Sunda yang penuh welas asih, suara lembut penuh kehangatan nenek sepuh, tutur kata mengayomi dan damai).',
     isCustom: false 
@@ -107,6 +117,9 @@ const INITIAL_VOICES = [
     desc: 'Pemuda Sunda (Ceria, Lincah & Gaul Nyunda)', 
     gender: 'Male', 
     category: 'Sunda', 
+    originalName: 'Ujang',
+    backendVoiceId: 'Puck',
+    geminiVoiceId: 'Puck',
     accent: 'Bujang Sunda (Lincah & Enerjik)',
     personaPrompt: 'Karakter Ujang (pemuda Sunda yang lincah, bersahabat, ceria, vokal segar dan penuh semangat khas anak muda tanah Pasundan).',
     isCustom: false 
@@ -117,6 +130,9 @@ const INITIAL_VOICES = [
     desc: 'Ibu / Tante Sunda (Heboh, Ramah & Medok Sunda)', 
     gender: 'Female', 
     category: 'Sunda', 
+    originalName: 'Bibi (Ceu Edah)',
+    backendVoiceId: 'Despina',
+    geminiVoiceId: 'Despina',
     accent: 'Medok Sunda (Heboh & Guyub)',
     personaPrompt: 'Karakter Ceu Edah / Bibi (ibu-ibu/tante Sunda yang ekspresif, ceria heboh, akrab guyub, intonasi medok renyah khas ceu-ceu Sunda).',
     isCustom: false 
@@ -127,6 +143,9 @@ const INITIAL_VOICES = [
     desc: 'Remaja Putri Sunda (Ceria, Santun & Lugas)', 
     gender: 'Female', 
     category: 'Sunda', 
+    originalName: 'Budak Leutik (Eneng)',
+    backendVoiceId: 'Aoede',
+    geminiVoiceId: 'Aoede',
     accent: 'Mojang Remaja (Ceria & Santun)',
     personaPrompt: 'Karakter Neng Geulis (mojang remaja putri Sunda yang ceria, santun, lugas, gaya bicara remaja alami yang komunikatif).',
     isCustom: false 
@@ -137,6 +156,9 @@ const INITIAL_VOICES = [
     desc: 'Remaja Putra Sunda (Energik, Santai & Ramah)', 
     gender: 'Male', 
     category: 'Sunda', 
+    originalName: 'Budak Leutik (Ujang Alit)',
+    backendVoiceId: 'Puck',
+    geminiVoiceId: 'Puck',
     accent: 'Pemuda Pasundan (Energik & Ramah)',
     personaPrompt: 'Karakter Ujang Anom (pemuda remaja putra Sunda yang aktif, energik, santai, gaya bicara pemuda yang ramah dan bersemangat).',
     isCustom: false 
@@ -147,6 +169,9 @@ const INITIAL_VOICES = [
     desc: 'Gadis / Mojang Sunda (Lembut, Santun & Merdu)', 
     gender: 'Female', 
     category: 'Sunda', 
+    originalName: 'Teh Neng',
+    backendVoiceId: 'Leda',
+    geminiVoiceId: 'Leda',
     accent: 'Mojang Sunda (Halus & Santun)',
     personaPrompt: 'Karakter Teh Neng (gadis/mojang Sunda dengan intonasi halus santun, tutur kata ramah, lembut dan merdu berayun).',
     isCustom: false 
@@ -157,8 +182,12 @@ const INITIAL_VOICES = [
     desc: 'Pria Dewasa Sunda (Santai, Bersahabat & Luwes)', 
     gender: 'Male', 
     category: 'Sunda', 
+    originalName: 'Kang Asep',
+    backendVoiceId: 'Orus',
+    geminiVoiceId: 'Orus',
     accent: 'Akang Sunda (Santai & Sahaja)',
     personaPrompt: 'Karakter Kang Asep (pria dewasa Sunda yang bersahabat, luwes, santai, gaya bicara akrab dan hangat).',
+    isCustom: false
   }
 ];
 
@@ -945,6 +974,7 @@ export const GentraStudio = ({
 
   const [showApiKeyModal, setShowApiKeyModal] = useState(false);
   const [showVoiceLabModal, setShowVoiceLabModal] = useState(false);
+  const [showUserManagementModal, setShowUserManagementModal] = useState(false);
   const [generationError, setGenerationError] = useState(null);
 
   // Indikator Status Kuota API Real-Time (Lampu Hijau / Merah / Kuning)
@@ -1056,38 +1086,25 @@ export const GentraStudio = ({
   const [newMasterKeyInput, setNewMasterKeyInput] = useState('');
   const [masterKeySuccess, setMasterKeySuccess] = useState('');
 
-  // Dynamic Voices State (Menjaga 14 Persona Awal + 8 Persona Sunda Lengkap)
-  const [voices, setVoices] = useState(() => {
-    try {
-      const saved = localStorage.getItem('gentra_voices_v3');
-      const customPrompts = JSON.parse(localStorage.getItem('gentra_custom_voice_prompts') || '{}');
-      if (saved) {
-        const parsed = JSON.parse(saved);
-        const clonedVoices = parsed.filter(v => v.isCloned);
-        const merged = INITIAL_VOICES.map(iv => {
-          const found = parsed.find(p => (p.originalName || p.name) === iv.name) || parsed.find(p => p.name === iv.name);
-          const customPrompt = customPrompts[iv.name] || (found && found.personaPrompt);
-          return found 
-            ? { ...iv, ...found, personaPrompt: customPrompt || found.personaPrompt || iv.personaPrompt } 
-            : { ...iv, personaPrompt: customPrompt || iv.personaPrompt };
-        });
-        return [...merged, ...clonedVoices];
-      }
-      return INITIAL_VOICES.map(iv => ({
-        ...iv,
-        personaPrompt: customPrompts[iv.name] || iv.personaPrompt
-      }));
-    } catch (e) {
-      return INITIAL_VOICES;
-    }
-  });
+  const [voices, setVoices] = useState(() => getUnifiedVoices());
 
   const handleUpdateVoices = (newVoices) => {
     setVoices(newVoices);
-    try {
-      localStorage.setItem('gentra_voices_v3', JSON.stringify(newVoices));
-    } catch (e) {}
+    saveUnifiedVoices(newVoices);
   };
+
+  // Sinkronisasi otomatis real-time lintas tab / komponen jika daftar suara diperbarui di Lab
+  useEffect(() => {
+    const handleSyncVoices = () => {
+      setVoices(getUnifiedVoices());
+    };
+    window.addEventListener(GENTRA_VOICES_EVENT, handleSyncVoices);
+    window.addEventListener('storage', handleSyncVoices);
+    return () => {
+      window.removeEventListener(GENTRA_VOICES_EVENT, handleSyncVoices);
+      window.removeEventListener('storage', handleSyncVoices);
+    };
+  }, []);
 
   const [voiceCategory, setVoiceCategory] = useState('Nasional');
   const [selectedVoice, setSelectedVoice] = useState(INITIAL_VOICES[0]);
@@ -1606,15 +1623,42 @@ PENTING:
         }
       }
 
-      if (result?.candidates?.[0]?.content?.parts?.[0]?.text) {
-        const textResult = result.candidates[0].content.parts[0].text;
-        setText(textResult.trim());
-      } else {
-        setText(generateLocalFallback());
-      }
+      const finalGeneratedText = (result?.candidates?.[0]?.content?.parts?.[0]?.text || generateLocalFallback()).trim();
+      setText(finalGeneratedText);
+      try {
+        logAccountActivity({
+          userEmail: user?.email || 'admin@gentra.internal',
+          userName: user?.name || 'Admin',
+          type: 'SCRIPT_GENERATION',
+          voiceName: selectedVoice?.name || 'Umum',
+          originalVoiceName: selectedVoice?.originalName || selectedVoice?.name || 'Umum',
+          backendVoiceId: selectedVoice?.backendVoiceId || selectedVoice?.id || 'gemini',
+          script: finalGeneratedText,
+          charCount: finalGeneratedText.length,
+          wordCount: finalGeneratedText.split(/\s+/).filter(Boolean).length,
+          category: 'ILM ' + contentTone,
+          metadata: { topic: ilmTopic, organization: org, duration: is30s ? '30 Detik' : '60 Detik' }
+        });
+      } catch (e) {}
     } catch (err) {
       console.warn("Fallback ILM otomatis digunakan:", err.message);
-      setText(generateLocalFallback());
+      const fallbackText = generateLocalFallback().trim();
+      setText(fallbackText);
+      try {
+        logAccountActivity({
+          userEmail: user?.email || 'admin@gentra.internal',
+          userName: user?.name || 'Admin',
+          type: 'SCRIPT_GENERATION',
+          voiceName: selectedVoice?.name || 'Umum',
+          originalVoiceName: selectedVoice?.originalName || selectedVoice?.name || 'Umum',
+          backendVoiceId: selectedVoice?.backendVoiceId || selectedVoice?.id || 'gemini',
+          script: fallbackText,
+          charCount: fallbackText.length,
+          wordCount: fallbackText.split(/\s+/).filter(Boolean).length,
+          category: 'ILM (Lokal)',
+          metadata: { topic: ilmTopic, organization: org }
+        });
+      } catch (e) {}
     } finally {
       setIsGeneratingCopy(false);
     }
@@ -1789,9 +1833,22 @@ ATURAN MUTLAK: Langsung bacakan teks naskah dari kata pertama tanpa intro, tanpa
         url: url
       }, ...prev]);
 
-
-
-      setApiQuotaStatus('active');
+      try {
+        logAccountActivity({
+          userEmail: user?.email || 'admin@gentra.internal',
+          userName: user?.name || 'Admin',
+          type: 'AUDIO_GENERATION',
+          voiceName: selectedVoice.name,
+          originalVoiceName: selectedVoice.originalName || selectedVoice.name,
+          backendVoiceId: selectedVoice.backendVoiceId || selectedVoice.id,
+          script: text,
+          charCount: text.length,
+          wordCount: text.trim().split(/\s+/).filter(Boolean).length,
+          category: selectedVoice.category,
+          emotion: emotion,
+          sampleRate: audioSampleRate
+        });
+      } catch (e) {}
       setGenerationProgress(100);
       setProgressStatus('Selesai! Audio siap diputar.');
     } catch (err) {
@@ -1852,7 +1909,7 @@ ATURAN MUTLAK: Langsung bacakan teks naskah dari kata pertama tanpa intro, tanpa
                       : 'bg-[#ECFDF5] text-[#064E3B] border-[#6EE7B7]'
                   }`}>
                     <span className="w-1.5 h-1.5 rounded-full bg-[#10B981]"></span>
-                    v1.3.0
+                    v2.6.4
                   </span>
                 </div>
                 <span className={`text-[12px] font-semibold mt-1 whitespace-nowrap leading-tight ${
@@ -2100,6 +2157,21 @@ ATURAN MUTLAK: Langsung bacakan teks naskah dari kata pertama tanpa intro, tanpa
                 <span>Lab Suara</span>
               </button>
 
+              {/* Tombol Manajemen Akun & Audit */}
+              <button 
+                type="button"
+                onClick={() => setShowUserManagementModal(true)}
+                className={`h-9 px-3.5 rounded-full border transition-all flex items-center gap-2 shrink-0 shadow-xs font-bold text-xs ${
+                  isDarkTheme 
+                    ? 'bg-[#14161B] hover:bg-[#181A20] border-[#20232B] text-zinc-300 hover:text-white' 
+                    : 'bg-zinc-100 hover:bg-zinc-200/80 border-zinc-200 text-slate-800'
+                }`}
+                title="Kelola Akun, Sandi, dan Riwayat Naskah"
+              >
+                <Users className={`w-3.5 h-3.5 ${isDarkTheme ? 'text-[#CCFF00]' : 'text-emerald-600'}`} />
+                <span>Akun & Audit</span>
+              </button>
+
               <div className={`h-9 px-3 rounded-full border text-[11px] font-bold flex items-center gap-1.5 shrink-0 ${
                 isDarkTheme 
                   ? 'bg-[#14161B] border-[#20232B] text-zinc-200' 
@@ -2171,6 +2243,10 @@ ATURAN MUTLAK: Langsung bacakan teks naskah dari kata pertama tanpa intro, tanpa
             <button onClick={() => { setIsMenuOpen(false); setShowVoiceLabModal(true); }} className={`w-full px-4 py-3 rounded-2xl text-sm font-bold flex items-center gap-3 ${isDarkTheme ? 'text-zinc-200 hover:bg-[#181A20]' : 'text-amber-700 hover:bg-zinc-100'}`}>
               <FlaskConical className={`w-4 h-4 ${isDarkTheme ? 'text-[#CCFF00]' : 'text-[#F59E0B]'}`} />
               <span>Lab Suara & Backend</span>
+            </button>
+            <button onClick={() => { setIsMenuOpen(false); setShowUserManagementModal(true); }} className={`w-full px-4 py-3 rounded-2xl text-sm font-bold flex items-center gap-3 ${isDarkTheme ? 'text-zinc-200 hover:bg-[#181A20]' : 'text-emerald-800 hover:bg-zinc-100'}`}>
+              <Users className={`w-4 h-4 ${isDarkTheme ? 'text-[#CCFF00]' : 'text-emerald-700'}`} />
+              <span>Manajemen Akun & Riwayat Naskah</span>
             </button>
             <button onClick={() => handleSwitchView('history')} className={`w-full px-4 py-3 rounded-2xl text-sm font-bold flex items-center gap-3 ${view === 'history' ? (isDarkTheme ? 'bg-[#CCFF00] text-black' : 'bg-[#0C4E34] text-white') : isDarkTheme ? 'text-zinc-300 hover:bg-[#181A20]' : 'text-zinc-700 hover:bg-zinc-100'}`}>
               <History className="w-4 h-4" /> Riwayat ({history.length})
@@ -2774,15 +2850,20 @@ ATURAN MUTLAK: Langsung bacakan teks naskah dari kata pertama tanpa intro, tanpa
 
                         {/* Name & Subtitle */}
                         <div className="min-w-0">
-                          <h4 className={`font-bold text-sm truncate ${
+                          <h4 className={`font-bold text-sm truncate flex items-center gap-1.5 ${
                             isSelected 
                               ? isDarkTheme ? 'text-[#CCFF00] font-black' : 'text-slate-950 font-black' 
                               : isDarkTheme ? 'text-zinc-100' : 'text-slate-900'
                           }`}>
-                            {v.name}
+                            <span>{v.name}</span>
+                            {v.originalName && v.originalName !== v.name && (
+                              <span className="text-[10px] font-normal opacity-75">
+                                (Asli: {v.originalName})
+                              </span>
+                            )}
                           </h4>
                           <p className={`text-xs truncate mt-0.5 ${isDarkTheme ? 'text-zinc-400' : 'text-slate-500'}`}>
-                            {v.desc}
+                            {v.desc} <span className="font-mono text-[10px] opacity-70">• {v.backendVoiceId || v.id}</span>
                           </p>
                         </div>
                       </div>
@@ -3373,6 +3454,14 @@ ATURAN MUTLAK: Langsung bacakan teks naskah dari kata pertama tanpa intro, tanpa
         TTS_MODEL={TTS_MODEL}
         initialVoicesDefaults={INITIAL_VOICES}
         initialTab="lab"
+      />
+
+      {/* MODAL: MANAJEMEN PENGGUNA, KATA SANDI & RIWAYAT NASKAH (SELF-SERVICE AUDIT) */}
+      <UserManagementModal
+        isOpen={showUserManagementModal}
+        onClose={() => setShowUserManagementModal(false)}
+        isDarkTheme={isDarkTheme}
+        currentUser={user}
       />
 
       {/* MODAL: TRANSKRIPSI SUARA GEMINI AI (SPEECH-TO-TEXT) */}

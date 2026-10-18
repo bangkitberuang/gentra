@@ -576,7 +576,7 @@ export const VoiceLabModal = ({
                   Laboratorium Pengembangan Suara & Backend
                 </h2>
                 <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-emerald-500/15 text-emerald-400 border border-emerald-400/30 font-bold shrink-0">
-                  GENTRA Lab v2.6
+                  GENTRA Lab v2.6.4
                 </span>
                 {isAdminUnlocked ? (
                   <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/30 shrink-0">

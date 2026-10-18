@@ -1,4 +1,5 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
+import { getUnifiedVoices, GENTRA_VOICES_EVENT } from '../utils/voiceRegistry.js';
 import { 
   Mic, 
   Sparkles, 
@@ -339,12 +340,26 @@ export const LandingPage = ({ onOpenLogin }) => {
   const landingAudioRef = useRef(null);
   const landingAudioCache = useRef({});
 
-  const filteredPersonas = FULL_PERSONAS.filter(p => {
+  const [personas, setPersonas] = useState(() => getUnifiedVoices());
+
+  useEffect(() => {
+    const handleVoiceSync = () => {
+      setPersonas(getUnifiedVoices());
+    };
+    window.addEventListener(GENTRA_VOICES_EVENT, handleVoiceSync);
+    window.addEventListener('storage', handleVoiceSync);
+    return () => {
+      window.removeEventListener(GENTRA_VOICES_EVENT, handleVoiceSync);
+      window.removeEventListener('storage', handleVoiceSync);
+    };
+  }, []);
+
+  const filteredPersonas = personas.filter(p => !p.isHidden).filter(p => {
     if (personaFilter === 'Semua') return true;
-    if (personaFilter === 'Sunda') return p.category === 'Khas Sunda';
+    if (personaFilter === 'Sunda') return p.category === 'Khas Sunda' || p.category === 'Sunda';
     if (personaFilter === 'Nasional') return p.category === 'Nasional';
-    if (personaFilter === 'Pria') return p.gender === 'Pria';
-    if (personaFilter === 'Wanita') return p.gender === 'Wanita';
+    if (personaFilter === 'Pria') return p.gender === 'Pria' || p.gender === 'Male';
+    if (personaFilter === 'Wanita') return p.gender === 'Wanita' || p.gender === 'Female';
     return true;
   });
 
@@ -407,7 +422,7 @@ export const LandingPage = ({ onOpenLogin }) => {
                 <span className="text-2xl sm:text-[27px] font-black tracking-tight text-[#064E3B] leading-none">GENTRA</span>
                 <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-bold bg-[#ECFDF5] text-[#064E3B] border border-[#6EE7B7] shadow-2xs">
                   <span className="w-2 h-2 rounded-full bg-[#10B981]"></span>
-                  v1.3.0
+                  v2.6.4
                 </span>
               </div>
               <span className="text-xs sm:text-[13px] font-semibold text-[#526170] tracking-normal mt-1 whitespace-nowrap leading-tight">Ti Téks Jadi Sora</span>
@@ -882,6 +897,14 @@ export const LandingPage = ({ onOpenLogin }) => {
                             <span className="text-[10px] font-bold text-zinc-400 block mt-0.5">
                               {persona.gender} • {persona.role}
                             </span>
+                            <div className="flex items-center gap-1.5 mt-1 flex-wrap">
+                              <span className="text-[9px] font-bold text-zinc-500 bg-zinc-200/80 px-1.5 py-0.5 rounded border border-zinc-300">
+                                Asli: {persona.originalName || persona.name}
+                              </span>
+                              <span className="text-[9px] font-mono font-medium text-zinc-400 bg-zinc-200/50 px-1.5 py-0.5 rounded border border-zinc-300">
+                                {persona.backendVoiceId || persona.geminiVoiceId || persona.id}
+                              </span>
+                            </div>
                           </div>
                         </div>
 
@@ -968,6 +991,14 @@ export const LandingPage = ({ onOpenLogin }) => {
                           <span className="text-[10px] font-bold text-zinc-500 block mt-0.5">
                             {persona.gender} • {persona.role}
                           </span>
+                          <div className="flex items-center gap-1.5 mt-1 flex-wrap">
+                            <span className="text-[9px] font-bold text-emerald-800 bg-emerald-50 px-1.5 py-0.5 rounded border border-emerald-200">
+                              Asli: {persona.originalName || persona.name}
+                            </span>
+                            <span className="text-[9px] font-mono font-medium text-zinc-500 bg-zinc-100 px-1.5 py-0.5 rounded border border-zinc-200">
+                              {persona.backendVoiceId || persona.geminiVoiceId || persona.id}
+                            </span>
+                          </div>
                         </div>
                       </div>
 
@@ -1094,7 +1125,7 @@ export const LandingPage = ({ onOpenLogin }) => {
             <span className="text-lg font-black text-[#064E3B]">GENTRA</span>
             <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-[#ECFDF5] text-[#064E3B] border border-[#6EE7B7]">
               <span className="w-1.5 h-1.5 rounded-full bg-[#10B981]"></span>
-              v1.3.0
+              v2.6.4
             </span>
             <span className="text-zinc-300 font-mono">|</span>
             <span className="text-xs font-semibold text-[#526170]">Ti Téks Jadi Sora</span>

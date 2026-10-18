@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
-import { Lock, Mail, ArrowRight, X, Shield, Sparkles, Key } from 'lucide-react';
+import { Lock, Mail, ArrowRight, X, Shield, Sparkles, Key, Users } from 'lucide-react';
 import { safeGetItem, safeSetItem } from '../utils/safeStorage';
+import { authenticateAccount, getRegisteredUsers } from '../utils/userManagement';
 
 export const LoginModal = ({ isOpen, onClose, onLoginSuccess }) => {
   const [email, setEmail] = useState(() => {
@@ -33,17 +34,10 @@ export const LoginModal = ({ isOpen, onClose, onLoginSuccess }) => {
     setIsLoading(true);
 
     setTimeout(() => {
-      // Check stored master key (default: admin2026)
-      const currentMasterKey = safeGetItem('gentra_master_key') || 'admin2026';
-      const isMasterAdmin = password.trim() === currentMasterKey || email.toLowerCase().includes('admin');
+      const authResult = authenticateAccount(email.trim(), password.trim());
 
-      if (password.length >= 4) {
-        const userData = {
-          email: email.trim(),
-          role: isMasterAdmin ? 'Master Admin' : 'Tim Produksi',
-          name: isMasterAdmin ? 'MASTER ADMIN' : email.split('@')[0].toUpperCase(),
-          loginAt: new Date().toISOString()
-        };
+      if (authResult.success) {
+        const userData = authResult.user;
 
         if (rememberMe) {
           try {
@@ -56,9 +50,9 @@ export const LoginModal = ({ isOpen, onClose, onLoginSuccess }) => {
         onLoginSuccess(userData);
       } else {
         setIsLoading(false);
-        setError('Kata sandi minimal 4 karakter.');
+        setError(authResult.message || 'Kredensial akses tidak cocok.');
       }
-    }, 400);
+    }, 300);
   };
 
   const handleQuickLogin = (asAdmin = false) => {
@@ -77,7 +71,7 @@ export const LoginModal = ({ isOpen, onClose, onLoginSuccess }) => {
     };
 
     try {
-      localStorage.setItem('gentra_auth_user', JSON.stringify(userData));
+      safeSetItem('gentra_auth_user', JSON.stringify(userData));
     } catch (e) {}
     onLoginSuccess(userData);
   };
@@ -108,7 +102,7 @@ export const LoginModal = ({ isOpen, onClose, onLoginSuccess }) => {
                 <span className="text-2xl font-black tracking-tight text-white leading-none">GENTRA</span>
                 <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-bold bg-white/15 text-emerald-300 border border-emerald-400/30">
                   <span className="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
-                  v1.3.0
+                  v2.6.4
                 </span>
               </div>
               <p className="text-xs text-emerald-100/90 font-semibold mt-1">Ti Téks Jadi Sora • Studio Voice Over</p>

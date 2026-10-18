@@ -30,6 +30,39 @@ export function pcmToWav(pcmBuffer, sampleRate = 24000) {
   return wav;
 }
 
+// Peta Resolusi Nama Karakter & Nama Asli ke Gemini Prebuilt Voice ID
+const CHARACTER_TO_GEMINI_VOICE = {
+  'anita': 'Aoede',
+  'mugi': 'Charon',
+  'agus': 'Charon',
+  'siti': 'Leda',
+  'dewi': 'Despina',
+  'tina': 'Callirrhoe',
+  'maya': 'Autonoe',
+  'rian': 'Puck',
+  'indah': 'Erinome',
+  'gading': 'Fenrir',
+  'shinta': 'Laomedeia',
+  'bayu': 'Orus',
+  'adi': 'Algenib',
+  'eko': 'Iapetus',
+  'laras': 'Achernar',
+  'abah': 'Fenrir',
+  'nini': 'Erinome',
+  'ujang': 'Puck',
+  'bibi (ceu edah)': 'Despina',
+  'bibi': 'Despina',
+  'ceu edah': 'Despina',
+  'neng geulis': 'Aoede',
+  'budak leutik (eneng)': 'Aoede',
+  'budak leutik eneng': 'Aoede',
+  'ujang anom': 'Puck',
+  'budak leutik (ujang alit)': 'Algenib',
+  'budak leutik ujang alit': 'Algenib',
+  'teh neng': 'Leda',
+  'kang asep': 'Orus'
+};
+
 // 1. ENGINE GEMINI NEURAL TTS
 export async function synthesizeGemini({ text, voice = 'Aoede', personaPrompt = '', speed = 1.0, dialect = 'sunda', apiKey = '' }) {
   const t0 = Date.now();
@@ -37,12 +70,15 @@ export async function synthesizeGemini({ text, voice = 'Aoede', personaPrompt = 
     throw new Error('GEMINI_API_KEY belum dikonfigurasi di backend (.env).');
   }
 
+  const normalizedVoiceKey = String(voice || '').toLowerCase().trim();
+  const geminiPrebuiltVoice = CHARACTER_TO_GEMINI_VOICE[normalizedVoiceKey] || voice || 'Aoede';
+
   const speedDesc = speed > 1.2 ? "tempo cepat dan dinamis" : speed < 0.8 ? "tempo tenang dan santai" : "tempo normal bersahaja";
   const dialectDesc = dialect === 'sunda' 
     ? "Gunakan cengkok dan intonasi khas Jawa Barat / Sunda yang luwes, hangat, ramah, dan manusiawi."
     : "Gunakan intonasi Bahasa Indonesia yang sangat alami, artikulatif, ramah, dan mengalir layaknya manusia sungguhan.";
 
-  const systemInstructionText = `Karakter vokal: ${voice}. ${personaPrompt ? personaPrompt + ' ' : ''}${dialectDesc} Karakteristik vokal: ${speedDesc}.
+  const systemInstructionText = `Karakter vokal: ${voice} (Base Voice ID: ${geminiPrebuiltVoice}). ${personaPrompt ? personaPrompt + ' ' : ''}${dialectDesc} Karakteristik vokal: ${speedDesc}.
 ATURAN MUTLAK: Langsung bacakan teks naskah dari kata pertama tanpa kalimat pengantar, tanpa sapaan, tanpa memperkenalkan diri, dan tanpa basa-basi apa pun.`;
 
   const models = ['gemini-3.8-flash-tts', 'gemini-3.8-flash-lite-tts'];
@@ -65,7 +101,7 @@ ATURAN MUTLAK: Langsung bacakan teks naskah dari kata pertama tanpa kalimat peng
             responseModalities: ["AUDIO"],
             speechConfig: {
               voiceConfig: {
-                prebuiltVoiceConfig: { voiceName: voice || 'Aoede' }
+                prebuiltVoiceConfig: { voiceName: geminiPrebuiltVoice }
               }
             }
           }
