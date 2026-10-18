@@ -308,25 +308,25 @@ export const LANDING_STATIC_PREVIEWS = {
   'Ujang': '/audio/previews/ujang.wav',
   'Bibi (Ceu Edah)': '/audio/previews/bibi.wav',
   'Budak Leutik Eneng': '/audio/previews/budak_eneng.wav',
-  'Budak Leutik Ujang Alit': '/audio/previews/budak_ujang.mp3',
+  'Budak Leutik Ujang Alit': '/audio/previews/budak_ujang.wav',
   'Teh Neng': '/audio/previews/teh_neng.wav',
-  'Kang Asep': '/audio/previews/kang_asep.mp3',
+  'Kang Asep': '/audio/previews/kang_asep.wav',
 
-  // 14 Persona Nasional (Studio-Grade Neural & High-Fidelity)
+  // 14 Persona Nasional (Studio-Grade Pure Gemini Neural Pre-rendered - 0 Token)
   'Anita': '/audio/previews/anita.wav',
   'Siti': '/audio/previews/siti.wav',
   'Agus': '/audio/previews/agus.wav',
-  'Dewi': '/audio/previews/elevenlabs_laura.mp3',
-  'Tina': '/audio/previews/elevenlabs_alice.mp3',
-  'Maya': '/audio/previews/elevenlabs_sarah.mp3',
-  'Rian': '/audio/previews/elevenlabs_callum.mp3',
-  'Indah': '/audio/previews/siti.wav',
-  'Gading': '/audio/previews/elevenlabs_george.mp3',
-  'Shinta': '/audio/previews/elevenlabs_alice.mp3',
-  'Bayu': '/audio/previews/elevenlabs_roger.mp3',
-  'Adi': '/audio/previews/elevenlabs_charlie.mp3',
-  'Eko': '/audio/previews/agus.wav',
-  'Laras': '/audio/previews/teh_neng.wav'
+  'Dewi': '/audio/previews/dewi.wav',
+  'Tina': '/audio/previews/tina.wav',
+  'Maya': '/audio/previews/maya.wav',
+  'Rian': '/audio/previews/rian.wav',
+  'Indah': '/audio/previews/indah.wav',
+  'Gading': '/audio/previews/gading.wav',
+  'Shinta': '/audio/previews/shinta.wav',
+  'Bayu': '/audio/previews/bayu.wav',
+  'Adi': '/audio/previews/adi.wav',
+  'Eko': '/audio/previews/eko.wav',
+  'Laras': '/audio/previews/laras.wav'
 };
 
 export const LandingPage = ({ onOpenLogin }) => {
@@ -373,7 +373,8 @@ export const LandingPage = ({ onOpenLogin }) => {
     setPlayingVoice(persona.name);
 
     try {
-      const audio = new Audio(targetUrl);
+      const cleanUrl = targetUrl.includes('?') ? targetUrl : `${targetUrl}?v=gemini-neural-v2`;
+      const audio = new Audio(cleanUrl);
       landingAudioRef.current = audio;
       audio.onended = () => setPlayingVoice(null);
       audio.onerror = () => setPlayingVoice(null);

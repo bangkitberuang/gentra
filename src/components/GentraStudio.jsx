@@ -195,7 +195,7 @@ const VOICEBOX_VOICES = [
   { id: 'kokoro_male', name: 'Kokoro Pria (Offline)', desc: 'Model 82M Vokal Pria Lokal', gender: 'Male', category: 'Voicebox Local', accent: 'Lokal Mandiri', isCustom: false }
 ];
 
-// --- Peta File Audio Preview Terkonfirmasi (35 Persona Lengkap Aktif) ---
+// --- Peta File Audio Preview Terkonfirmasi (Pure Gemini Neural Pre-rendered - 0 Token) ---
 export const STATIC_AUDIO_PREVIEWS = {
   // 8 Persona Khas Sunda (Blok 2)
   'Abah': '/audio/previews/abah.wav',
@@ -204,35 +204,26 @@ export const STATIC_AUDIO_PREVIEWS = {
   'Bibi (Ceu Edah)': '/audio/previews/bibi.wav',
   'Budak Leutik (Eneng)': '/audio/previews/budak_eneng.wav',
   'Budak Leutik Eneng': '/audio/previews/budak_eneng.wav',
-  'Budak Leutik (Ujang Alit)': '/audio/previews/budak_eneng.wav',
-  'Budak Leutik Ujang Alit': '/audio/previews/budak_eneng.wav',
+  'Budak Leutik (Ujang Alit)': '/audio/previews/budak_ujang.wav',
+  'Budak Leutik Ujang Alit': '/audio/previews/budak_ujang.wav',
   'Teh Neng': '/audio/previews/teh_neng.wav',
-  'Kang Asep': '/audio/previews/ujang.wav',
+  'Kang Asep': '/audio/previews/kang_asep.wav',
 
   // 14 Persona Nasional (Blok 1 - NUSA VOICE)
   'Anita': '/audio/previews/anita.wav',
   'Siti': '/audio/previews/siti.wav',
   'Agus': '/audio/previews/agus.wav',
-  'Dewi': '/audio/previews/dewi.mp3',
-  'Tina': '/audio/previews/tina.mp3',
-  'Maya': '/audio/previews/maya.mp3',
-  'Rian': '/audio/previews/rian.mp3',
-  'Indah': '/audio/previews/indah.mp3',
-  'Gading': '/audio/previews/gading.mp3',
-  'Shinta': '/audio/previews/shinta.mp3',
-  'Bayu': '/audio/previews/bayu.mp3',
-  'Adi': '/audio/previews/adi.mp3',
-  'Eko': '/audio/previews/eko.mp3',
-  'Laras': '/audio/previews/laras.mp3',
-
-  // Karakter ElevenLabs Studio (Prabu Pajajaran Server)
-  'Sarah': '/audio/previews/elevenlabs_sarah.mp3',
-  'George': '/audio/previews/elevenlabs_george.mp3',
-  'Charlie': '/audio/previews/elevenlabs_charlie.mp3',
-  'Alice': '/audio/previews/elevenlabs_alice.mp3',
-  'Callum': '/audio/previews/elevenlabs_callum.mp3',
-  'Roger': '/audio/previews/elevenlabs_roger.mp3',
-  'Laura': '/audio/previews/elevenlabs_laura.mp3',
+  'Dewi': '/audio/previews/dewi.wav',
+  'Tina': '/audio/previews/tina.wav',
+  'Maya': '/audio/previews/maya.wav',
+  'Rian': '/audio/previews/rian.wav',
+  'Indah': '/audio/previews/indah.wav',
+  'Gading': '/audio/previews/gading.wav',
+  'Shinta': '/audio/previews/shinta.wav',
+  'Bayu': '/audio/previews/bayu.wav',
+  'Adi': '/audio/previews/adi.wav',
+  'Eko': '/audio/previews/eko.wav',
+  'Laras': '/audio/previews/laras.wav'
 };
 
 // Helper: Cek apakah karakter memiliki sampel audio preview
@@ -1299,142 +1290,11 @@ export const GentraStudio = ({
 
     setPreviewingVoice(v.name);
 
-    // 1. Putar langsung jika sudah ada di cache live
-    if (previewAudioCache.current[v.name]) {
-      const audio = new Audio(previewAudioCache.current[v.name]);
-      currentAudioRef.current = audio;
-      audio.onended = () => setPreviewingVoice(null);
-      audio.onerror = () => setPreviewingVoice(null);
-      try {
-        await audio.play();
-        return;
-      } catch (err) {
-        setPreviewingVoice(null);
-        return;
-      }
-    }
-
-    // 2. Jika ada API Key Gemini aktif, buat preview vokal ASLI Gemini Neural secara instan untuk SEMUA karakter!
-    if (activeKey) {
-      try {
-        const persona = getVoicePersonaInstruction(v);
-        let sampleSentence = "Setiap karya dan dedikasi kita hari ini adalah warisan bermakna bagi generasi masa depan.";
-        if (v.name === 'Maya') {
-          sampleSentence = "Setiap karya dan dedikasi kita hari ini adalah warisan bermakna bagi generasi masa depan.";
-        } else if (v.name === 'Dewi') {
-          sampleSentence = "Manfaatkan inovasi layanan digital terpadu sekarang juga untuk kemudahan hidup Anda.";
-        } else if (v.name === 'Tina') {
-          sampleSentence = "Berikut rangkuman capaian indikator reformasi birokrasi dan tata kelola pemerintah daerah.";
-        } else if (v.name === 'Rian') {
-          sampleSentence = "Satukan ide brilianmu dan wujudkan kreasi digital terbaik hari ini!";
-        } else if (v.name === 'Indah') {
-          sampleSentence = "Tarik napas perlahan... rasakan ketenangan alam yang membawa kedamaian dalam batin Anda.";
-        } else if (v.name === 'Gading') {
-          sampleSentence = "Perhatian seluruh warga: patuhi arahan keselamatan publik demi keamanan bersama.";
-        } else if (v.name === 'Shinta') {
-          sampleSentence = "Transparansi informasi dan pelayanan prima adalah komitmen mutlak aparatur sipil negara.";
-        } else if (v.name === 'Bayu') {
-          sampleSentence = "Mari kita luangkan waktu sejenak untuk saling mendengarkan dan mencari solusi terbaik bersama.";
-        } else if (v.name === 'Adi') {
-          sampleSentence = "Semangat pagi semuanya! Awali hari ini dengan senyuman dan tekad untuk berprestasi!";
-        } else if (v.name === 'Eko') {
-          sampleSentence = "Mari kita cermati bersama langkah-langkah strategis dalam meningkatkan daya saing daerah.";
-        } else if (v.name === 'Laras') {
-          sampleSentence = "Dengan rasa bangga dan penghormatan setinggi-tingginya, marilah kita saksikan pembukaan acara resmi ini.";
-        } else if (v.name === 'Anita') {
-          sampleSentence = "Inovasi dan kolaborasi adalah kunci utama kemajuan bersama di era digital.";
-        } else if (v.name === 'Agus') {
-          sampleSentence = "Kedisiplinan dan kerja keras adalah pondasi kesuksesan yang nyata.";
-        } else if (v.name === 'Siti') {
-          sampleSentence = "Keramahan dan ketulusan hati selalu menghadirkan kehangatan dalam setiap perjumpaan.";
-        } else if (v.category === 'Sunda') {
-          if (v.name.includes('Eneng') || v.name.includes('Budak Leutik (Eneng)')) {
-            sampleSentence = `Eneng resep pisan diajar ngadongeng sareng maca buku carita unggal dinten!`;
-          } else if (v.name.includes('Ujang Alit') || v.name.includes('Budak Leutik (Ujang Alit)')) {
-            sampleSentence = `Horeee, hayu urang ulin ka buruan bari diajar elmu pangaweruh anyar!`;
-          } else if (v.name.includes('Abah')) {
-            sampleSentence = `Pancegkeun hate dina kahadean tur silih asih, mugia rahayu berkah salamet salamina.`;
-          } else if (v.name.includes('Nini')) {
-            sampleSentence = `Sing sabar tawekal mayunan hirup huripna, mugia dipaparin kasehatan lahir batin.`;
-          } else if (v.name.includes('Ceu Edah') || v.name.includes('Bibi')) {
-            sampleSentence = `Tong hilap jaga kaberesihan sareng kasehatan lingkungan kulawarga urang sadayana!`;
-          } else if (v.name.includes('Kang Asep')) {
-            sampleSentence = `Hayu urang silih rojong ngawangun tatar Pasundan anu maju tur berakhlak mulya.`;
-          } else if (v.name.includes('Teh Neng')) {
-            sampleSentence = `Tatar Parahyangan mangrupikeun nagri asri pinuh ku katengtreman sareng kabagjaan.`;
-          } else if (v.name.includes('Ujang')) {
-            sampleSentence = `Hayu urang babarengan ngamumule kabudayaan Pasundan sangkan tetep hurip tur kajembaran!`;
-          } else {
-            sampleSentence = `Hayu urang silih asah, silih asih, silih asuh dina ngahontal kamajuan tatar Pasundan.`;
-          }
-        }
-
-        const payload = {
-          systemInstruction: {
-            parts: [{ text: `Karakter vokal: ${persona.role}. ${persona.timbre}. ${persona.dialect}.
-ATURAN MUTLAK: Langsung bacakan kalimat ini dari kata pertama tanpa kalimat pengantar, tanpa sapaan, tanpa menyebutkan nama Anda, dan tanpa basa-basi apa pun.` }]
-          },
-          contents: [{ 
-            role: "user",
-            parts: [{ text: sampleSentence }] 
-          }],
-          generationConfig: {
-            responseModalities: ["AUDIO"],
-            speechConfig: {
-              voiceConfig: {
-                prebuiltVoiceConfig: { voiceName: v.id || 'Aoede' }
-              }
-            }
-          },
-          model: TTS_MODEL
-        };
-
-        let res = await fetch(
-          `https://generativelanguage.googleapis.com/v1beta/models/${TTS_MODEL}:generateContent?key=${activeKey}`,
-          {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(payload)
-          }
-        );
-
-        if (!res.ok) {
-          res = await fetch(
-            `https://generativelanguage.googleapis.com/v1beta/models/${TTS_FALLBACK_MODEL}:generateContent?key=${activeKey}`,
-            {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify(payload)
-            }
-          );
-        }
-
-        if (res.ok) {
-          const data = await res.json();
-          const inlineData = data?.candidates?.[0]?.content?.parts?.[0]?.inlineData;
-          if (inlineData?.data) {
-            const pcm16 = base64ToPCM16(inlineData.data);
-            const wavBlob = buildWavBlobFromPCM(pcm16, 24000);
-            const liveUrl = URL.createObjectURL(wavBlob);
-            previewAudioCache.current[v.name] = liveUrl;
-
-            const audio = new Audio(liveUrl);
-            currentAudioRef.current = audio;
-            audio.onended = () => setPreviewingVoice(null);
-            audio.onerror = () => setPreviewingVoice(null);
-            await audio.play();
-            return;
-          }
-        }
-      } catch (liveErr) {
-        console.warn('Fallback ke file preview statis:', liveErr);
-      }
-    }
-
-    // 3. Fallback jika offline / belum ada API Key: Putar audio preview statis
-    const cachedOrStaticUrl = STATIC_AUDIO_PREVIEWS[v.name];
-    if (cachedOrStaticUrl) {
-      const audio = new Audio(cachedOrStaticUrl);
+    // Prioritas Mutlak: Putar langsung dari file audio pre-rendered statis (Tabungan audio tersimpan - Hemat 100% Token)
+    const targetUrl = previewAudioCache.current[v.name] || STATIC_AUDIO_PREVIEWS[v.name];
+    if (targetUrl) {
+      const cleanUrl = targetUrl.includes('?') ? targetUrl : `${targetUrl}?v=gemini-neural-v2`;
+      const audio = new Audio(cleanUrl);
       currentAudioRef.current = audio;
       audio.onended = () => setPreviewingVoice(null);
       audio.onerror = () => {
@@ -1921,26 +1781,26 @@ ATURAN MUTLAK: Langsung bacakan teks naskah dari kata pertama tanpa intro, tanpa
     }
   };
 
-  // Dynamic Broadcast Studio Styling Tokens (Modern Audiophile & Clean Slate)
+  // Dynamic Broadcast Studio Styling Tokens (Volt Lime & Deep Obsidian in Dark, 50% Darker Slate in Light)
   const cardBg = isDarkTheme 
     ? 'bg-[#12141D] border border-[#222634] shadow-xl text-zinc-100' 
-    : 'bg-white border border-slate-200 shadow-[0_2px_12px_rgba(0,0,0,0.03)] text-slate-900';
+    : 'bg-white border border-slate-300 shadow-[0_4px_24px_rgba(0,0,0,0.12)] text-slate-900';
 
   const subCardBg = isDarkTheme
     ? 'bg-[#181B26] border border-[#282D3D] text-zinc-200'
-    : 'bg-slate-50 border border-slate-200 text-slate-700';
+    : 'bg-slate-50 border border-slate-200 text-slate-800';
 
   const inputBg = isDarkTheme
-    ? 'bg-[#0E1017] border border-[#262B3A] text-white placeholder-zinc-500 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500/30'
-    : 'bg-white border border-slate-200 text-slate-900 placeholder-slate-400 focus:border-indigo-600 focus:ring-1 focus:ring-indigo-600/20';
+    ? 'bg-[#0E1017] border border-[#262B3A] text-white placeholder-zinc-500 focus:border-[#CCFF00] focus:ring-1 focus:ring-[#CCFF00]/30'
+    : 'bg-white border border-slate-300 text-slate-900 placeholder-slate-400 focus:border-slate-800 focus:ring-1 focus:ring-slate-800/20';
 
   const headingColor = isDarkTheme ? 'text-white' : 'text-slate-900';
-  const subTextColor = isDarkTheme ? 'text-zinc-400' : 'text-slate-500';
+  const subTextColor = isDarkTheme ? 'text-zinc-400' : 'text-slate-600';
 
   return (
-    <div className={`min-h-screen transition-colors duration-300 font-sans selection:bg-indigo-600 selection:text-white ${isDarkTheme ? 'bg-[#0A0B10] text-zinc-100' : 'bg-[#F6F7F9] text-slate-900'}`}>
+    <div className={`min-h-screen transition-colors duration-300 font-sans selection:bg-[#CCFF00] selection:text-black ${isDarkTheme ? 'bg-[#0A0B10] text-zinc-100' : 'bg-[#717686] text-slate-900'}`}>
       {/* Top Navigation Bar */}
-      <nav className={`sticky top-0 z-50 backdrop-blur-md transition-colors duration-300 ${isDarkTheme ? 'bg-[#0A0B10]/95 border-b border-[#1A1D27] text-white' : 'bg-white/95 border-b border-slate-200/80 shadow-xs text-slate-900'}`}>
+      <nav className={`sticky top-0 z-50 backdrop-blur-md transition-colors duration-300 ${isDarkTheme ? 'bg-[#0A0B10]/95 border-b border-[#1A1D27] text-white' : 'bg-white/95 border-b border-slate-300 shadow-sm text-slate-900'}`}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-20 gap-4">
             
@@ -1958,7 +1818,7 @@ ATURAN MUTLAK: Langsung bacakan teks naskah dari kata pertama tanpa intro, tanpa
                   GENTRA
                 </span>
                 <span className={`text-[11px] font-bold tracking-tight mt-0.5 whitespace-nowrap leading-none ${
-                  isDarkTheme ? 'text-indigo-400' : 'text-indigo-600'
+                  isDarkTheme ? 'text-[#CCFF00]' : 'text-amber-700'
                 }`}>
                   Ti Téks Jadi Sora
                 </span>
@@ -1974,7 +1834,7 @@ ATURAN MUTLAK: Langsung bacakan teks naskah dari kata pertama tanpa intro, tanpa
                   className={`h-9 px-4 sm:px-5 rounded-full text-xs font-black transition-all flex items-center gap-2 whitespace-nowrap shrink-0 ${
                     view === 'studio' 
                       ? isDarkTheme
-                        ? 'bg-indigo-600 text-white shadow-md'
+                        ? 'bg-[#CCFF00] text-black font-black shadow-[0_0_15px_rgba(204,255,0,0.25)]'
                         : 'bg-white text-slate-950 shadow-sm border border-slate-200/80' 
                       : isDarkTheme ? 'text-zinc-400 hover:text-white hover:bg-zinc-800/60' : 'text-slate-600 hover:text-slate-950 hover:bg-slate-200/60'
                   }`}
@@ -1989,7 +1849,7 @@ ATURAN MUTLAK: Langsung bacakan teks naskah dari kata pertama tanpa intro, tanpa
                   className={`h-9 px-4 sm:px-5 rounded-full text-xs font-black transition-all flex items-center gap-2 whitespace-nowrap shrink-0 ${
                     view === 'ads' 
                       ? isDarkTheme
-                        ? 'bg-indigo-600 text-white shadow-md'
+                        ? 'bg-[#CCFF00] text-black font-black shadow-[0_0_15px_rgba(204,255,0,0.25)]'
                         : 'bg-white text-slate-950 shadow-sm border border-slate-200/80' 
                       : isDarkTheme ? 'text-zinc-400 hover:text-white hover:bg-zinc-800/60' : 'text-slate-600 hover:text-slate-950 hover:bg-slate-200/60'
                   }`}
@@ -2005,7 +1865,7 @@ ATURAN MUTLAK: Langsung bacakan teks naskah dari kata pertama tanpa intro, tanpa
                   className={`h-9 px-4 sm:px-5 rounded-full text-xs font-black transition-all flex items-center gap-2 whitespace-nowrap shrink-0 ${
                     view === 'history' 
                       ? isDarkTheme
-                        ? 'bg-indigo-600 text-white shadow-md'
+                        ? 'bg-[#CCFF00] text-black font-black shadow-[0_0_15px_rgba(204,255,0,0.25)]'
                         : 'bg-white text-slate-950 shadow-sm border border-slate-200/80' 
                       : isDarkTheme ? 'text-zinc-400 hover:text-white hover:bg-zinc-800/60' : 'text-slate-600 hover:text-slate-950 hover:bg-slate-200/60'
                   }`}
@@ -2014,7 +1874,7 @@ ATURAN MUTLAK: Langsung bacakan teks naskah dari kata pertama tanpa intro, tanpa
                   <span>RIWAYAT</span>
                   <span className={`text-[10px] px-1.5 py-0.2 rounded-full font-bold shrink-0 ${
                     view === 'history' 
-                      ? isDarkTheme ? 'bg-black/30 text-white' : 'bg-slate-100 text-slate-800' 
+                      ? isDarkTheme ? 'bg-black text-[#CCFF00]' : 'bg-slate-100 text-slate-800' 
                       : isDarkTheme ? 'bg-zinc-800 text-zinc-300' : 'bg-slate-200 text-slate-700'
                   }`}>
                     {history.length}
@@ -2829,7 +2689,7 @@ ATURAN MUTLAK: Langsung bacakan teks naskah dari kata pertama tanpa intro, tanpa
                     onClick={() => setVoiceCategory('Nasional')}
                     className={`px-3 py-1 rounded-lg text-xs font-bold transition-all ${
                       voiceCategory === 'Nasional'
-                        ? isDarkTheme ? 'bg-indigo-600 text-white shadow-xs' : 'bg-white text-slate-950 shadow-xs border border-slate-200/80'
+                        ? isDarkTheme ? 'bg-[#CCFF00] text-black font-extrabold shadow-sm' : 'bg-white text-slate-950 shadow-xs border border-slate-200/80'
                         : isDarkTheme ? 'text-zinc-400 hover:text-white' : 'text-slate-600 hover:text-slate-900'
                     }`}
                   >
@@ -2840,7 +2700,7 @@ ATURAN MUTLAK: Langsung bacakan teks naskah dari kata pertama tanpa intro, tanpa
                     onClick={() => setVoiceCategory('Sunda')}
                     className={`px-3 py-1 rounded-lg text-xs font-bold transition-all ${
                       voiceCategory === 'Sunda'
-                        ? isDarkTheme ? 'bg-indigo-600 text-white shadow-xs' : 'bg-white text-slate-950 shadow-xs border border-slate-200/80'
+                        ? isDarkTheme ? 'bg-[#CCFF00] text-black font-extrabold shadow-sm' : 'bg-white text-slate-950 shadow-xs border border-slate-200/80'
                         : isDarkTheme ? 'text-zinc-400 hover:text-white' : 'text-slate-600 hover:text-slate-900'
                     }`}
                   >
@@ -2851,7 +2711,7 @@ ATURAN MUTLAK: Langsung bacakan teks naskah dari kata pertama tanpa intro, tanpa
                     onClick={() => setVoiceCategory('Semua')}
                     className={`px-3 py-1 rounded-lg text-xs font-bold transition-all ${
                       voiceCategory === 'Semua'
-                        ? isDarkTheme ? 'bg-indigo-600 text-white shadow-xs' : 'bg-white text-slate-950 shadow-xs border border-slate-200/80'
+                        ? isDarkTheme ? 'bg-[#CCFF00] text-black font-extrabold shadow-sm' : 'bg-white text-slate-950 shadow-xs border border-slate-200/80'
                         : isDarkTheme ? 'text-zinc-400 hover:text-white' : 'text-slate-600 hover:text-slate-900'
                     }`}
                   >
@@ -2878,8 +2738,8 @@ ATURAN MUTLAK: Langsung bacakan teks naskah dari kata pertama tanpa intro, tanpa
                       className={`p-3.5 sm:p-4 rounded-2xl border transition-all duration-150 flex items-center justify-between cursor-pointer select-none group ${
                         isSelected
                           ? isDarkTheme 
-                            ? 'border-2 border-indigo-500 bg-indigo-950/20 shadow-[0_0_20px_rgba(99,102,241,0.12)]' 
-                            : 'border-2 border-indigo-600 bg-indigo-50/70 shadow-sm'
+                            ? 'border-2 border-[#CCFF00] bg-[#CCFF00]/10 shadow-[0_0_20px_rgba(204,255,0,0.18)]' 
+                            : 'border-2 border-slate-900 bg-slate-50/80 shadow-sm'
                           : isDarkTheme 
                             ? 'border border-[#222634] bg-[#141620] hover:border-[#33384A] hover:bg-[#1A1D2B]' 
                             : 'border border-slate-200 bg-white hover:border-slate-300 hover:bg-slate-50/70 shadow-2xs'
@@ -2889,14 +2749,14 @@ ATURAN MUTLAK: Langsung bacakan teks naskah dari kata pertama tanpa intro, tanpa
                         {/* Avatar Icon */}
                         <div className={`w-11 h-11 rounded-full flex items-center justify-center shrink-0 transition-transform ${
                           isSelected
-                            ? 'bg-indigo-600 text-white shadow-sm'
+                            ? isDarkTheme ? 'bg-[#CCFF00] text-black font-bold shadow-sm' : 'bg-slate-900 text-white shadow-sm'
                             : isDarkTheme ? 'bg-[#222636] text-zinc-400 group-hover:text-zinc-200' : 'bg-slate-100 text-slate-600 group-hover:text-slate-900'
                         }`}>
                           {isPlaying ? (
                             <div className="flex items-center gap-0.5 h-3.5">
-                              <span className="w-1 h-2.5 rounded-full animate-bounce bg-white" />
-                              <span className="w-1 h-4 rounded-full animate-bounce [animation-delay:0.15s] bg-white" />
-                              <span className="w-1 h-3 rounded-full animate-bounce [animation-delay:0.3s] bg-white" />
+                              <span className={`w-1 h-2.5 rounded-full animate-bounce ${isDarkTheme ? 'bg-black' : 'bg-white'}`} />
+                              <span className={`w-1 h-4 rounded-full animate-bounce [animation-delay:0.15s] ${isDarkTheme ? 'bg-black' : 'bg-white'}`} />
+                              <span className={`w-1 h-3 rounded-full animate-bounce [animation-delay:0.3s] ${isDarkTheme ? 'bg-black' : 'bg-white'}`} />
                             </div>
                           ) : (
                             <User className="w-5 h-5 stroke-[2.2]" />
@@ -2907,7 +2767,7 @@ ATURAN MUTLAK: Langsung bacakan teks naskah dari kata pertama tanpa intro, tanpa
                         <div className="min-w-0">
                           <h4 className={`font-bold text-sm truncate ${
                             isSelected 
-                              ? isDarkTheme ? 'text-white' : 'text-indigo-950 font-black' 
+                              ? isDarkTheme ? 'text-[#CCFF00] font-black' : 'text-slate-950 font-black' 
                               : isDarkTheme ? 'text-zinc-100' : 'text-slate-900'
                           }`}>
                             {v.name}
@@ -2926,13 +2786,13 @@ ATURAN MUTLAK: Langsung bacakan teks naskah dari kata pertama tanpa intro, tanpa
                             onClick={(e) => handlePreviewVoice(v, e)}
                             className={`p-1.5 rounded-lg transition-colors ${
                               isPlaying
-                                ? isDarkTheme ? 'text-indigo-400' : 'text-indigo-600'
+                                ? isDarkTheme ? 'text-[#CCFF00]' : 'text-slate-900'
                                 : isDarkTheme ? 'text-zinc-500 hover:text-white opacity-0 group-hover:opacity-100' : 'text-slate-400 hover:text-slate-800 opacity-0 group-hover:opacity-100'
                             }`}
                             title="Dengarkan sampel vokal"
                           >
                             {isPlaying ? (
-                              <Volume2 className={`w-4 h-4 animate-pulse ${isDarkTheme ? 'text-indigo-400' : 'text-indigo-600'}`} />
+                              <Volume2 className={`w-4 h-4 animate-pulse ${isDarkTheme ? 'text-[#CCFF00]' : 'text-slate-900'}`} />
                             ) : (
                               <Play className="w-4 h-4 fill-current" />
                             )}
@@ -2940,7 +2800,7 @@ ATURAN MUTLAK: Langsung bacakan teks naskah dari kata pertama tanpa intro, tanpa
                         )}
 
                         {isSelected && (
-                          <Check className={`w-4 h-4 stroke-[3] ${isDarkTheme ? 'text-indigo-400' : 'text-indigo-600'}`} />
+                          <Check className={`w-4 h-4 stroke-[3] ${isDarkTheme ? 'text-[#CCFF00]' : 'text-slate-900'}`} />
                         )}
                       </div>
                     </div>
@@ -3062,18 +2922,18 @@ ATURAN MUTLAK: Langsung bacakan teks naskah dari kata pertama tanpa intro, tanpa
                   isGenerating || !text.trim() 
                     ? isDarkTheme ? 'bg-zinc-800/80 text-zinc-500 border border-zinc-700/60 cursor-not-allowed' : 'bg-slate-100 text-slate-400 border border-slate-200 cursor-not-allowed'
                     : isDarkTheme 
-                      ? 'bg-gradient-to-r from-indigo-500 to-violet-600 text-white hover:from-indigo-600 hover:to-violet-700 shadow-lg shadow-indigo-500/25 active:scale-[0.99] cursor-pointer' 
+                      ? 'bg-[#CCFF00] hover:bg-[#b8e600] text-black shadow-lg shadow-[#CCFF00]/20 active:scale-[0.99] cursor-pointer' 
                       : 'bg-slate-950 text-white hover:bg-slate-800 shadow-lg shadow-slate-950/15 active:scale-[0.99] cursor-pointer'
                 }`}
               >
                 {isGenerating ? (
                   <>
-                    <Loader2 className="animate-spin w-5 h-5 text-white" />
+                    <Loader2 className={`animate-spin w-5 h-5 ${isDarkTheme ? 'text-black' : 'text-white'}`} />
                     <span>{progressStatus || "Menyintesis suara..."}</span>
                   </>
                 ) : (
                   <>
-                    <Play className="fill-current w-5 h-5 text-white" />
+                    <Play className={`fill-current w-5 h-5 ${isDarkTheme ? 'text-black' : 'text-white'}`} />
                     <span>HASILKAN SUARA</span>
                   </>
                 )}
@@ -3086,12 +2946,12 @@ ATURAN MUTLAK: Langsung bacakan teks naskah dari kata pertama tanpa intro, tanpa
                 }`}>
                   <div className="flex items-center justify-between gap-3 text-xs">
                     <div className="flex items-center gap-2.5 truncate">
-                      <Loader2 className={`w-4 h-4 animate-spin shrink-0 ${isDarkTheme ? 'text-indigo-400' : 'text-indigo-600'}`} />
-                      <span className={`font-bold truncate ${isDarkTheme ? 'text-indigo-400' : 'text-indigo-600'}`}>
+                      <Loader2 className={`w-4 h-4 animate-spin shrink-0 ${isDarkTheme ? 'text-[#CCFF00]' : 'text-indigo-600'}`} />
+                      <span className={`font-bold truncate ${isDarkTheme ? 'text-[#CCFF00]' : 'text-indigo-600'}`}>
                         {progressStatus || "Menyintesis suara..."}
                       </span>
                     </div>
-                    <span className={`font-mono font-black text-sm shrink-0 ${isDarkTheme ? 'text-indigo-400' : 'text-indigo-600'}`}>
+                    <span className={`font-mono font-black text-sm shrink-0 ${isDarkTheme ? 'text-[#CCFF00]' : 'text-indigo-600'}`}>
                       {generationProgress}%
                     </span>
                   </div>
@@ -3100,7 +2960,9 @@ ATURAN MUTLAK: Langsung bacakan teks naskah dari kata pertama tanpa intro, tanpa
                     isDarkTheme ? 'bg-[#0E1017] border-[#262B3A]' : 'bg-slate-100 border-slate-200'
                   }`}>
                     <div 
-                      className="h-full rounded-full bg-gradient-to-r from-indigo-500 to-violet-600 transition-all duration-300 ease-out relative overflow-hidden shadow-xs"
+                      className={`h-full rounded-full transition-all duration-300 ease-out relative overflow-hidden shadow-xs ${
+                        isDarkTheme ? 'bg-[#CCFF00]' : 'bg-slate-900'
+                      }`}
                       style={{ width: `${Math.max(6, Math.min(100, generationProgress))}%` }}
                     >
                       <div className="absolute inset-0 bg-white/20 animate-pulse" />
