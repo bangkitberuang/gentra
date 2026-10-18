@@ -158,7 +158,7 @@ export const EngineSelectorModal = ({
                 className={`cursor-pointer rounded-2xl p-5 border transition-all duration-200 flex flex-col justify-between relative group select-none ${
                   isSelected 
                     ? `bg-gradient-to-b ${srv.gradientBg} border-2 ${srv.selectedRing} shadow-2xl -translate-y-1`
-                    : `bg-[#0c1611]/80 hover:bg-[#121f19] border-emerald-950 hover:border-emerald-700/60 hover:-translate-y-0.5`
+                    : `bg-[#14161B] hover:bg-[#181A20] border-[#20232B] hover:border-[#3a3f4d] hover:-translate-y-0.5`
                 }`}
               >
                 {/* Top Badge: Server Code & Recommendation */}

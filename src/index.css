@@ -31,29 +31,29 @@ html, body {
 }
 
 ::-webkit-scrollbar-track {
-  background: rgba(12, 78, 52, 0.04);
+  background: rgba(99, 102, 241, 0.04);
 }
 
 ::-webkit-scrollbar-thumb {
-  background: rgba(12, 78, 52, 0.25);
+  background: rgba(100, 116, 139, 0.3);
   border-radius: 9999px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(12, 78, 52, 0.45);
+  background: rgba(100, 116, 139, 0.5);
 }
 
 .dark ::-webkit-scrollbar-track {
-  background: #0B0C0E;
+  background: #0A0B10;
 }
 
 .dark ::-webkit-scrollbar-thumb {
-  background: #20232B;
+  background: #222634;
   border-radius: 9999px;
 }
 
 .dark ::-webkit-scrollbar-thumb:hover {
-  background: #2e323e;
+  background: #31374a;
 }
 
 /* Tactile Analog Broadcast Range Slider */
@@ -62,7 +62,7 @@ input[type="range"].studio-fader {
   appearance: none;
   height: 6px;
   border-radius: 9999px;
-  background: rgba(12, 78, 52, 0.15);
+  background: rgba(99, 102, 241, 0.15);
   outline: none;
   transition: all 0.2s ease;
 }
@@ -77,7 +77,7 @@ input[type="range"].studio-fader::-webkit-slider-thumb {
   width: 18px;
   height: 18px;
   border-radius: 50%;
-  background: linear-gradient(135deg, #F59E0B 0%, #D97706 100%);
+  background: linear-gradient(135deg, #6366F1 0%, #4F46E5 100%);
   cursor: grab;
   box-shadow: 0 1px 4px rgba(0, 0, 0, 0.3), inset 0 1px 1px rgba(255, 255, 255, 0.4);
   border: 2px solid #ffffff;
@@ -85,9 +85,9 @@ input[type="range"].studio-fader::-webkit-slider-thumb {
 }
 
 .dark input[type="range"].studio-fader::-webkit-slider-thumb {
-  background: #CCFF00;
-  border-color: #0B0C0E;
-  box-shadow: 0 0 10px rgba(204, 255, 0, 0.5);
+  background: linear-gradient(135deg, #6366F1 0%, #4F46E5 100%);
+  border-color: #0A0B10;
+  box-shadow: 0 0 10px rgba(99, 102, 241, 0.6);
 }
 
 input[type="range"].studio-fader:active::-webkit-slider-thumb {
@@ -99,9 +99,15 @@ input[type="range"].studio-fader::-moz-range-thumb {
   width: 18px;
   height: 18px;
   border-radius: 50%;
-  background: linear-gradient(135deg, #F59E0B 0%, #D97706 100%);
+  background: linear-gradient(135deg, #6366F1 0%, #4F46E5 100%);
   cursor: grab;
   border: 2px solid #ffffff;
+}
+
+.dark input[type="range"].studio-fader::-moz-range-thumb {
+  background: linear-gradient(135deg, #6366F1 0%, #4F46E5 100%);
+  border-color: #0A0B10;
+  box-shadow: 0 0 10px rgba(99, 102, 241, 0.6);
 }
 
 /* Studio Precision LED pulse */

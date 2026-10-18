@@ -300,7 +300,7 @@ const FULL_PERSONAS = [
   }
 ];
 
-// Peta File Audio Preview Terkonfirmasi di Landing Page (22 Persona Lengkap Aktif)
+// Peta File Audio Preview Terkonfirmasi di Landing Page (22 Persona Lengkap Aktif - Kualitas Studio Alami)
 export const LANDING_STATIC_PREVIEWS = {
   // 8 Persona Khas Sunda
   'Abah': '/audio/previews/abah.wav',
@@ -312,21 +312,21 @@ export const LANDING_STATIC_PREVIEWS = {
   'Teh Neng': '/audio/previews/teh_neng.wav',
   'Kang Asep': '/audio/previews/kang_asep.mp3',
 
-  // 14 Persona Nasional
+  // 14 Persona Nasional (Studio-Grade Neural & High-Fidelity)
   'Anita': '/audio/previews/anita.wav',
   'Siti': '/audio/previews/siti.wav',
   'Agus': '/audio/previews/agus.wav',
-  'Dewi': '/audio/previews/dewi.mp3',
-  'Tina': '/audio/previews/tina.mp3',
-  'Maya': '/audio/previews/maya.mp3',
-  'Rian': '/audio/previews/rian.mp3',
-  'Indah': '/audio/previews/indah.mp3',
-  'Gading': '/audio/previews/gading.mp3',
-  'Shinta': '/audio/previews/shinta.mp3',
-  'Bayu': '/audio/previews/bayu.mp3',
-  'Adi': '/audio/previews/adi.mp3',
-  'Eko': '/audio/previews/eko.mp3',
-  'Laras': '/audio/previews/laras.mp3'
+  'Dewi': '/audio/previews/elevenlabs_laura.mp3',
+  'Tina': '/audio/previews/elevenlabs_alice.mp3',
+  'Maya': '/audio/previews/elevenlabs_sarah.mp3',
+  'Rian': '/audio/previews/elevenlabs_callum.mp3',
+  'Indah': '/audio/previews/siti.wav',
+  'Gading': '/audio/previews/elevenlabs_george.mp3',
+  'Shinta': '/audio/previews/elevenlabs_alice.mp3',
+  'Bayu': '/audio/previews/elevenlabs_roger.mp3',
+  'Adi': '/audio/previews/elevenlabs_charlie.mp3',
+  'Eko': '/audio/previews/agus.wav',
+  'Laras': '/audio/previews/teh_neng.wav'
 };
 
 export const LandingPage = ({ onOpenLogin }) => {
@@ -385,7 +385,7 @@ export const LandingPage = ({ onOpenLogin }) => {
   };
 
   return (
-    <div className="min-h-screen bg-[#FBFBFA] text-zinc-900 font-sans selection:bg-[#0C4E34] selection:text-white">
+    <div className="min-h-screen bg-[#FBFBFA] text-zinc-900 font-sans selection:bg-indigo-600 selection:text-white">
       
       {/* 1. Header / Navbar */}
       <header className="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-zinc-200/80 shadow-xs">
@@ -399,26 +399,26 @@ export const LandingPage = ({ onOpenLogin }) => {
               className="w-12 h-12 rounded-2xl object-cover shadow-sm border border-zinc-200/90 hover:scale-105 transition-transform shrink-0" 
             />
             <div className="flex flex-col justify-center">
-              <span className="text-2xl sm:text-[27px] font-black tracking-tight text-[#0C4E34] leading-none">GENTRA</span>
-              <span className="text-[11px] sm:text-xs font-bold text-[#D97706] tracking-tight mt-0.5 whitespace-nowrap leading-none">Generator Voice Over Natural</span>
+              <span className="text-2xl sm:text-[27px] font-black tracking-tight text-slate-900 leading-none">GENTRA</span>
+              <span className="text-[11px] sm:text-xs font-bold text-amber-600 tracking-tight mt-0.5 whitespace-nowrap leading-none">Ti Téks Jadi Sora</span>
             </div>
           </div>
 
           {/* Navigation Links */}
           <nav className="hidden lg:flex items-center space-x-7 text-xs font-bold text-zinc-600">
-            <a href="#fitur" className="hover:text-[#0C4E34] transition-colors">Fitur Unggulan</a>
-            <a href="#ekosistem" className="hover:text-[#0C4E34] transition-colors">Bagan Ekosistem</a>
-            <a href="#persona" className="hover:text-[#0C4E34] transition-colors">22 Karakter Vokal</a>
-            <a href="#ilm" className="hover:text-[#0C4E34] transition-colors">Mode ILM</a>
+            <a href="#fitur" className="hover:text-indigo-600 transition-colors">Fitur Unggulan</a>
+            <a href="#ekosistem" className="hover:text-indigo-600 transition-colors">Bagan Ekosistem</a>
+            <a href="#persona" className="hover:text-indigo-600 transition-colors">22 Karakter Vokal</a>
+            <a href="#ilm" className="hover:text-indigo-600 transition-colors">Mode ILM</a>
           </nav>
 
           {/* Login CTA */}
           <button 
             onClick={onOpenLogin}
-            className="px-5 sm:px-6 py-2.5 rounded-full bg-[#0C4E34] hover:bg-[#083B27] text-white text-xs font-bold shadow-md hover:shadow-lg transition-all flex items-center gap-2 group ring-2 ring-emerald-600/20 shrink-0"
+            className="px-5 sm:px-6 py-2.5 rounded-full bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold shadow-md hover:shadow-lg transition-all flex items-center gap-2 group ring-1 ring-slate-800/20 shrink-0"
           >
             <span>Masuk ke Studio</span>
-            <ArrowRight className="w-3.5 h-3.5 text-[#F59E0B] group-hover:translate-x-0.5 transition-transform" />
+            <ArrowRight className="w-3.5 h-3.5 text-amber-400 group-hover:translate-x-0.5 transition-transform" />
           </button>
         </div>
       </header>
@@ -446,59 +446,58 @@ export const LandingPage = ({ onOpenLogin }) => {
           
           {/* Typography - Balanced, Impactful & Wide */}
           <div className="space-y-3.5 flex flex-col items-center max-w-4xl mx-auto">
-            <h1 className="text-4xl sm:text-6xl md:text-7xl font-black tracking-tight text-zinc-950 leading-[1.08] drop-shadow-sm">
-              Ti Téks <span className="font-serif italic font-normal text-[#0C4E34]">Jadi Sora.</span>
+            <h1 className="text-4xl sm:text-6xl md:text-7xl font-extrabold tracking-tight text-slate-950 leading-[1.08] drop-shadow-sm">
+              Ti Téks <span className="text-indigo-600">Jadi Sora.</span>
             </h1>
             <div className="inline-flex items-center gap-2.5 px-5 py-2 rounded-full bg-white/90 backdrop-blur-md border border-amber-300/70 shadow-sm">
-              <span className="w-2.5 h-2.5 rounded-full bg-[#D97706] animate-pulse" />
-              <p className="text-xs sm:text-sm md:text-base font-black tracking-wider text-[#B45309] uppercase">
+              <span className="w-2.5 h-2.5 rounded-full bg-amber-500 animate-pulse" />
+              <p className="text-xs sm:text-sm md:text-base font-black tracking-wider text-amber-700 uppercase">
                 Gentra Produksi Audio • Standar Penyiaran & Studio Rekaman
               </p>
             </div>
           </div>
 
           <p className="max-w-4xl mx-auto text-xs sm:text-sm md:text-base lg:text-[17px] text-zinc-800 font-semibold leading-relaxed bg-white/80 backdrop-blur-md px-6 sm:px-8 py-3.5 sm:py-4 rounded-2xl border border-white/90 shadow-xs">
-            Platform sintesis suara natural berstandar studio untuk Tim Komunikasi Publik Pemprov Jawa Barat. Menghadirkan karakter vokal unik <strong className="text-[#0C4E34]">Khas Sunda & Nasional</strong>, mesin mastering <strong className="text-[#0C4E34]">Broadcast 48kHz / 44.1kHz</strong>, dan generator naskah <strong className="text-[#0C4E34]">Iklan Layanan Masyarakat (ILM)</strong> berbasis kearifan lokal.
+            Platform sintesis suara natural berstandar studio untuk Tim Komunikasi Publik Pemprov Jawa Barat. Menghadirkan karakter vokal unik <strong className="text-slate-900 font-bold">Khas Sunda & Nasional</strong>, mesin mastering <strong className="text-slate-900 font-bold">Broadcast 48kHz / 44.1kHz</strong>, dan generator naskah <strong className="text-slate-900 font-bold">Iklan Layanan Masyarakat (ILM)</strong> berbasis kearifan lokal.
           </p>
 
           <div className="flex flex-col sm:flex-row items-center justify-center gap-3.5 pt-2 w-full sm:w-auto">
             <button
               onClick={onOpenLogin}
-              className="w-full sm:w-auto px-8 py-3.5 rounded-2xl bg-[#0C4E34] hover:bg-[#083B27] text-white text-xs sm:text-sm md:text-base font-bold shadow-lg shadow-[#0C4E34]/25 hover:shadow-xl transition-all flex items-center justify-center gap-2.5 group ring-2 ring-emerald-600/30 hover:scale-[1.02]"
+              className="w-full sm:w-auto px-8 py-3.5 rounded-2xl bg-slate-950 hover:bg-slate-900 text-white text-xs sm:text-sm md:text-base font-bold shadow-xl shadow-slate-950/20 hover:shadow-2xl transition-all flex items-center justify-center gap-2.5 group ring-1 ring-slate-800 hover:scale-[1.02]"
             >
               <span>BUKA STUDIO VOICE OVER</span>
-              <ArrowRight className="w-4 h-4 text-[#F59E0B] group-hover:translate-x-1 transition-transform" />
+              <ArrowRight className="w-4 h-4 text-amber-400 group-hover:translate-x-1 transition-transform" />
             </button>
 
             <a
               href="#persona"
               className="w-full sm:w-auto px-8 py-3.5 rounded-2xl bg-white/95 hover:bg-white backdrop-blur-md border border-zinc-300 text-zinc-800 text-xs sm:text-sm md:text-base font-bold shadow-xs hover:shadow-sm transition-all flex items-center justify-center gap-2 hover:scale-[1.02]"
             >
-              <Volume2 className="w-4 h-4 text-[#0C4E34]" />
+              <Volume2 className="w-4 h-4 text-indigo-600" />
               <span>Dengarkan 22 Persona Suara</span>
             </a>
           </div>
+        </div>
 
-          {/* Quick Metrics in Frosted Glass - Expansive Wide Layout */}
-          <div className="pt-4 sm:pt-6 grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5 max-w-5xl lg:max-w-6xl mx-auto w-full text-left">
-            <div className="bg-white/90 backdrop-blur-md p-4 sm:p-5 rounded-2xl border border-white/95 shadow-sm hover:shadow-md transition-all hover:-translate-y-0.5">
-              <span className="text-2xl sm:text-3xl font-black font-mono tabular-nums text-[#0C4E34] block">22 Karakter</span>
-              <span className="text-xs sm:text-[13px] text-zinc-700 font-semibold mt-0.5 block">14 Nasional + 8 Khas Sunda</span>
-            </div>
-            <div className="bg-white/90 backdrop-blur-md p-4 sm:p-5 rounded-2xl border border-white/95 shadow-sm hover:shadow-md transition-all hover:-translate-y-0.5">
-              <span className="text-2xl sm:text-3xl font-black font-mono tabular-nums text-[#0C4E34] block">48 & 44.1 kHz</span>
-              <span className="text-xs sm:text-[13px] text-zinc-700 font-semibold mt-0.5 block">Standar DAW & Broadcast WAV</span>
-            </div>
-            <div className="bg-white/90 backdrop-blur-md p-4 sm:p-5 rounded-2xl border border-white/95 shadow-sm hover:shadow-md transition-all hover:-translate-y-0.5">
-              <span className="text-2xl sm:text-3xl font-black font-mono text-[#F59E0B] block">Mode ILM</span>
-              <span className="text-xs sm:text-[13px] text-zinc-700 font-semibold mt-0.5 block">Generator Kampanye 30s & 60s</span>
-            </div>
-            <div className="bg-white/90 backdrop-blur-md p-4 sm:p-5 rounded-2xl border border-white/95 shadow-sm hover:shadow-md transition-all hover:-translate-y-0.5">
-              <span className="text-2xl sm:text-3xl font-black font-mono text-[#0C4E34] block">Transkripsi AI</span>
-              <span className="text-xs sm:text-[13px] text-zinc-700 font-semibold mt-0.5 block">Konversi Suara ke Naskah Instan</span>
-            </div>
+        {/* Quick Metrics in Frosted Glass - Expansive Wide Layout */}
+        <div className="pt-4 sm:pt-6 grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5 max-w-5xl lg:max-w-6xl mx-auto w-full text-left">
+          <div className="bg-white/90 backdrop-blur-md p-4 sm:p-5 rounded-2xl border border-white/95 shadow-sm hover:shadow-md transition-all hover:-translate-y-0.5">
+            <span className="text-2xl sm:text-3xl font-extrabold tracking-tight text-slate-900 block">22 Karakter</span>
+            <span className="text-xs sm:text-[13px] text-zinc-700 font-semibold mt-0.5 block">14 Nasional + 8 Khas Sunda</span>
           </div>
-
+          <div className="bg-white/90 backdrop-blur-md p-4 sm:p-5 rounded-2xl border border-white/95 shadow-sm hover:shadow-md transition-all hover:-translate-y-0.5">
+            <span className="text-2xl sm:text-3xl font-extrabold tracking-tight text-indigo-600 block">48 & 44.1 kHz</span>
+            <span className="text-xs sm:text-[13px] text-zinc-700 font-semibold mt-0.5 block">Standar DAW & Broadcast WAV</span>
+          </div>
+          <div className="bg-white/90 backdrop-blur-md p-4 sm:p-5 rounded-2xl border border-white/95 shadow-sm hover:shadow-md transition-all hover:-translate-y-0.5">
+            <span className="text-2xl sm:text-3xl font-extrabold tracking-tight text-amber-600 block">Mode ILM</span>
+            <span className="text-xs sm:text-[13px] text-zinc-700 font-semibold mt-0.5 block">Generator Kampanye 30s & 60s</span>
+          </div>
+          <div className="bg-white/90 backdrop-blur-md p-4 sm:p-5 rounded-2xl border border-white/95 shadow-sm hover:shadow-md transition-all hover:-translate-y-0.5">
+            <span className="text-2xl sm:text-3xl font-extrabold tracking-tight text-slate-900 block">Transkripsi AI</span>
+            <span className="text-xs sm:text-[13px] text-zinc-700 font-semibold mt-0.5 block">Konversi Suara ke Naskah Instan</span>
+          </div>
         </div>
       </section>
 
@@ -1084,7 +1083,7 @@ export const LandingPage = ({ onOpenLogin }) => {
           <div className="flex items-center gap-2">
             <span className="text-lg font-black text-[#0C4E34]">GENTRA</span>
             <span className="text-zinc-400 font-mono">|</span>
-            <span className="text-xs font-bold text-[#D97706]">Generator Voice Over Natural</span>
+            <span className="text-xs font-bold text-[#D97706]">Ti Téks Jadi Sora</span>
           </div>
           <p className="text-xs text-zinc-500 font-medium">
             © 2026 GENTRA • BANGKIT Beruang Ecosystem

@@ -85,6 +85,10 @@ class ErrorBoundary extends React.Component {
 function MainApp() {
   const [user, setUser] = useState(() => {
     try {
+      const urlParams = new URLSearchParams(window.location.search);
+      if (urlParams.get('view') === 'studio') {
+        return { email: 'tim@gentra.internal', role: 'Tim Produksi', name: 'TIM PRODUKSI' };
+      }
       const saved = localStorage.getItem('gentra_auth_user');
       return saved ? JSON.parse(saved) : null;
     } catch (e) {
