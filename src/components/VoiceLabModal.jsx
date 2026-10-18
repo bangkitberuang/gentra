@@ -747,9 +747,6 @@ export const VoiceLabModal = ({
                   className={`w-full p-3.5 rounded-xl text-sm outline-none transition-colors ${inputStyle}`}
                   autoFocus
                 />
-                <span className={`text-[11px] block ${subText}`}>
-                  Sandi default: <code className="px-1.5 py-0.5 rounded bg-zinc-800 text-amber-300 font-mono font-bold">admin2026</code>
-                </span>
               </div>
 
               <div className="flex gap-2.5 pt-1">

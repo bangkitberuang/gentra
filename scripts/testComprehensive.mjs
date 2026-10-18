@@ -280,6 +280,11 @@ assert(!apiKeyModalCode.includes('type={showKey1 ? "text" : "password"}'), 'ApiK
 assert(apiKeyModalCode.includes('formatMaskedKey'), 'ApiKeyModal provides secure masked key formatting');
 assert(voiceLabCode.includes('formatMaskedKey'), 'VoiceLabModal provides secure masked key formatting');
 assert(!voiceLabCode.includes('type={isVisible ? "text" : "password"}'), 'VoiceLabModal never exposes raw key as plaintext in input');
+const userMgmtCode = fs.readFileSync('src/components/UserManagementModal.jsx', 'utf8');
+assert(!apiKeyModalCode.includes('Sandi default:'), 'ApiKeyModal completely purged plaintext password hint');
+assert(!voiceLabCode.includes('Sandi default:'), 'VoiceLabModal completely purged plaintext password hint');
+assert(!userMgmtCode.includes('Sandi default:'), 'UserManagementModal completely purged plaintext password hint');
+assert(gentraCode.includes('SOVEREIGN_VAULT_KEY'), 'GentraStudio includes SOVEREIGN_VAULT_KEY for seamless cross-device generation');
 
 // 9. TEST DISTINCT GENTRA VERSIONING (v2.6.4)
 console.log('\n--- 9. Testing Distinct Platform Versioning (GENTRA v2.6.4 Standard) ---');
@@ -293,6 +298,8 @@ assert(!landingCode.includes('v1.3.0'), 'LandingPage completely purged external 
 const studioCode = fs.readFileSync('src/components/GentraStudio.jsx', 'utf8');
 assert(studioCode.includes('v2.6.4'), 'GentraStudio header and footer display GENTRA v2.6.4');
 assert(!studioCode.includes('v1.3.0'), 'GentraStudio completely purged external v1.3.0 badge');
+assert(studioCode.includes('BANGKIT Beruang Ekosistem'), 'GentraStudio footer displays BANGKIT Beruang Ekosistem');
+assert(landingCode.includes('BANGKIT Beruang Ekosistem'), 'LandingPage footer displays BANGKIT Beruang Ekosistem');
 
 const loginModalCode = fs.readFileSync('src/components/LoginModal.jsx', 'utf8');
 assert(loginModalCode.includes('v2.6.4'), 'LoginModal displays GENTRA v2.6.4');

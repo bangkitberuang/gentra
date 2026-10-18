@@ -1131,7 +1131,7 @@ export const LandingPage = ({ onOpenLogin }) => {
             <span className="text-xs font-semibold text-[#526170]">Ti Téks Jadi Sora</span>
           </div>
           <p className="text-xs text-zinc-500 font-medium">
-            © 2026 GENTRA • BANGKIT Beruang Ecosystem
+            © 2026 GENTRA • BANGKIT Beruang Ekosistem
           </p>
         </div>
       </footer>
