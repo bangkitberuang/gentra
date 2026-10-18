@@ -984,8 +984,8 @@ export const VoiceLabModal = ({
                         onClick={() => setFilterCategory('Nasional')}
                         className={`px-2.5 py-1 rounded-lg text-xs font-bold border transition-colors ${
                           filterCategory === 'Nasional' 
-                            ? 'bg-blue-600 text-white border-blue-600' 
-                            : isDarkTheme ? 'bg-zinc-900 border-zinc-800 text-blue-400 hover:text-white' : 'bg-white border-zinc-200 text-blue-700'
+                            ? (isDarkTheme ? 'bg-[#CCFF00] text-black border-[#CCFF00]' : 'bg-[#0C4E34] text-white border-[#0C4E34]') 
+                            : isDarkTheme ? 'bg-zinc-900 border-zinc-800 text-zinc-300 hover:text-white' : 'bg-white border-zinc-200 text-zinc-700'
                         }`}
                       >
                         🇮🇩 Nasional
@@ -1490,7 +1490,7 @@ export const VoiceLabModal = ({
                               <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full border ${
                                 v.category === 'Sunda' 
                                   ? 'bg-amber-500/10 text-amber-400 border-amber-500/20' 
-                                  : 'bg-blue-500/10 text-blue-400 border-blue-500/20'
+                                  : (isDarkTheme ? 'bg-[#CCFF00]/10 text-[#CCFF00] border-[#CCFF00]/20' : 'bg-emerald-50 text-emerald-800 border-emerald-200')
                               }`}>
                                 {v.category === 'Sunda' ? '🍃 Pasundan' : '🇮🇩 Nasional'}
                               </span>

@@ -251,28 +251,28 @@ const FULL_PERSONAS = [
     sampleText: 'Aduh euy wargi sadayana, tong hilap jaga kaberesihan sareng kasehatan lingkungan nya!'
   },
   { 
-    id: 'sunda_budak_eneng', 
-    name: 'Budak Leutik Eneng', 
+    id: 'sunda_remaja_putri', 
+    name: 'Neng Geulis', 
     gender: 'Wanita', 
     category: 'Khas Sunda', 
-    role: 'Anak Perempuan', 
-    desc: 'Imut, polos, cempreng alami dan menggemaskan.', 
+    role: 'Remaja Putri', 
+    desc: 'Ceria, santun, lugas, suara mojang remaja Sunda alami dan komunikatif.', 
     badge: 'Sunda',
     avatar: '👧🏻',
-    tags: ['Polos', 'Imut', 'Menggemaskan'],
-    sampleText: 'Bapa, Ibu... Eneng hoyong diajar maca Al-Qur\'an sareng ngadongeng sasarengan!'
+    tags: ['Ceria', 'Santun', 'Remaja'],
+    sampleText: 'Hayu wargi anom, urang gunakeun waktu ngora pikeun diajar jeung ngahontal cita-cita!'
   },
   { 
-    id: 'sunda_budak_ujang', 
-    name: 'Budak Leutik Ujang Alit', 
+    id: 'sunda_remaja_putra', 
+    name: 'Ujang Anom', 
     gender: 'Pria', 
     category: 'Khas Sunda', 
-    role: 'Anak Laki-laki', 
-    desc: 'Lincah, polos, suka bertanya dan periang.', 
+    role: 'Remaja Putra', 
+    desc: 'Energik, santai, vokal pemuda remaja putra Pasundan yang ramah dan bersemangat.', 
     badge: 'Sunda',
     avatar: '👦🏻',
-    tags: ['Lincah', 'Riang', 'Kreatif'],
-    sampleText: 'Horeee! Hayu urang ulin ka buruan bari diajar elmu pangaweruh anyar!'
+    tags: ['Energik', 'Santai', 'Pemuda'],
+    sampleText: 'Semangat wargi ngora Jawa Barat! Hayu babarengan ngamumule budaya tur prestasi!'
   },
   { 
     id: 'sunda_teh_neng', 
@@ -307,8 +307,10 @@ export const LANDING_STATIC_PREVIEWS = {
   'Nini': '/audio/previews/nini.wav',
   'Ujang': '/audio/previews/ujang.wav',
   'Bibi (Ceu Edah)': '/audio/previews/bibi.wav',
-  'Budak Leutik Eneng': '/audio/previews/budak_eneng.wav',
-  'Budak Leutik Ujang Alit': '/audio/previews/budak_ujang.wav',
+  'Neng Geulis': '/audio/previews/remaja_neng.wav',
+  'Ujang Anom': '/audio/previews/remaja_ujang.wav',
+  'Budak Leutik Eneng': '/audio/previews/remaja_neng.wav',
+  'Budak Leutik Ujang Alit': '/audio/previews/remaja_ujang.wav',
   'Teh Neng': '/audio/previews/teh_neng.wav',
   'Kang Asep': '/audio/previews/kang_asep.wav',
 
@@ -530,7 +532,7 @@ export const LandingPage = ({ onOpenLogin }) => {
               </div>
               <h3 className="text-xl font-bold text-zinc-900">22 Karakter Vokal Bawaan</h3>
               <p className="text-xs text-zinc-600 leading-relaxed">
-                Menyediakan 8 karakter otentik khas Sunda (Abah, Nini, Ujang, Bibi, Budak Leutik, Teh Neng, Kang Asep) dan 14 karakter penyiar nasional standar penyiaran resmi.
+                Menyediakan 8 karakter otentik khas Sunda (Abah, Nini, Ujang, Bibi, Neng Geulis, Ujang Anom, Teh Neng, Kang Asep) dan 14 karakter penyiar nasional standar penyiaran resmi.
               </p>
             </div>
 
@@ -547,8 +549,8 @@ export const LandingPage = ({ onOpenLogin }) => {
 
             {/* Card 3 */}
             <div className="bg-[#FBFBFA] p-8 rounded-3xl border border-zinc-200 shadow-sm space-y-4 hover:border-[#0C4E34]/40 transition-colors">
-              <div className="w-12 h-12 rounded-2xl bg-blue-100/70 text-blue-700 flex items-center justify-center font-bold">
-                <Megaphone className="w-6 h-6" />
+              <div className="w-12 h-12 rounded-2xl bg-lime-100 text-[#0C4E34] border border-lime-300 flex items-center justify-center font-bold shadow-xs">
+                <Megaphone className="w-6 h-6 text-[#0C4E34]" />
               </div>
               <h3 className="text-xl font-bold text-zinc-900">Generator Naskah ILM Otomatis</h3>
               <p className="text-xs text-zinc-600 leading-relaxed">
@@ -580,7 +582,7 @@ export const LandingPage = ({ onOpenLogin }) => {
 
             {/* Card 6 */}
             <div className="bg-[#FBFBFA] p-8 rounded-3xl border border-zinc-200 shadow-sm space-y-4 hover:border-[#0C4E34]/40 transition-colors">
-              <div className="w-12 h-12 rounded-2xl bg-teal-100/70 text-teal-700 flex items-center justify-center font-bold">
+              <div className="w-12 h-12 rounded-2xl bg-emerald-100/70 text-[#0C4E34] border border-emerald-200/80 flex items-center justify-center font-bold shadow-xs">
                 <Zap className="w-6 h-6" />
               </div>
               <h3 className="text-xl font-bold text-zinc-900">Neural Engine & Kontrol Emosi</h3>
@@ -966,7 +968,7 @@ export const LandingPage = ({ onOpenLogin }) => {
                       <span className={`text-[9px] px-2.5 py-0.5 rounded-full font-black uppercase tracking-wider shrink-0 border ${
                         persona.badge === 'Sunda' 
                           ? 'bg-emerald-100 text-emerald-800 border-emerald-200' 
-                          : 'bg-blue-100 text-blue-800 border-blue-200'
+                          : 'bg-lime-100 text-lime-900 border-lime-300'
                       }`}>
                         {persona.badge}
                       </span>

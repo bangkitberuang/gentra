@@ -121,22 +121,22 @@ const INITIAL_VOICES = [
   },
   { 
     id: 'Aoede', 
-    name: 'Budak Leutik (Eneng)', 
-    desc: 'Anak Perempuan Sunda (Lugu, Polos & Menggemaskan)', 
+    name: 'Neng Geulis', 
+    desc: 'Remaja Putri Sunda (Ceria, Santun & Lugas)', 
     gender: 'Female', 
     category: 'Sunda', 
-    accent: 'Budak Sunda (Lugu & Ceria)',
-    personaPrompt: 'Karakter Eneng / Budak Leutik (anak kecil perempuan Sunda dengan nada vokal tinggi yang imut, polos, riang dan menggemaskan).',
+    accent: 'Mojang Remaja (Ceria & Santun)',
+    personaPrompt: 'Karakter Neng Geulis (mojang remaja putri Sunda yang ceria, santun, lugas, gaya bicara remaja alami yang komunikatif).',
     isCustom: false 
   },
   { 
-    id: 'Algenib', 
-    name: 'Budak Leutik (Ujang Alit)', 
-    desc: 'Anak Laki-laki Sunda (Aktif, Polos & Ceria)', 
+    id: 'Puck', 
+    name: 'Ujang Anom', 
+    desc: 'Remaja Putra Sunda (Energik, Santai & Ramah)', 
     gender: 'Male', 
     category: 'Sunda', 
-    accent: 'Budak Sunda (Aktif & Ceria)',
-    personaPrompt: 'Karakter Ujang Alit (anak kecil laki-laki Sunda yang riang, polos, suara anak-anak yang bersemangat dan ceria).',
+    accent: 'Pemuda Pasundan (Energik & Ramah)',
+    personaPrompt: 'Karakter Ujang Anom (pemuda remaja putra Sunda yang aktif, energik, santai, gaya bicara pemuda yang ramah dan bersemangat).',
     isCustom: false 
   },
   { 
@@ -188,10 +188,12 @@ export const STATIC_AUDIO_PREVIEWS = {
   'Nini': '/audio/previews/nini.wav',
   'Ujang': '/audio/previews/ujang.wav',
   'Bibi (Ceu Edah)': '/audio/previews/bibi.wav',
-  'Budak Leutik (Eneng)': '/audio/previews/budak_eneng.wav',
-  'Budak Leutik Eneng': '/audio/previews/budak_eneng.wav',
-  'Budak Leutik (Ujang Alit)': '/audio/previews/budak_ujang.wav',
-  'Budak Leutik Ujang Alit': '/audio/previews/budak_ujang.wav',
+  'Neng Geulis': '/audio/previews/remaja_neng.wav',
+  'Ujang Anom': '/audio/previews/remaja_ujang.wav',
+  'Budak Leutik (Eneng)': '/audio/previews/remaja_neng.wav',
+  'Budak Leutik Eneng': '/audio/previews/remaja_neng.wav',
+  'Budak Leutik (Ujang Alit)': '/audio/previews/remaja_ujang.wav',
+  'Budak Leutik Ujang Alit': '/audio/previews/remaja_ujang.wav',
   'Teh Neng': '/audio/previews/teh_neng.wav',
   'Kang Asep': '/audio/previews/kang_asep.wav',
 
@@ -233,18 +235,18 @@ export const getVoicePersonaInstruction = (voice) => {
   }
 
   if (voice.category === 'Sunda') {
-    if (voice.name.includes('Eneng') || voice.name.includes('Budak Leutik (Eneng)')) {
+    if (voice.name.includes('Eneng') || voice.name.includes('Neng Geulis') || voice.name.includes('Budak Leutik (Eneng)')) {
       return {
-        role: 'anak perempuan kecil Sunda berusia 6-7 tahun bernama Eneng (Budak Leutik)',
-        timbre: 'vokal anak perempuan kecil bernada tinggi (high-pitched), imut, cempreng menggemaskan, polos, riang dan ceria',
-        dialect: 'Gunakan cengkok, dialek, dan intonasi anak-anak khas Sunda Jawa Barat yang manis dan alami'
+        role: 'mojang remaja putri Sunda berusia 16-17 tahun bernama Neng Geulis',
+        timbre: 'vokal mojang remaja putri yang ceria, santun, lugas, artikulatif dan komunikatif',
+        dialect: 'Gunakan cengkok, dialek, dan intonasi mojang remaja khas Sunda Jawa Barat yang manis dan alami'
       };
     }
-    if (voice.name.includes('Ujang Alit') || voice.name.includes('Budak Leutik (Ujang Alit)')) {
+    if (voice.name.includes('Ujang Anom') || voice.name.includes('Ujang Alit') || voice.name.includes('Budak Leutik (Ujang Alit)')) {
       return {
-        role: 'anak kecil laki-laki Sunda berusia 7 tahun bernama Ujang Alit (Budak Leutik)',
-        timbre: 'vokal anak laki-laki kecil yang lincah, aktif, polos, riang dan bersemangat',
-        dialect: 'Gunakan cengkok, dialek, dan intonasi anak-anak khas Sunda Jawa Barat yang riang dan bersahaja'
+        role: 'pemuda remaja putra Sunda berusia 17 tahun bernama Ujang Anom',
+        timbre: 'vokal pemuda remaja laki-laki yang energik, santai, aktif, ramah dan bersemangat',
+        dialect: 'Gunakan cengkok, dialek, dan intonasi pemuda khas Sunda Jawa Barat yang riang dan bersahaja'
       };
     }
     if (voice.name.includes('Abah')) {
@@ -317,6 +319,7 @@ const EMOTIONS = [
 ];
 
 const ILM_TONES = [
+  { id: 'Formal', label: 'Resmi & Kedinasan' },
   { id: 'Edukasi', label: 'Edukasi & Informatif' },
   { id: 'Persuasif', label: 'Ajakan / Gotong Royong' },
   { id: 'Peringatan', label: 'Peringatan / Disiplin' },
@@ -365,24 +368,24 @@ const getVoiceAvatarMeta = (v) => {
         glow: 'shadow-rose-500/20'
       };
     }
-    if (v.name.includes('Ujang Alit')) {
+    if (v.name.includes('Ujang Anom') || v.name.includes('Ujang Alit')) {
       return {
         initials: '👦 UA',
-        gradient: 'from-sky-500 via-cyan-600 to-blue-700',
-        badge: 'Budak Lalaki',
-        roleColor: 'bg-sky-100 text-sky-900 border-sky-300',
-        genderIcon: '♂ Anak',
-        glow: 'shadow-sky-500/20'
+        gradient: 'from-emerald-500 via-teal-600 to-slate-800',
+        badge: 'Remaja Lalaki',
+        roleColor: 'bg-emerald-100 text-emerald-900 border-emerald-300',
+        genderIcon: '♂ Remaja',
+        glow: 'shadow-emerald-500/20'
       };
     }
-    if (v.name.includes('Eneng') || v.name.includes('Budak Leutik')) {
+    if (v.name.includes('Neng Geulis') || v.name.includes('Eneng') || v.name.includes('Budak Leutik')) {
       return {
-        initials: '👧 EN',
-        gradient: 'from-pink-400 via-rose-500 to-amber-500',
-        badge: 'Budak Awewe',
-        roleColor: 'bg-rose-100 text-rose-900 border-rose-300',
-        genderIcon: '♀ Anak',
-        glow: 'shadow-rose-500/20'
+        initials: '👧 NG',
+        gradient: 'from-amber-400 via-rose-500 to-emerald-600',
+        badge: 'Mojang Remaja',
+        roleColor: 'bg-amber-100 text-amber-900 border-amber-300',
+        genderIcon: '♀ Remaja',
+        glow: 'shadow-amber-500/20'
       };
     }
     if (v.name.includes('Ujang')) {
@@ -451,11 +454,11 @@ const getVoiceAvatarMeta = (v) => {
   if (v.category === 'Azure') {
     return {
       initials: '🔷 ' + initials,
-      gradient: v.gender === 'Female' ? 'from-cyan-500 via-blue-600 to-slate-700' : 'from-blue-600 via-slate-700 to-slate-800',
+      gradient: v.gender === 'Female' ? 'from-teal-500 via-emerald-600 to-slate-700' : 'from-slate-600 via-slate-700 to-slate-800',
       badge: 'Azure Neural',
-      roleColor: 'bg-blue-50 text-blue-700 border-blue-200',
+      roleColor: 'bg-emerald-50 text-emerald-800 border-emerald-200',
       genderIcon: v.gender === 'Female' ? '♀ Wanita' : '♂ Pria',
-      glow: 'shadow-blue-500/20'
+      glow: 'shadow-emerald-500/20'
     };
   }
 
@@ -463,11 +466,11 @@ const getVoiceAvatarMeta = (v) => {
   if (v.category === 'Google Cloud') {
     return {
       initials: '☁️ ' + initials,
-      gradient: 'from-sky-500 via-blue-600 to-slate-700',
+      gradient: 'from-emerald-500 via-teal-600 to-slate-700',
       badge: 'Google Cloud',
-      roleColor: 'bg-sky-50 text-sky-700 border-sky-200',
+      roleColor: 'bg-teal-50 text-teal-800 border-teal-200',
       genderIcon: v.gender === 'Female' ? '♀ Wanita' : '♂ Pria',
-      glow: 'shadow-sky-500/20'
+      glow: 'shadow-teal-500/20'
     };
   }
 
@@ -489,8 +492,8 @@ const getVoiceAvatarMeta = (v) => {
       'Anita': 'from-rose-500 via-pink-600 to-amber-600',
       'Siti': 'from-emerald-500 via-teal-600 to-cyan-700',
       'Dewi': 'from-amber-500 via-orange-600 to-red-600',
-      'Tina': 'from-cyan-500 via-blue-600 to-slate-700',
-      'Maya': 'from-teal-500 via-blue-600 to-slate-700',
+      'Tina': 'from-teal-500 via-emerald-600 to-slate-700',
+      'Maya': 'from-teal-500 via-emerald-600 to-slate-700',
       'Indah': 'from-teal-500 via-emerald-600 to-teal-800',
       'Shinta': 'from-red-500 via-rose-600 to-pink-700',
       'Laras': 'from-amber-500 via-rose-600 to-slate-700'
@@ -507,21 +510,21 @@ const getVoiceAvatarMeta = (v) => {
 
   // Nasional Males
   const malePalette = {
-    'Mugi': 'from-blue-600 via-slate-700 to-slate-800',
-    'Agus': 'from-blue-600 via-slate-700 to-slate-800',
-    'Rian': 'from-sky-500 via-blue-600 to-slate-700',
+    'Mugi': 'from-slate-600 via-slate-700 to-slate-800',
+    'Agus': 'from-slate-600 via-slate-700 to-slate-800',
+    'Rian': 'from-emerald-600 via-teal-600 to-slate-700',
     'Gading': 'from-slate-700 via-zinc-800 to-stone-900',
     'Bayu': 'from-emerald-600 via-teal-700 to-cyan-800',
     'Adi': 'from-amber-600 via-yellow-600 to-orange-700',
-    'Eko': 'from-blue-700 via-slate-700 to-slate-900'
+    'Eko': 'from-zinc-700 via-slate-700 to-slate-900'
   };
   return {
     initials,
     gradient: malePalette[v.name] || 'from-slate-700 to-slate-900',
     badge: 'Nasional',
-    roleColor: 'bg-blue-50 text-blue-700 border-blue-200',
+    roleColor: 'bg-emerald-50 text-emerald-800 border-emerald-200',
     genderIcon: '♂ Pria',
-    glow: 'shadow-blue-500/20'
+    glow: 'shadow-emerald-500/20'
   };
 };
 
@@ -1505,23 +1508,52 @@ export const GentraStudio = ({
       ? "Gunakan Bahasa Sunda yang santun, guyub, luwes, dan menyentuh hati warga (misal: 'Wargi sadayana...', 'Hayu urang sasarengan...')."
       : "Gunakan Bahasa Indonesia yang komunikatif, santun, persuasif, dan berdampak kuat bagi kesadaran publik.";
 
+    let toneInstruction = `Gaya Penyampaian: ${contentTone}`;
+    if (contentTone === 'Formal') {
+      toneInstruction = "Gaya Penyampaian: Resmi & Kedinasan (Gunakan Bahasa Indonesia baku, kredibel, otoritatif, lugas, santun, dan sesuai standar protokol komunikasi publik Pemerintah Provinsi Jawa Barat).";
+    }
+
     const prompt = `Sebagai pakar komunikasi publik dan penulis naskah Iklan Layanan Masyarakat (ILM), buatkan naskah voice-over ILM yang berdampak tinggi untuk:
 Topik / Isu: ${ilmTopic}
-Instansi / Penggagas: ${ilmOrganization || "Layanan Masyarakat Bersama"}
-Gaya Penyampaian: ${contentTone}
+Instansi / Penggagas: ${ilmOrganization || "Pemerintah Provinsi Jawa Barat"}
+${toneInstruction}
 Target Durasi: ${ilmDuration === '30s' ? 'Spot Singkat 30 Detik (~60-70 kata)' : 'Spot Lengkap 60 Detik (~120-140 kata)'}
 Bahasa Output: ${languageInstruction}
+Pesan Pokok & Himbauan Khusus: ${ilmMessage}
 
 PENTING:
 - Berikan naskah narasi siap baca yang mengalir alami untuk dibacakan oleh narator/pengisi suara.
 - Gunakan tanda baca koma dan titik dengan cermat untuk jeda napas yang nyaman.
 - Hanya berikan naskah bacaan narator saja tanpa judul, tanpa catatan panggung, dan tanpa kata pengantar/penutup.`;
 
+    const generateLocalFallback = () => {
+      const is30s = ilmDuration === '30s';
+      const org = ilmOrganization || "Pemerintah Provinsi Jawa Barat";
+      if (dialect === 'sunda') {
+        if (contentTone === 'Formal') {
+          return is30s
+            ? `Wawaran resmi ti ${org}. Dina raraga ngaronjatkeun katertiban sareng karaharjaan umum, sakumna wargi Jawa Barat dihimbau pikeun museurkeun perhatosan kana ${ilmTopic}. ${ilmMessage}. Hayu urang patuh kana aturan anu parantos ditangtoskeun demi kamaslahatan sasarengan.`
+            : `Pamaréntah Daerah Provinsi Jawa Barat ngaliwatan ${org} ngémbarkeun wawaran resmi ka sakumna wargi. Ngeunaan tarékah ${ilmTopic}, dihaturanan ka sakumna masarakat supados silih rojong. ${ilmMessage}. Hayu urang babarengan ngajaga tatar Pasundan anu aman, tertib, tur barokah.`;
+        }
+        return is30s
+          ? `Sampurasun wargi sadayana! Ti ${org}, hayu urang babarengan merhatoskeun ${ilmTopic}. ${ilmMessage}. Léngkah leutik urang sadaya, mangrupa harepan badag pikeun kamajuan tatar Parahyangan!`
+          : `Sampurasun wargi Jawa Barat anu bageur tur salawasna guyub! Ti ${org}, hayu urang sami-sami ngiring rempug jukung dina perkawis ${ilmTopic}. ${ilmMessage}. Tong hilap, kasadaran urang mangrupikeun kakuatan nyata pikeun kasalametan kulawarga urang. Hayu babarengan ngawujudkeun Jabar Juara Lahir Batin!`;
+      }
+      if (contentTone === 'Formal') {
+        return is30s
+          ? `Pengumuman resmi dari ${org}. Dalam rangka menjaga ketertiban, keselamatan, dan kenyamanan publik, seluruh warga dihimbau untuk memperhatikan ${ilmTopic}. ${ilmMessage}. Kepatuhan dan kedisiplinan kita bersama adalah wujud nyata kepedulian terhadap kemajuan Jawa Barat.`
+          : `Pemerintah Provinsi Jawa Barat melalui ${org} menyampaikan himbauan resmi kepada seluruh lapisan masyarakat. Terkait upaya optimalisasi ${ilmTopic}, kami mengajak setiap warga untuk mengambil peran aktif. ${ilmMessage}. Mari kita tingkatkan kepedulian demi terwujudnya tata kelola lingkungan dan masyarakat yang aman, tertib, dan berdaya saing. Pesan ini disampaikan oleh ${org}.`;
+      }
+      return is30s
+        ? `Halo warga Jawa Barat! Tahukah Anda betapa pentingnya ${ilmTopic}? ${ilmMessage}. Mari bersama-sama kita wujudkan perubahan positif mulai dari diri sendiri dan keluarga kita. Pesan kepedulian ini dipersembahkan oleh ${org}.`
+        : `Setiap langkah kecil yang kita ambil hari ini, menentukan masa depan Jawa Barat esok hari. Melalui ${org}, kami mengajak seluruh masyarakat untuk bersama-sama peduli terhadap ${ilmTopic}. ${ilmMessage}. Jadikan kebiasaan baik ini bagian dari kehidupan sehari-hari kita. Dari kita, oleh kita, untuk Jawa Barat Juara!`;
+    };
+
     try {
       const activeKey = apiKey || (typeof import.meta !== 'undefined' && import.meta.env?.VITE_GEMINI_API_KEY) || "";
       if (!activeKey) {
-        setShowApiKeyModal(true);
-        throw new Error("Kunci API belum terpasang. Silakan masukkan API Key di menu kunci.");
+        setText(generateLocalFallback());
+        return;
       }
 
       let result = null;
@@ -1539,8 +1571,8 @@ PENTING:
                 systemInstruction: { parts: [{ text: "Pakar komunikasi publik dan naskah Iklan Layanan Masyarakat (ILM)." }] }
               })
             },
-            3,
-            800,
+            2,
+            600,
             activeKeyPool
           );
           if (result?.candidates?.[0]?.content?.parts?.[0]?.text) break;
@@ -1550,14 +1582,15 @@ PENTING:
         }
       }
 
-      if (!result || !result.candidates?.[0]?.content?.parts?.[0]?.text) {
-        throw lastErr || new Error("Tidak dapat menghasilkan naskah ILM.");
+      if (result?.candidates?.[0]?.content?.parts?.[0]?.text) {
+        const textResult = result.candidates[0].content.parts[0].text;
+        setText(textResult.trim());
+      } else {
+        setText(generateLocalFallback());
       }
-
-      const textResult = result.candidates[0].content.parts[0].text;
-      setText(textResult.trim());
     } catch (err) {
-      alert("Gagal membuat naskah ILM: " + err.message);
+      console.warn("Fallback ILM otomatis digunakan:", err.message);
+      setText(generateLocalFallback());
     } finally {
       setIsGeneratingCopy(false);
     }
@@ -2366,13 +2399,13 @@ ATURAN MUTLAK: Langsung bacakan teks naskah dari kata pertama tanpa intro, tanpa
 
                   <div className="space-y-1">
                     <label className={`text-xs font-bold uppercase ${isDarkTheme ? 'text-zinc-300' : 'text-zinc-600'}`}>Gaya Penyampaian ILM</label>
-                    <div className="grid grid-cols-2 gap-2">
+                    <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
                       {ILM_TONES.map(tone => (
                         <button
                           key={tone.id}
                           type="button"
                           onClick={() => setContentTone(tone.id)}
-                          className={`py-2.5 px-2 rounded-xl border text-xs font-bold transition-all truncate ${
+                          className={`py-2 px-2.5 rounded-xl border text-xs font-bold transition-all truncate text-center ${
                             contentTone === tone.id 
                               ? (isDarkTheme ? 'bg-[#CCFF00] border-[#CCFF00] text-black font-extrabold shadow-sm' : 'bg-[#0C4E34] border-emerald-600 text-white shadow-sm')
                               : isDarkTheme 
