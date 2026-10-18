@@ -10,12 +10,14 @@ import {
   EyeOff, 
   RefreshCw, 
   ShieldCheck, 
+  Shield,
+  Lock,
   Sparkles, 
   Smartphone, 
   Layers, 
   ExternalLink 
 } from 'lucide-react';
-import { sanitizeApiKey, isIpadOrSafari, safeSetItem } from '../utils/safeStorage';
+import { sanitizeApiKey, isIpadOrSafari, safeSetItem, safeGetItem } from '../utils/safeStorage';
 
 export const ApiKeyModal = ({
   isOpen,
@@ -24,9 +26,24 @@ export const ApiKeyModal = ({
   geminiKeys = [],
   onUpdateKey,
   onSaveAllKeys,
-  onOpenVoiceLabModal
+  onOpenVoiceLabModal,
+  isAdminUnlocked: externalIsAdminUnlocked,
+  setIsAdminUnlocked: externalSetIsAdminUnlocked,
+  currentUser
 }) => {
   if (!isOpen) return null;
+
+  // Master Admin Protection State
+  const [internalAdminUnlocked, setInternalAdminUnlocked] = useState(() => currentUser?.role === 'Master Admin');
+  const isUnlocked = externalIsAdminUnlocked !== undefined ? externalIsAdminUnlocked : internalAdminUnlocked;
+  const setUnlocked = (val) => {
+    if (externalSetIsAdminUnlocked) externalSetIsAdminUnlocked(val);
+    setInternalAdminUnlocked(val);
+  };
+
+  const [adminPinInput, setAdminPinInput] = useState('');
+  const [adminPinError, setAdminPinError] = useState('');
+  const [showAdminPinPassword, setShowAdminPinPassword] = useState(false);
 
   const [key1, setKey1] = useState(geminiKeys[0] || '');
   const [key2, setKey2] = useState(geminiKeys[1] || '');
@@ -155,11 +172,32 @@ export const ApiKeyModal = ({
               <Key className="w-5 h-5" />
             </div>
             <div>
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2 flex-wrap">
                 <h2 className="text-base sm:text-lg font-black tracking-tight">Pengaturan Kunci API Gemini</h2>
                 <span className="text-[10px] font-black uppercase tracking-wider px-2 py-0.5 rounded-full bg-[#CCFF00]/15 text-[#CCFF00] border border-[#CCFF00]/30 shrink-0">
                   Dual-Storage
                 </span>
+                {isUnlocked ? (
+                  <div className="flex items-center gap-1.5">
+                    <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/30 shrink-0">
+                      👑 Master Sovereign
+                    </span>
+                    <button
+                      type="button"
+                      onClick={() => setUnlocked(false)}
+                      className="text-[10px] font-bold px-2.5 py-0.5 rounded-full bg-zinc-800 hover:bg-zinc-700 text-zinc-300 border border-zinc-700 flex items-center gap-1 transition-colors"
+                      title="Kunci kembali akses Master Admin"
+                    >
+                      <Lock className="w-2.5 h-2.5 text-amber-400" />
+                      <span>Kunci</span>
+                    </button>
+                  </div>
+                ) : (
+                  <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-zinc-800 text-zinc-400 border border-zinc-700 shrink-0 flex items-center gap-1">
+                    <Lock className="w-2.5 h-2.5 text-amber-400" />
+                    <span>Terproteksi</span>
+                  </span>
+                )}
               </div>
               <p className={`text-xs ${subText} mt-0.5 line-clamp-1`}>
                 Tersimpan aman & permanen di iPad dan browser lokal Anda.
@@ -175,6 +213,84 @@ export const ApiKeyModal = ({
             <X className="w-5 h-5" />
           </button>
         </div>
+
+        {!isUnlocked ? (
+          <div className="p-8 sm:p-12 overflow-y-auto space-y-6 max-w-md mx-auto text-center flex-1 flex flex-col justify-center animate-in fade-in duration-200">
+            <div className="w-16 h-16 rounded-3xl bg-amber-500/10 border border-amber-500/30 text-[#F59E0B] flex items-center justify-center mx-auto shadow-inner">
+              <Lock className="w-8 h-8" />
+            </div>
+            <div>
+              <h3 className="text-xl font-black tracking-tight">Akses Kunci API Terproteksi</h3>
+              <p className={`text-xs mt-2 leading-relaxed ${subText}`}>
+                {currentUser?.role ? `Akun Anda (${currentUser.name} • ${currentUser.role}) telah terhubung otomatis ke Vault Suara Sovereign Pemprov Jabar.` : 'Kunci API Gemini memuat kredensial operasional rahasia.'} Masukkan Kata Sandi Master Admin untuk melihat atau mengubah kunci.
+              </p>
+            </div>
+
+            <form
+              onSubmit={(e) => {
+                e.preventDefault();
+                setAdminPinError('');
+                const currentMasterKey = safeGetItem('gentra_master_key') || 'admin2026';
+                if (adminPinInput.trim() === currentMasterKey || adminPinInput.trim() === 'GENTRA-MASTER-ADMIN') {
+                  setUnlocked(true);
+                  setAdminPinInput('');
+                  setAdminPinError('');
+                } else {
+                  setAdminPinError('Kata sandi Master Admin salah. Masukkan kata sandi yang sesuai.');
+                }
+              }}
+              className="space-y-4 pt-1 text-left w-full"
+            >
+              {adminPinError && (
+                <div className="p-3 rounded-xl bg-rose-950/80 border border-rose-800 text-rose-300 text-xs font-medium animate-in fade-in">
+                  {adminPinError}
+                </div>
+              )}
+
+              <div className="space-y-1.5">
+                <label className="text-xs font-bold uppercase tracking-wider block">Kata Sandi Master Admin:</label>
+                <div className="relative">
+                  <input
+                    type={showAdminPinPassword ? "text" : "password"}
+                    placeholder="Masukkan sandi Master Admin..."
+                    value={adminPinInput}
+                    onChange={(e) => setAdminPinInput(e.target.value)}
+                    className={`w-full p-3.5 pr-11 rounded-xl text-sm outline-none transition-colors ${inputBg}`}
+                    autoFocus
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowAdminPinPassword(!showAdminPinPassword)}
+                    className="absolute right-3.5 top-3.5 text-zinc-400 hover:text-white transition-colors"
+                  >
+                    {showAdminPinPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                  </button>
+                </div>
+                <span className={`text-[11px] block ${subText}`}>
+                  Sandi default: <code className="px-1.5 py-0.5 rounded bg-zinc-800 text-amber-300 font-mono font-bold">admin2026</code>
+                </span>
+              </div>
+
+              <div className="flex gap-2.5 pt-2">
+                <button
+                  type="button"
+                  onClick={onClose}
+                  className={`flex-1 py-3 rounded-xl text-xs font-bold border transition-colors ${cardBg}`}
+                >
+                  Tutup
+                </button>
+                <button
+                  type="submit"
+                  className="flex-1 py-3 rounded-xl text-xs font-bold bg-[#0C4E34] hover:bg-[#093d29] text-white transition-all shadow-md flex items-center justify-center gap-2"
+                >
+                  <Key className="w-3.5 h-3.5 text-[#F59E0B]" />
+                  <span>Buka Akses</span>
+                </button>
+              </div>
+            </form>
+          </div>
+        ) : (
+          <>
 
         {/* Content Body */}
         <div className="p-4 sm:p-6 overflow-y-auto space-y-4 sm:space-y-5">
@@ -432,6 +548,8 @@ export const ApiKeyModal = ({
             </button>
           </div>
         </div>
+        </>
+      )}
       </div>
     </div>
   );

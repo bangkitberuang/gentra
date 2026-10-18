@@ -241,7 +241,7 @@ assert(wavResult.byteLength === 44 + 48000, `WAV File buffer size matches expect
 
 // 7. TEST UI POLISH & ACCURACY
 console.log('\n--- 7. Testing UI Navigation & ILM Labels ---');
-assert(gentraCode.includes('ADS MODE'), 'Desktop navbar renders "ADS MODE" segmented tab');
+assert(gentraCode.includes('ILM MODE'), 'Desktop navbar renders "ILM MODE" segmented tab');
 assert(gentraCode.includes('Iklan Layanan Masyarakat (ILM)'), 'Navigation renders "Iklan Layanan Masyarakat (ILM)"');
 assert(gentraCode.includes('BUAT NASKAH ILM OTOMATIS'), 'ILM generate copywriting button has succinct text');
 assert(!gentraCode.includes('[ Audio Nuansa Sunda ]'), 'Redundant dialect toggle button has been removed');

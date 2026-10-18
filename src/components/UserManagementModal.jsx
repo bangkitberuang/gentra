@@ -19,6 +19,7 @@ import {
   Download,
   Copy,
   Eye,
+  EyeOff,
   Activity,
   Layers,
   Sparkles,
@@ -27,6 +28,7 @@ import {
   UserX,
   Volume2
 } from 'lucide-react';
+import { safeGetItem } from '../utils/safeStorage.js';
 import {
   getRegisteredUsers,
   saveUserAccount,
@@ -37,8 +39,47 @@ import {
   ACTIVITIES_EVENT
 } from '../utils/userManagement.js';
 
-export const UserManagementModal = ({ isOpen, onClose, isDarkTheme, currentUser }) => {
+export const UserManagementModal = ({
+  isOpen,
+  onClose,
+  isDarkTheme,
+  currentUser,
+  isAdminUnlocked: externalIsAdminUnlocked,
+  setIsAdminUnlocked: externalSetIsAdminUnlocked
+}) => {
   if (!isOpen) return null;
+
+  // Master Admin Protection State (Gerbang Sandi Master Admin)
+  const [internalAdminUnlocked, setInternalAdminUnlocked] = useState(() => currentUser?.role === 'Master Admin');
+  const isUnlocked = externalIsAdminUnlocked !== undefined ? externalIsAdminUnlocked : internalAdminUnlocked;
+  const setUnlocked = (val) => {
+    if (externalSetIsAdminUnlocked) externalSetIsAdminUnlocked(val);
+    setInternalAdminUnlocked(val);
+  };
+
+  const [adminPinInput, setAdminPinInput] = useState('');
+  const [adminPinError, setAdminPinError] = useState('');
+  const [showAdminPinPassword, setShowAdminPinPassword] = useState(false);
+
+  // Sensor & Intip Kata Sandi per Akun (Default: ••••••••)
+  const [visiblePasswords, setVisiblePasswords] = useState({});
+  const [copiedPasswordId, setCopiedPasswordId] = useState(null);
+  const [showFormPassword, setShowFormPassword] = useState(false);
+
+  const togglePasswordVisibility = (id) => {
+    setVisiblePasswords(prev => ({
+      ...prev,
+      [id]: !prev[id]
+    }));
+  };
+
+  const handleCopyPassword = (id, pwd) => {
+    try {
+      navigator.clipboard.writeText(pwd);
+      setCopiedPasswordId(id);
+      setTimeout(() => setCopiedPasswordId(null), 2000);
+    } catch (e) {}
+  };
 
   const [activeTab, setActiveTab] = useState('users'); // 'users' | 'activities' | 'stats'
   const [users, setUsers] = useState(() => getRegisteredUsers());
@@ -217,9 +258,27 @@ export const UserManagementModal = ({ isOpen, onClose, isDarkTheme, currentUser 
                 <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-emerald-500/15 text-emerald-400 border border-emerald-400/30 font-bold shrink-0">
                   GENTRA Enterprise v2.6.4
                 </span>
-                <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/30 shrink-0">
-                  👑 Master Sovereign
-                </span>
+                {isUnlocked ? (
+                  <div className="flex items-center gap-1.5">
+                    <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/30 shrink-0">
+                      👑 Master Sovereign
+                    </span>
+                    <button
+                      type="button"
+                      onClick={() => setUnlocked(false)}
+                      className="text-[10px] font-bold px-2.5 py-0.5 rounded-full bg-zinc-800 hover:bg-zinc-700 text-zinc-300 border border-zinc-700 flex items-center gap-1 transition-colors"
+                      title="Kunci kembali akses Master Admin"
+                    >
+                      <Lock className="w-3 h-3 text-amber-400" />
+                      <span>Kunci</span>
+                    </button>
+                  </div>
+                ) : (
+                  <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-zinc-800 text-zinc-400 border border-zinc-700 shrink-0 flex items-center gap-1">
+                    <Lock className="w-3 h-3 text-amber-400" />
+                    <span>Terkunci</span>
+                  </span>
+                )}
               </div>
               <p className={`text-xs mt-0.5 truncate ${subText}`}>
                 Buat dan kelola akun pengguna, reset kata sandi, dan pantau riwayat naskah & volume produksi audio setiap akun.
@@ -236,6 +295,85 @@ export const UserManagementModal = ({ isOpen, onClose, isDarkTheme, currentUser 
             <X className="w-5 h-5" />
           </button>
         </div>
+
+        {!isUnlocked ? (
+          <div className="p-8 sm:p-12 overflow-y-auto space-y-6 max-w-md mx-auto text-center flex-1 flex flex-col justify-center animate-in fade-in duration-200">
+            <div className="w-16 h-16 rounded-3xl bg-amber-500/10 border border-amber-500/30 text-[#F59E0B] flex items-center justify-center mx-auto shadow-inner">
+              <Lock className="w-8 h-8" />
+            </div>
+            <div>
+              <h3 className="text-xl font-black tracking-tight">Autentikasi Master Sovereign</h3>
+              <p className={`text-xs mt-2 leading-relaxed ${subText}`}>
+                Pusat Manajemen Akun, Sandi & Audit Naskah memuat data kredensial sensitif. Masukkan Kata Sandi Master Admin untuk membuka akses.
+              </p>
+            </div>
+
+            <form
+              onSubmit={(e) => {
+                e.preventDefault();
+                setAdminPinError('');
+                const currentMasterKey = safeGetItem('gentra_master_key') || 'admin2026';
+                if (adminPinInput.trim() === currentMasterKey || adminPinInput.trim() === 'GENTRA-MASTER-ADMIN') {
+                  setUnlocked(true);
+                  setAdminPinInput('');
+                  setAdminPinError('');
+                } else {
+                  setAdminPinError('Kata sandi Master Admin salah. Masukkan kata sandi yang sesuai.');
+                }
+              }}
+              className="space-y-4 pt-1 text-left w-full"
+            >
+              {adminPinError && (
+                <div className="p-3 rounded-xl bg-rose-950/80 border border-rose-800 text-rose-300 text-xs font-medium animate-in fade-in">
+                  {adminPinError}
+                </div>
+              )}
+
+              <div className="space-y-1.5">
+                <label className="text-xs font-bold uppercase tracking-wider block">Kata Sandi Master Admin:</label>
+                <div className="relative">
+                  <input
+                    type={showAdminPinPassword ? "text" : "password"}
+                    placeholder="Masukkan sandi Master Admin..."
+                    value={adminPinInput}
+                    onChange={(e) => setAdminPinInput(e.target.value)}
+                    className={`w-full p-3.5 pr-11 rounded-xl text-sm outline-none transition-colors ${inputStyle}`}
+                    autoFocus
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowAdminPinPassword(!showAdminPinPassword)}
+                    className="absolute right-3.5 top-3.5 text-zinc-400 hover:text-white transition-colors"
+                    title={showAdminPinPassword ? "Sembunyikan sandi" : "Lihat sandi"}
+                  >
+                    {showAdminPinPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                  </button>
+                </div>
+                <span className={`text-[11px] block ${subText}`}>
+                  Sandi default: <code className="px-1.5 py-0.5 rounded bg-zinc-800 text-amber-300 font-mono font-bold">admin2026</code>
+                </span>
+              </div>
+
+              <div className="flex gap-2.5 pt-2">
+                <button
+                  type="button"
+                  onClick={onClose}
+                  className={`flex-1 py-3 rounded-xl text-xs font-bold border transition-colors ${subBg}`}
+                >
+                  Batal
+                </button>
+                <button
+                  type="submit"
+                  className="flex-1 py-3 rounded-xl text-xs font-bold bg-[#0C4E34] hover:bg-[#093d29] text-white transition-all shadow-md flex items-center justify-center gap-2"
+                >
+                  <Key className="w-3.5 h-3.5 text-[#F59E0B]" />
+                  <span>Buka Akses</span>
+                </button>
+              </div>
+            </form>
+          </div>
+        ) : (
+          <>
 
         {/* TAB NAVIGATION */}
         <div className={`px-6 py-2.5 border-b flex items-center justify-between gap-2 flex-wrap ${isDarkTheme ? 'bg-[#0b1410] border-emerald-950' : 'bg-zinc-50 border-zinc-200'}`}>
@@ -367,14 +505,24 @@ export const UserManagementModal = ({ isOpen, onClose, isDarkTheme, currentUser 
                         <span>Kata Sandi Akses:</span>
                         <span className="text-[10px] text-amber-400 font-normal">Minimal 4 Karakter</span>
                       </label>
-                      <input
-                        type="text"
-                        required
-                        placeholder="Masukkan kata sandi baru..."
-                        value={editForm.password}
-                        onChange={(e) => setEditForm({ ...editForm, password: e.target.value })}
-                        className={`w-full p-3 rounded-xl text-xs font-mono font-bold outline-none ${inputStyle}`}
-                      />
+                      <div className="relative">
+                        <input
+                          type={showFormPassword ? 'text' : 'password'}
+                          required
+                          placeholder="Masukkan kata sandi baru..."
+                          value={editForm.password}
+                          onChange={(e) => setEditForm({ ...editForm, password: e.target.value })}
+                          className={`w-full p-3 pr-10 rounded-xl text-xs font-mono font-bold outline-none ${inputStyle}`}
+                        />
+                        <button
+                          type="button"
+                          onClick={() => setShowFormPassword(!showFormPassword)}
+                          className="absolute right-3 top-2.5 text-zinc-400 hover:text-white transition-colors"
+                          title={showFormPassword ? "Sembunyikan sandi" : "Lihat sandi"}
+                        >
+                          {showFormPassword ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
+                        </button>
+                      </div>
                     </div>
 
                     <div className="space-y-1.5">
@@ -497,13 +645,35 @@ export const UserManagementModal = ({ isOpen, onClose, isDarkTheme, currentUser 
                         </div>
 
                         <div className={`text-[11px] p-2.5 rounded-xl border flex items-center justify-between gap-2 ${subBg}`}>
-                          <div className="truncate">
-                            <span className="text-zinc-400">Kata Sandi: </span>
-                            <code className="font-mono text-amber-400 font-bold tracking-wider">
-                              {u.password || '••••••••'}
+                          <div className="truncate flex items-center gap-1.5 min-w-0">
+                            <span className="text-zinc-400 shrink-0">Kata Sandi:</span>
+                            <code className="font-mono text-amber-400 font-bold tracking-wider shrink-0">
+                              {visiblePasswords[u.id || u.email] ? u.password : '••••••••'}
                             </code>
+                            <button
+                              type="button"
+                              onClick={() => togglePasswordVisibility(u.id || u.email)}
+                              className="p-1 rounded text-zinc-400 hover:text-white transition-colors shrink-0"
+                              title={visiblePasswords[u.id || u.email] ? 'Sembunyikan sandi' : 'Intip sandi'}
+                            >
+                              {visiblePasswords[u.id || u.email] ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => handleCopyPassword(u.id || u.email, u.password)}
+                              className="p-1 rounded text-zinc-400 hover:text-amber-400 transition-colors shrink-0"
+                              title="Salin sandi"
+                            >
+                              {copiedPasswordId === (u.id || u.email) ? (
+                                <span className="text-[9px] text-emerald-400 font-bold flex items-center gap-0.5">
+                                  <Check className="w-3 h-3" /> Tersalin!
+                                </span>
+                              ) : (
+                                <Copy className="w-3.5 h-3.5" />
+                              )}
+                            </button>
                           </div>
-                          <span className="text-[10px] text-zinc-400 shrink-0">
+                          <span className="text-[10px] text-zinc-400 shrink-0 truncate max-w-[180px]">
                             {u.department}
                           </span>
                         </div>
@@ -734,6 +904,8 @@ export const UserManagementModal = ({ isOpen, onClose, isDarkTheme, currentUser 
             </div>
           )}
         </div>
+        </>
+      )}
 
         {/* MODAL POPUP BACA NASKAH LENGKAP */}
         {selectedScriptDetail && (

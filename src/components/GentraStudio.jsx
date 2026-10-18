@@ -820,16 +820,22 @@ export const GentraStudio = ({
   }, [isDarkTheme]);
   // Pool 8 Kunci API Google Gemini (Fail-Safe Key Pool) dengan Dual-Storage (iPad & Cross-Device)
   const [geminiKeys, setGeminiKeys] = useState(() => {
+    const envKey = sanitizeApiKey(typeof import.meta !== 'undefined' && import.meta.env?.VITE_GEMINI_API_KEY) || '';
     try {
-      const saved = safeGetItem('gentra_gemini_keys_pool');
+      const saved = safeGetItem('gentra_gemini_keys_pool') || safeGetItem('gentra_sovereign_key_vault');
       if (saved) {
         const parsed = JSON.parse(saved);
         if (Array.isArray(parsed) && parsed.length === 8) {
-          return parsed.map(k => sanitizeApiKey(k));
+          const sanitized = parsed.map(k => sanitizeApiKey(k));
+          if (sanitized.some(k => k && k.length > 0)) {
+            // Jika slot 1 kosong tetapi ada envKey, isi slot 1 dengan kunci sistem sovereign
+            if (!sanitized[0] && envKey) sanitized[0] = envKey;
+            return sanitized;
+          }
         }
       }
     } catch (e) {}
-    const defaultKey1 = sanitizeApiKey(safeGetItem('gentra_gemini_key') || (typeof import.meta !== 'undefined' && import.meta.env?.VITE_GEMINI_API_KEY) || '');
+    const defaultKey1 = sanitizeApiKey(safeGetItem('gentra_gemini_key')) || envKey;
     const defaultKey2 = sanitizeApiKey(safeGetItem('gentra_gemini_backup_key') || '');
     return [defaultKey1, defaultKey2, '', '', '', '', '', ''];
   });
@@ -1137,7 +1143,7 @@ export const GentraStudio = ({
 
   // Main Form States
   const [text, setText] = useState('');
-  const [dialect, setDialect] = useState('sunda'); // Karakteristik audio output
+  const [dialect, setDialect] = useState('indonesia'); // Default: Bahasa Indonesia (Resmi/Nasional)
   const [emotion, setEmotion] = useState('Netral');
   const [speed, setSpeed] = useState(1.0);
   const [pitch, setPitch] = useState(0);
@@ -1545,13 +1551,16 @@ export const GentraStudio = ({
     if (!ilmTopic || !ilmMessage) return;
     setIsGeneratingCopy(true);
 
-    const languageInstruction = dialect === 'sunda' 
-      ? "Gunakan Bahasa Sunda yang santun, guyub, luwes, dan menyentuh hati warga (misal: 'Wargi sadayana...', 'Hayu urang sasarengan...')."
-      : "Gunakan Bahasa Indonesia yang komunikatif, santun, persuasif, dan berdampak kuat bagi kesadaran publik.";
+    const isSunda = dialect === 'sunda';
+    const languageInstruction = isSunda 
+      ? "Gunakan Basa Sunda yang santun, guyub, luwes, dan menyentuh hati warga (misal: 'Wargi sadayana...', 'Hayu urang sasarengan...')."
+      : "Gunakan Bahasa Indonesia baku yang komunikatif, artikulatif, santun, persuasif, dan berdampak kuat bagi kesadaran publik masyarakat.";
 
     let toneInstruction = `Gaya Penyampaian: ${contentTone}`;
     if (contentTone === 'Formal') {
-      toneInstruction = "Gaya Penyampaian: Resmi & Kedinasan (Gunakan Bahasa Indonesia baku, kredibel, otoritatif, lugas, santun, dan sesuai standar protokol komunikasi publik Pemerintah Provinsi Jawa Barat).";
+      toneInstruction = isSunda 
+        ? "Gaya Penyampaian: Resmi & Kedinasan (Gunakan Basa Sunda loma/lemes anu sopan tur otoritatif pamaréntah)."
+        : "Gaya Penyampaian: Resmi & Kedinasan (Gunakan Bahasa Indonesia baku, kredibel, otoritatif, lugas, santun, dan sesuai standar protokol komunikasi publik Pemerintah Provinsi Jawa Barat).";
     }
 
     const prompt = `Sebagai pakar komunikasi publik dan penulis naskah Iklan Layanan Masyarakat (ILM), buatkan naskah voice-over ILM yang berdampak tinggi untuk:
@@ -1570,7 +1579,7 @@ PENTING:
     const generateLocalFallback = () => {
       const is30s = ilmDuration === '30s';
       const org = ilmOrganization || "Pemerintah Provinsi Jawa Barat";
-      if (dialect === 'sunda') {
+      if (isSunda) {
         if (contentTone === 'Formal') {
           return is30s
             ? `Wawaran resmi ti ${org}. Dina raraga ngaronjatkeun katertiban sareng karaharjaan umum, sakumna wargi Jawa Barat dihimbau pikeun museurkeun perhatosan kana ${ilmTopic}. ${ilmMessage}. Hayu urang patuh kana aturan anu parantos ditangtoskeun demi kamaslahatan sasarengan.`
@@ -1582,11 +1591,11 @@ PENTING:
       }
       if (contentTone === 'Formal') {
         return is30s
-          ? `Pengumuman resmi dari ${org}. Dalam rangka menjaga ketertiban, keselamatan, dan kenyamanan publik, seluruh warga dihimbau untuk memperhatikan ${ilmTopic}. ${ilmMessage}. Kepatuhan dan kedisiplinan kita bersama adalah wujud nyata kepedulian terhadap kemajuan Jawa Barat.`
-          : `Pemerintah Provinsi Jawa Barat melalui ${org} menyampaikan himbauan resmi kepada seluruh lapisan masyarakat. Terkait upaya optimalisasi ${ilmTopic}, kami mengajak setiap warga untuk mengambil peran aktif. ${ilmMessage}. Mari kita tingkatkan kepedulian demi terwujudnya tata kelola lingkungan dan masyarakat yang aman, tertib, dan berdaya saing. Pesan ini disampaikan oleh ${org}.`;
+          ? `Pengumuman resmi dari ${org}. Dalam rangka menjaga ketertiban, keselamatan, dan kesehatan publik, seluruh warga diimbau untuk memperhatikan ${ilmTopic}. ${ilmMessage}. Kepatuhan dan kedisiplinan kita bersama adalah wujud nyata kepedulian terhadap kemajuan Jawa Barat.`
+          : `Pemerintah Provinsi Jawa Barat melalui ${org} menyampaikan imbauan resmi kepada seluruh lapisan masyarakat. Terkait upaya optimalisasi ${ilmTopic}, kami mengajak setiap warga untuk mengambil peran aktif. ${ilmMessage}. Mari kita tingkatkan kepedulian demi terwujudnya tata kelola lingkungan dan masyarakat yang aman, tertib, dan sehat. Pesan ini disampaikan oleh ${org}.`;
       }
       return is30s
-        ? `Halo warga Jawa Barat! Tahukah Anda betapa pentingnya ${ilmTopic}? ${ilmMessage}. Mari bersama-sama kita wujudkan perubahan positif mulai dari diri sendiri dan keluarga kita. Pesan kepedulian ini dipersembahkan oleh ${org}.`
+        ? `Halo Warga Jawa Barat! Tahukah Anda betapa pentingnya ${ilmTopic}? ${ilmMessage}. Mari bersama-sama kita wujudkan perubahan positif mulai dari diri sendiri dan keluarga kita. Pesan kepedulian ini dipersembahkan oleh ${org}.`
         : `Setiap langkah kecil yang kita ambil hari ini, menentukan masa depan Jawa Barat esok hari. Melalui ${org}, kami mengajak seluruh masyarakat untuk bersama-sama peduli terhadap ${ilmTopic}. ${ilmMessage}. Jadikan kebiasaan baik ini bagian dari kehidupan sehari-hari kita. Dari kita, oleh kita, untuk Jawa Barat Juara!`;
     };
 
@@ -1938,7 +1947,7 @@ ATURAN MUTLAK: Langsung bacakan teks naskah dari kata pertama tanpa intro, tanpa
                   <span>STUDIO</span>
                 </button>
 
-                {/* Posisi 2: ADS MODE */}
+                {/* Posisi 2: ILM MODE */}
                 <button 
                   onClick={() => setView('ads')} 
                   className={`h-9 px-4 sm:px-5 rounded-full text-xs font-black transition-all flex items-center gap-2 whitespace-nowrap shrink-0 ${
@@ -1948,10 +1957,10 @@ ATURAN MUTLAK: Langsung bacakan teks naskah dari kata pertama tanpa intro, tanpa
                         : 'bg-white text-slate-950 shadow-sm border border-slate-200/80' 
                       : isDarkTheme ? 'text-zinc-400 hover:text-white hover:bg-zinc-800/60' : 'text-slate-600 hover:text-slate-950 hover:bg-slate-200/60'
                   }`}
-                  title="Mode Iklan Layanan Masyarakat & Komersial"
+                  title="Mode Iklan Layanan Masyarakat (ILM)"
                 >
                   <Megaphone className="w-3.5 h-3.5" />
-                  <span>ADS MODE</span>
+                  <span>ILM MODE</span>
                 </button>
 
                 {/* Posisi 3: RIWAYAT */}
@@ -2474,7 +2483,38 @@ ATURAN MUTLAK: Langsung bacakan teks naskah dari kata pertama tanpa intro, tanpa
                   </div>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+                  <div className="space-y-1">
+                    <label className={`text-xs font-bold uppercase flex items-center justify-between ${isDarkTheme ? 'text-zinc-300' : 'text-zinc-600'}`}>
+                      <span>Bahasa Naskah ILM</span>
+                      <span className="text-[10px] text-emerald-400 font-normal">Pilihan Utama</span>
+                    </label>
+                    <div className="grid grid-cols-2 gap-2">
+                      <button
+                        type="button"
+                        onClick={() => setDialect('indonesia')}
+                        className={`py-2.5 px-2 rounded-xl border text-xs font-bold transition-all truncate text-center flex items-center justify-center gap-1.5 ${
+                          dialect !== 'sunda'
+                            ? (isDarkTheme ? 'bg-[#CCFF00] border-[#CCFF00] text-black font-extrabold shadow-sm' : 'bg-[#0C4E34] border-emerald-600 text-white shadow-sm')
+                            : isDarkTheme ? 'bg-[#0E1014] border-[#20232B] text-zinc-300 hover:border-[#3a3f4d]' : 'bg-zinc-50 border-zinc-200 text-zinc-600 hover:border-zinc-300'
+                        }`}
+                      >
+                        <span>🇮🇩 Indonesia</span>
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setDialect('sunda')}
+                        className={`py-2.5 px-2 rounded-xl border text-xs font-bold transition-all truncate text-center flex items-center justify-center gap-1.5 ${
+                          dialect === 'sunda'
+                            ? (isDarkTheme ? 'bg-[#CCFF00] border-[#CCFF00] text-black font-extrabold shadow-sm' : 'bg-[#0C4E34] border-emerald-600 text-white shadow-sm')
+                            : isDarkTheme ? 'bg-[#0E1014] border-[#20232B] text-zinc-300 hover:border-[#3a3f4d]' : 'bg-zinc-50 border-zinc-200 text-zinc-600 hover:border-zinc-300'
+                        }`}
+                      >
+                        <span>🌿 Basa Sunda</span>
+                      </button>
+                    </div>
+                  </div>
+
                   <div className="space-y-1">
                     <label className={`text-xs font-bold uppercase ${isDarkTheme ? 'text-zinc-300' : 'text-zinc-600'}`}>Target Durasi Spot</label>
                     <div className="grid grid-cols-2 gap-2">
@@ -3424,6 +3464,9 @@ ATURAN MUTLAK: Langsung bacakan teks naskah dari kata pertama tanpa intro, tanpa
         geminiKeys={geminiKeys}
         onUpdateKey={handleUpdateGeminiKey}
         onSaveAllKeys={handleSaveAllGeminiKeys}
+        isAdminUnlocked={isAdminUnlocked}
+        setIsAdminUnlocked={setIsAdminUnlocked}
+        currentUser={user}
         onOpenVoiceLabModal={(tab) => {
           setShowApiKeyModal(false);
           setShowVoiceLabModal(true);
@@ -3462,6 +3505,8 @@ ATURAN MUTLAK: Langsung bacakan teks naskah dari kata pertama tanpa intro, tanpa
         onClose={() => setShowUserManagementModal(false)}
         isDarkTheme={isDarkTheme}
         currentUser={user}
+        isAdminUnlocked={isAdminUnlocked}
+        setIsAdminUnlocked={setIsAdminUnlocked}
       />
 
       {/* MODAL: TRANSKRIPSI SUARA GEMINI AI (SPEECH-TO-TEXT) */}
