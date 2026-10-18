@@ -452,61 +452,61 @@ export const LandingPage = ({ onOpenLogin }) => {
         {/* Ambient Top Blend */}
         <div className="absolute top-0 inset-x-0 h-10 bg-gradient-to-b from-[#FBFBFA]/90 to-transparent pointer-events-none z-10" />
 
-        <div className="relative z-10 max-w-6xl lg:max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center flex flex-col items-center space-y-5 sm:space-y-6">
+        <div className="relative z-10 max-w-3xl sm:max-w-4xl mx-auto px-4 sm:px-6 text-center flex flex-col items-center space-y-4 sm:space-y-5">
           
-          {/* Typography - Balanced, Impactful & Wide */}
-          <div className="space-y-3.5 flex flex-col items-center max-w-4xl mx-auto">
-            <h1 className="text-4xl sm:text-6xl md:text-7xl font-extrabold tracking-tight text-slate-950 leading-[1.08] drop-shadow-sm">
-              Ti Téks <span className="text-amber-600">Jadi Sora.</span>
+          {/* Typography - Compact, Balanced & Elegant */}
+          <div className="space-y-3 flex flex-col items-center max-w-2xl mx-auto">
+            <h1 className="text-4xl sm:text-5xl md:text-6xl font-black tracking-tight text-slate-950 leading-[1.12] drop-shadow-xs">
+              Ti Téks <span className="text-[#064E3B]">Jadi Sora.</span>
             </h1>
-            <div className="inline-flex items-center gap-2.5 px-5 py-2 rounded-full bg-white/90 backdrop-blur-md border border-amber-300/70 shadow-sm">
-              <span className="w-2.5 h-2.5 rounded-full bg-amber-500 animate-pulse" />
-              <p className="text-xs sm:text-sm md:text-base font-black tracking-wider text-amber-700 uppercase">
+            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/90 backdrop-blur-md border border-emerald-200/90 shadow-2xs">
+              <span className="w-2 h-2 rounded-full bg-[#10B981] animate-pulse" />
+              <p className="text-[11px] sm:text-xs font-bold tracking-wider text-[#064E3B] uppercase">
                 Gentra Produksi Audio • Standar Penyiaran & Studio Rekaman
               </p>
             </div>
           </div>
 
-          <p className="max-w-4xl mx-auto text-xs sm:text-sm md:text-base lg:text-[17px] text-zinc-800 font-semibold leading-relaxed bg-white/80 backdrop-blur-md px-6 sm:px-8 py-3.5 sm:py-4 rounded-2xl border border-white/90 shadow-xs">
-            Platform sintesis suara natural berstandar studio untuk Tim Komunikasi Publik Pemprov Jawa Barat. Menghadirkan karakter vokal unik <strong className="text-slate-900 font-bold">Khas Sunda & Nasional</strong>, mesin mastering <strong className="text-slate-900 font-bold">Broadcast 48kHz / 44.1kHz</strong>, dan generator naskah <strong className="text-slate-900 font-bold">Iklan Layanan Masyarakat (ILM)</strong> berbasis kearifan lokal.
+          <p className="max-w-2xl mx-auto text-xs sm:text-sm md:text-[15px] text-slate-700 font-medium leading-relaxed bg-white/80 backdrop-blur-md px-6 sm:px-7 py-3 sm:py-3.5 rounded-2xl border border-white/90 shadow-2xs">
+            Platform sintesis suara natural berstandar studio untuk Tim Komunikasi Publik Pemprov Jawa Barat. Menghadirkan karakter vokal unik <strong className="text-slate-900 font-bold">Khas Sunda & Nasional</strong>, mesin mastering <strong className="text-slate-900 font-bold">Broadcast 48kHz / 44.1kHz</strong>, dan generator naskah <strong className="text-slate-900 font-bold">Iklan Layanan Masyarakat (ILM)</strong>.
           </p>
 
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-3.5 pt-2 w-full sm:w-auto">
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-1 w-full sm:w-auto">
             <button
               onClick={onOpenLogin}
-              className="w-full sm:w-auto px-8 py-3.5 rounded-2xl bg-slate-950 hover:bg-slate-900 text-white text-xs sm:text-sm md:text-base font-bold shadow-xl shadow-slate-950/20 hover:shadow-2xl transition-all flex items-center justify-center gap-2.5 group ring-1 ring-slate-800 hover:scale-[1.02]"
+              className="w-full sm:w-auto px-7 py-3 rounded-xl bg-[#064E3B] hover:bg-[#052E22] text-white text-xs sm:text-sm font-bold shadow-md hover:shadow-lg transition-all flex items-center justify-center gap-2 group ring-1 ring-[#064E3B]/20 hover:scale-[1.01]"
             >
               <span>BUKA STUDIO VOICE OVER</span>
-              <ArrowRight className="w-4 h-4 text-amber-400 group-hover:translate-x-1 transition-transform" />
+              <ArrowRight className="w-4 h-4 text-emerald-400 group-hover:translate-x-1 transition-transform" />
             </button>
 
             <a
               href="#persona"
-              className="w-full sm:w-auto px-8 py-3.5 rounded-2xl bg-white/95 hover:bg-white backdrop-blur-md border border-zinc-300 text-zinc-800 text-xs sm:text-sm md:text-base font-bold shadow-xs hover:shadow-sm transition-all flex items-center justify-center gap-2 hover:scale-[1.02]"
+              className="w-full sm:w-auto px-6 py-3 rounded-xl bg-white/95 hover:bg-white backdrop-blur-md border border-slate-200 text-slate-700 hover:text-slate-950 text-xs sm:text-sm font-semibold shadow-2xs hover:shadow-xs transition-all flex items-center justify-center gap-2 hover:scale-[1.01]"
             >
-              <Volume2 className="w-4 h-4 text-amber-600" />
+              <Volume2 className="w-4 h-4 text-[#064E3B]" />
               <span>Dengarkan 22 Persona Suara</span>
             </a>
           </div>
         </div>
 
-        {/* Quick Metrics in Frosted Glass - Expansive Wide Layout */}
-        <div className="pt-4 sm:pt-6 grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5 max-w-5xl lg:max-w-6xl mx-auto w-full text-left">
-          <div className="bg-white/90 backdrop-blur-md p-4 sm:p-5 rounded-2xl border border-white/95 shadow-sm hover:shadow-md transition-all hover:-translate-y-0.5">
-            <span className="text-2xl sm:text-3xl font-extrabold tracking-tight text-slate-900 block">22 Karakter</span>
-            <span className="text-xs sm:text-[13px] text-zinc-700 font-semibold mt-0.5 block">14 Nasional + 8 Khas Sunda</span>
+        {/* Quick Metrics in Frosted Glass - Compact Focused Grid */}
+        <div className="mt-8 sm:mt-10 grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4 max-w-3xl sm:max-w-4xl mx-auto w-full px-4 text-center sm:text-left">
+          <div className="bg-white/90 backdrop-blur-md p-3.5 sm:p-4 rounded-xl border border-slate-200/80 shadow-2xs hover:shadow-xs transition-all hover:-translate-y-0.5">
+            <span className="text-xl sm:text-2xl font-black tracking-tight text-[#064E3B] block">22 Karakter</span>
+            <span className="text-[11px] sm:text-xs text-slate-500 font-medium mt-0.5 block leading-tight">14 Nasional + 8 Khas Sunda</span>
           </div>
-          <div className="bg-white/90 backdrop-blur-md p-4 sm:p-5 rounded-2xl border border-white/95 shadow-sm hover:shadow-md transition-all hover:-translate-y-0.5">
-            <span className="text-2xl sm:text-3xl font-extrabold tracking-tight text-slate-900 block">48 & 44.1 kHz</span>
-            <span className="text-xs sm:text-[13px] text-zinc-700 font-semibold mt-0.5 block">Standar DAW & Broadcast WAV</span>
+          <div className="bg-white/90 backdrop-blur-md p-3.5 sm:p-4 rounded-xl border border-slate-200/80 shadow-2xs hover:shadow-xs transition-all hover:-translate-y-0.5">
+            <span className="text-xl sm:text-2xl font-black tracking-tight text-[#064E3B] block">48 & 44.1 kHz</span>
+            <span className="text-[11px] sm:text-xs text-slate-500 font-medium mt-0.5 block leading-tight">Standar DAW & Broadcast WAV</span>
           </div>
-          <div className="bg-white/90 backdrop-blur-md p-4 sm:p-5 rounded-2xl border border-white/95 shadow-sm hover:shadow-md transition-all hover:-translate-y-0.5">
-            <span className="text-2xl sm:text-3xl font-extrabold tracking-tight text-amber-600 block">Mode ILM</span>
-            <span className="text-xs sm:text-[13px] text-zinc-700 font-semibold mt-0.5 block">Generator Kampanye 30s & 60s</span>
+          <div className="bg-white/90 backdrop-blur-md p-3.5 sm:p-4 rounded-xl border border-slate-200/80 shadow-2xs hover:shadow-xs transition-all hover:-translate-y-0.5">
+            <span className="text-xl sm:text-2xl font-black tracking-tight text-[#064E3B] block">Mode ILM</span>
+            <span className="text-[11px] sm:text-xs text-slate-500 font-medium mt-0.5 block leading-tight">Generator Kampanye 30s & 60s</span>
           </div>
-          <div className="bg-white/90 backdrop-blur-md p-4 sm:p-5 rounded-2xl border border-white/95 shadow-sm hover:shadow-md transition-all hover:-translate-y-0.5">
-            <span className="text-2xl sm:text-3xl font-extrabold tracking-tight text-slate-900 block">Transkripsi AI</span>
-            <span className="text-xs sm:text-[13px] text-zinc-700 font-semibold mt-0.5 block">Konversi Suara ke Naskah Instan</span>
+          <div className="bg-white/90 backdrop-blur-md p-3.5 sm:p-4 rounded-xl border border-slate-200/80 shadow-2xs hover:shadow-xs transition-all hover:-translate-y-0.5">
+            <span className="text-xl sm:text-2xl font-black tracking-tight text-[#064E3B] block">Transkripsi AI</span>
+            <span className="text-[11px] sm:text-xs text-slate-500 font-medium mt-0.5 block leading-tight">Konversi Suara ke Naskah Instan</span>
           </div>
         </div>
       </section>
