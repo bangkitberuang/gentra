@@ -15,7 +15,8 @@ import {
   Sparkles, 
   Smartphone, 
   Layers, 
-  ExternalLink 
+  ExternalLink,
+  Copy
 } from 'lucide-react';
 import { sanitizeApiKey, isIpadOrSafari, safeSetItem, safeGetItem } from '../utils/safeStorage';
 
@@ -49,6 +50,7 @@ export const ApiKeyModal = ({
   const [key2, setKey2] = useState(geminiKeys[1] || '');
   const [showKey1, setShowKey1] = useState(false);
   const [showKey2, setShowKey2] = useState(false);
+  const [copiedKeyIndex, setCopiedKeyIndex] = useState(null);
   
   const [testStatus1, setTestStatus1] = useState(null); // { status: 'testing'|'active'|'limited'|'invalid'|'empty', message: '' }
   const [testStatus2, setTestStatus2] = useState(null);
@@ -57,6 +59,27 @@ export const ApiKeyModal = ({
   const [clipboardNotice, setClipboardNotice] = useState(null);
 
   const isIpad = isIpadOrSafari();
+
+  const formatMaskedKey = (key) => {
+    if (!key || typeof key !== 'string') return '';
+    const trimmed = key.trim();
+    if (trimmed.length <= 10) return '••••••••';
+    const prefix = trimmed.slice(0, 8);
+    const suffix = trimmed.slice(-4);
+    const dotCount = Math.max(16, trimmed.length - 12);
+    return `${prefix}${'•'.repeat(dotCount)}${suffix} (${trimmed.length} Karakter)`;
+  };
+
+  const handleCopyKey = async (key, idx) => {
+    if (!key) return;
+    try {
+      await navigator.clipboard.writeText(key.trim());
+      setCopiedKeyIndex(idx);
+      setTimeout(() => setCopiedKeyIndex(null), 2500);
+    } catch (err) {
+      console.warn("Gagal menyalin kunci:", err);
+    }
+  };
 
   // Sync internal inputs when geminiKeys changes
   useEffect(() => {
@@ -346,7 +369,7 @@ export const ApiKeyModal = ({
 
             <div className="relative flex items-center">
               <input
-                type={showKey1 ? "text" : "password"}
+                type="password"
                 placeholder="AIzaSy... (Tempel kunci Google Gemini di sini)"
                 value={key1}
                 onChange={(e) => {
@@ -370,11 +393,38 @@ export const ApiKeyModal = ({
                 type="button"
                 onClick={() => setShowKey1(!showKey1)}
                 className="absolute right-2.5 p-1 text-zinc-400 hover:text-white"
-                title={showKey1 ? "Sembunyikan" : "Tampilkan"}
+                title={showKey1 ? "Tutup Info Masking" : "Lihat Info Masking & Salin"}
               >
-                {showKey1 ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                {showKey1 ? <EyeOff className="w-4 h-4 text-amber-400" /> : <Eye className="w-4 h-4" />}
               </button>
             </div>
+
+            {/* Masked Preview Pill (No plaintext raw key exposure) */}
+            {showKey1 && key1 && (
+              <div className="flex items-center justify-between px-3 py-1.5 rounded-lg bg-amber-500/10 border border-amber-500/20 text-amber-300 text-xs font-mono">
+                <div className="flex items-center gap-1.5 truncate">
+                  <Lock className="w-3.5 h-3.5 text-amber-400 shrink-0" />
+                  <span className="truncate">{formatMaskedKey(key1)}</span>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => handleCopyKey(key1, 1)}
+                  className="ml-2 px-2 py-0.5 rounded text-[10px] font-bold bg-amber-400/20 hover:bg-amber-400/30 text-amber-200 border border-amber-400/30 flex items-center gap-1 shrink-0"
+                >
+                  {copiedKeyIndex === 1 ? (
+                    <>
+                      <Check className="w-3 h-3 text-emerald-400" />
+                      <span className="text-emerald-300">Tersalin!</span>
+                    </>
+                  ) : (
+                    <>
+                      <Copy className="w-3 h-3" />
+                      <span>Salin</span>
+                    </>
+                  )}
+                </button>
+              </div>
+            )}
 
             {/* Test Status Slot 1 */}
             <div className="flex items-center justify-between pt-1">
@@ -427,7 +477,7 @@ export const ApiKeyModal = ({
 
             <div className="relative flex items-center">
               <input
-                type={showKey2 ? "text" : "password"}
+                type="password"
                 placeholder="AIzaSy... (Kunci cadangan otomatis dipakai jika Slot 1 habis kuota)"
                 value={key2}
                 onChange={(e) => {
@@ -451,11 +501,38 @@ export const ApiKeyModal = ({
                 type="button"
                 onClick={() => setShowKey2(!showKey2)}
                 className="absolute right-2.5 p-1 text-zinc-400 hover:text-white"
-                title={showKey2 ? "Sembunyikan" : "Tampilkan"}
+                title={showKey2 ? "Tutup Info Masking" : "Lihat Info Masking & Salin"}
               >
-                {showKey2 ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                {showKey2 ? <EyeOff className="w-4 h-4 text-emerald-400" /> : <Eye className="w-4 h-4" />}
               </button>
             </div>
+
+            {/* Masked Preview Pill (No plaintext raw key exposure) */}
+            {showKey2 && key2 && (
+              <div className="flex items-center justify-between px-3 py-1.5 rounded-lg bg-emerald-500/10 border border-emerald-500/20 text-emerald-300 text-xs font-mono">
+                <div className="flex items-center gap-1.5 truncate">
+                  <Lock className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
+                  <span className="truncate">{formatMaskedKey(key2)}</span>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => handleCopyKey(key2, 2)}
+                  className="ml-2 px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-400/20 hover:bg-emerald-400/30 text-emerald-200 border border-emerald-400/30 flex items-center gap-1 shrink-0"
+                >
+                  {copiedKeyIndex === 2 ? (
+                    <>
+                      <Check className="w-3 h-3 text-emerald-400" />
+                      <span className="text-emerald-300">Tersalin!</span>
+                    </>
+                  ) : (
+                    <>
+                      <Copy className="w-3 h-3" />
+                      <span>Salin</span>
+                    </>
+                  )}
+                </button>
+              </div>
+            )}
 
             {/* Test Status Slot 2 */}
             <div className="flex items-center justify-between pt-1">

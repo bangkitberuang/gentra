@@ -35,7 +35,8 @@ import {
   Wallet,
   Calendar,
   CreditCard,
-  FileSpreadsheet
+  FileSpreadsheet,
+  Copy
 } from 'lucide-react';
 import { sanitizeApiKey, safeSetItem, safeGetItem } from '../utils/safeStorage';
 
@@ -175,6 +176,28 @@ export const VoiceLabModal = ({
   // PIN Auth State
   const [adminPinInput, setAdminPinInput] = useState('');
   const [adminPinError, setAdminPinError] = useState('');
+  const [copiedPoolKeyIndex, setCopiedPoolKeyIndex] = useState(null);
+
+  const formatMaskedKey = (key) => {
+    if (!key || typeof key !== 'string') return '';
+    const trimmed = key.trim();
+    if (trimmed.length <= 10) return '••••••••';
+    const prefix = trimmed.slice(0, 8);
+    const suffix = trimmed.slice(-4);
+    const dotCount = Math.max(16, trimmed.length - 12);
+    return `${prefix}${'•'.repeat(dotCount)}${suffix} (${trimmed.length} Karakter)`;
+  };
+
+  const handleCopyKey = async (key, idx) => {
+    if (!key) return;
+    try {
+      await navigator.clipboard.writeText(key.trim());
+      setCopiedPoolKeyIndex(idx);
+      setTimeout(() => setCopiedPoolKeyIndex(null), 2500);
+    } catch (err) {
+      console.warn("Gagal menyalin kunci pool:", err);
+    }
+  };
 
   // Voice Playground State
   const [labText, setLabText] = useState('Sampurasun wargi Jawa Barat, ieu simulasi audio laboratorium vokal GENTRA.');
@@ -414,11 +437,9 @@ export const VoiceLabModal = ({
     const startTime = performance.now();
 
     try {
+      const voiceDirective = `[Sebagai pengisi suara ${targetVoice.name}, persona Anda: ${targetVoice.personaPrompt || targetVoice.desc || 'natural'}. ATURAN WAJIB: Langsung bacakan naskah tanpa intro atau salam pembuka apa pun]:\n`;
       const payload = {
-        systemInstruction: {
-          parts: [{ text: `Sebagai pengisi suara ${targetVoice.name}, persona Anda: ${targetVoice.personaPrompt || targetVoice.desc || 'natural'}. ATURAN WAJIB: Langsung bacakan naskah tanpa intro atau salam pembuka apa pun.` }]
-        },
-        contents: [{ parts: [{ text: labText.trim() }] }],
+        contents: [{ parts: [{ text: `${voiceDirective}${labText.trim()}` }] }],
         generationConfig: {
           responseModalities: ['AUDIO'],
           speechConfig: {
@@ -1669,7 +1690,7 @@ export const VoiceLabModal = ({
 
                           <div className="relative flex items-center">
                             <input
-                              type={isVisible ? "text" : "password"}
+                              type="password"
                               placeholder={isPrimary ? "AIzaSy... (Kunci Utama)" : `AIzaSy... (Cadangan ${idx})`}
                               value={keyVal}
                               onChange={(e) => handleUpdateGeminiKey(idx, e.target.value)}
@@ -1694,11 +1715,35 @@ export const VoiceLabModal = ({
                                 });
                               }}
                               className="absolute right-2.5 p-1 text-zinc-400 hover:text-white"
-                              title={isVisible ? "Sembunyikan" : "Tampilkan"}
+                              title={isVisible ? "Tutup Info Masking" : "Lihat Info Masking & Salin"}
                             >
-                              {isVisible ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                              {isVisible ? <EyeOff className="w-4 h-4 text-amber-400" /> : <Eye className="w-4 h-4" />}
                             </button>
                           </div>
+
+                          {/* Masked Preview Pill (No plaintext raw key exposure) */}
+                          {isVisible && keyVal && (
+                            <div className="flex items-center justify-between mt-1 px-2.5 py-1 rounded-lg bg-amber-500/10 border border-amber-500/20 text-amber-300 text-[10px] font-mono">
+                              <span className="truncate">{formatMaskedKey(keyVal)}</span>
+                              <button
+                                type="button"
+                                onClick={() => handleCopyKey(keyVal, idx)}
+                                className="ml-2 px-1.5 py-0.5 rounded text-[9px] font-bold bg-amber-400/20 hover:bg-amber-400/30 text-amber-200 border border-amber-400/30 flex items-center gap-1 shrink-0"
+                              >
+                                {copiedPoolKeyIndex === idx ? (
+                                  <>
+                                    <Check className="w-2.5 h-2.5 text-emerald-400" />
+                                    <span className="text-emerald-300">Tersalin!</span>
+                                  </>
+                                ) : (
+                                  <>
+                                    <Copy className="w-2.5 h-2.5" />
+                                    <span>Salin</span>
+                                  </>
+                                )}
+                              </button>
+                            </div>
+                          )}
 
                           {/* Quota tester status & Action Buttons */}
                           <div className="flex items-center justify-between mt-2.5 pt-2 border-t border-zinc-800/30">

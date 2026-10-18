@@ -90,12 +90,9 @@ ATURAN MUTLAK: Langsung bacakan teks naskah dari kata pertama tanpa kalimat peng
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          systemInstruction: {
-            parts: [{ text: systemInstructionText }]
-          },
           contents: [{ 
             role: "user",
-            parts: [{ text }] 
+            parts: [{ text: `[${systemInstructionText}]:\n${text}` }] 
           }],
           generationConfig: {
             responseModalities: ["AUDIO"],

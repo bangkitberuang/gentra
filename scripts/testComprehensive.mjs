@@ -269,12 +269,17 @@ assert(cleanedKey === 'AIzaSyTestKey1234567890', `Dirty iPad clipboard key corre
 const quotedKey = '"AIzaSyWithQuotes"';
 assert(sanitizeApiKeyMock(quotedKey) === 'AIzaSyWithQuotes', 'Keys with copied quotes correctly stripped');
 
-// Verify GentraStudio and Modals integrate safeStorage
+// Verify GentraStudio and Modals integrate safeStorage & Key Masking
 assert(gentraCode.includes('safeStorage'), 'GentraStudio imports safeStorage utilities');
 assert(gentraCode.includes('ApiKeyModal'), 'GentraStudio includes dedicated ApiKeyModal');
 const apiKeyModalCode = fs.readFileSync('src/components/ApiKeyModal.jsx', 'utf8');
+const voiceLabCode = fs.readFileSync('src/components/VoiceLabModal.jsx', 'utf8');
 assert(apiKeyModalCode.includes('autoCapitalize="none"'), 'ApiKeyModal disables iOS autoCapitalize');
 assert(apiKeyModalCode.includes('autoCorrect="off"'), 'ApiKeyModal disables iOS autoCorrect');
+assert(!apiKeyModalCode.includes('type={showKey1 ? "text" : "password"}'), 'ApiKeyModal never exposes raw key as plaintext in input');
+assert(apiKeyModalCode.includes('formatMaskedKey'), 'ApiKeyModal provides secure masked key formatting');
+assert(voiceLabCode.includes('formatMaskedKey'), 'VoiceLabModal provides secure masked key formatting');
+assert(!voiceLabCode.includes('type={isVisible ? "text" : "password"}'), 'VoiceLabModal never exposes raw key as plaintext in input');
 
 // 9. TEST DISTINCT GENTRA VERSIONING (v2.6.4)
 console.log('\n--- 9. Testing Distinct Platform Versioning (GENTRA v2.6.4 Standard) ---');
@@ -293,7 +298,6 @@ const loginModalCode = fs.readFileSync('src/components/LoginModal.jsx', 'utf8');
 assert(loginModalCode.includes('v2.6.4'), 'LoginModal displays GENTRA v2.6.4');
 assert(!loginModalCode.includes('v1.3.0'), 'LoginModal completely purged external v1.3.0 badge');
 
-const voiceLabCode = fs.readFileSync('src/components/VoiceLabModal.jsx', 'utf8');
 assert(voiceLabCode.includes('v2.6.4'), 'VoiceLabModal displays GENTRA Lab v2.6.4');
 
 const userModalCode = fs.readFileSync('src/components/UserManagementModal.jsx', 'utf8');

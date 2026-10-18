@@ -1741,16 +1741,14 @@ ATURAN WAJIB & MUTLAK:
 
         const chunkText = chunks[i];
 
-        // Naskah murni di contents, seluruh instruksi persona & larangan basa-basi di systemInstruction
+        // Google Gemini TTS Audio endpoint menolak systemInstruction (HTTP 400 Developer instruction is not enabled).
+        // Arahan persona dan larangan mutlak intro/basa-basi digabungkan langsung ke dalam contents user.
+        const voiceDirective = `[Karakter vokal: ${selectedVoice.name} (${persona.timbre}). ${persona.dialect}. Emosi: ${emotion}, Tempo: ${speedText}, Nada: ${pitchText}. ${emotionTagGuidance}. ATURAN WAJIB & MUTLAK: Bacakan HANYA teks naskah. DILARANG KERAS mengucapkan intro, sapaan, atau basa-basi apa pun (jangan sebut "Tentu", "Baik", "Baiklah", "Halo", "Berikut adalah pembacaan naskah", atau "Oke"). Mulai bersuara langsung dari kata pertama teks naskah tanpa jeda]:\n`;
+
         const payload = {
-          systemInstruction: {
-            parts: [{ text: `${systemInstructionText}
-Dialek & Gaya: ${persona.dialect}. Emosi: ${emotion}, Tempo: ${speedText}, Nada: ${pitchText}. ${emotionTagGuidance}
-ATURAN MUTLAK: Langsung bacakan teks naskah dari kata pertama tanpa intro, tanpa sapaan, dan tanpa basa-basi apa pun.` }]
-          },
           contents: [{ 
             role: "user",
-            parts: [{ text: chunkText }] 
+            parts: [{ text: `${voiceDirective}${chunkText}` }] 
           }],
           generationConfig: {
             responseModalities: ["AUDIO"],
@@ -1759,8 +1757,7 @@ ATURAN MUTLAK: Langsung bacakan teks naskah dari kata pertama tanpa intro, tanpa
                 prebuiltVoiceConfig: { voiceName: selectedVoice.id || 'Aoede' } 
               } 
             }
-          },
-          model: TTS_MODEL
+          }
         };
 
         let response;
