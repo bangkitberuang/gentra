@@ -3339,8 +3339,8 @@ ATURAN MUTLAK: Langsung bacakan teks naskah dari kata pertama tanpa intro, tanpa
                   <Mic className="w-5 h-5 text-[#CCFF00]" />
                 </div>
                 <div>
-                  <h3 className={`text-base font-bold ${isDarkTheme ? 'text-white' : 'text-slate-900'}`}>Transkripsi Audio ke Naskah (Gemini AI)</h3>
-                  <p className={`text-[11px] ${subTextColor}`}>Ubah rekaman suara menjadi teks secara otomatis dengan kecerdasan Gemini Multimodal.</p>
+                  <h3 className={`text-base font-bold ${isDarkTheme ? 'text-white' : 'text-slate-900'}`}>Transkripsi Audio ke Naskah (Neural AI)</h3>
+                  <p className={`text-[11px] ${subTextColor}`}>Ubah rekaman suara menjadi teks secara otomatis dengan teknologi Neural Multimodal.</p>
                 </div>
               </div>
               <button onClick={() => setShowWhisperModal(false)} className={`p-1 rounded-lg transition-colors ${isDarkTheme ? 'text-zinc-400 hover:text-white hover:bg-[#181B26]' : 'text-slate-400 hover:text-black hover:bg-slate-100'}`}>
@@ -3399,7 +3399,7 @@ ATURAN MUTLAK: Langsung bacakan teks naskah dari kata pertama tanpa intro, tanpa
                 ) : (
                   <>
                     <Sparkles className="w-4 h-4 text-amber-400" />
-                    <span>MULAI TRANSKRIPSI (GEMINI AI)</span>
+                    <span>MULAI TRANSKRIPSI (NEURAL AI)</span>
                   </>
                 )}
               </button>
