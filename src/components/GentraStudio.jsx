@@ -51,6 +51,8 @@ import {
   RotateCcw
 } from 'lucide-react';
 import { VoiceLabModal } from './VoiceLabModal.jsx';
+import { ApiKeyModal } from './ApiKeyModal.jsx';
+import { safeGetItem, safeSetItem, sanitizeApiKey } from '../utils/safeStorage.js';
 
 // --- Konfigurasi Model (Google Gemini AI v1beta) ---
 const TTS_MODELS = ["gemini-3.8-flash-tts", "gemini-3.8-flash-lite-tts", "gemini-3.1-flash-tts-preview"];
@@ -787,17 +789,19 @@ export const GentraStudio = ({
       }
     } catch (e) {}
   }, [isDarkTheme]);
-  // Pool 8 Kunci API Google Gemini (Fail-Safe Key Pool)
+  // Pool 8 Kunci API Google Gemini (Fail-Safe Key Pool) dengan Dual-Storage (iPad & Cross-Device)
   const [geminiKeys, setGeminiKeys] = useState(() => {
     try {
-      const saved = localStorage.getItem('gentra_gemini_keys_pool');
+      const saved = safeGetItem('gentra_gemini_keys_pool');
       if (saved) {
         const parsed = JSON.parse(saved);
-        if (Array.isArray(parsed) && parsed.length === 8) return parsed;
+        if (Array.isArray(parsed) && parsed.length === 8) {
+          return parsed.map(k => sanitizeApiKey(k));
+        }
       }
     } catch (e) {}
-    const defaultKey1 = (typeof localStorage !== 'undefined' && localStorage.getItem('gentra_gemini_key')) || (typeof import.meta !== 'undefined' && import.meta.env?.VITE_GEMINI_API_KEY) || '';
-    const defaultKey2 = (typeof localStorage !== 'undefined' && localStorage.getItem('gentra_gemini_backup_key')) || '';
+    const defaultKey1 = sanitizeApiKey(safeGetItem('gentra_gemini_key') || (typeof import.meta !== 'undefined' && import.meta.env?.VITE_GEMINI_API_KEY) || '');
+    const defaultKey2 = sanitizeApiKey(safeGetItem('gentra_gemini_backup_key') || '');
     return [defaultKey1, defaultKey2, '', '', '', '', '', ''];
   });
 
@@ -897,13 +901,14 @@ export const GentraStudio = ({
   };
 
   const handleUpdateGeminiKey = (index, value) => {
+    const sanitized = sanitizeApiKey(value);
     setGeminiKeys(prev => {
       const next = [...prev];
-      next[index] = value;
+      next[index] = sanitized;
       try {
-        localStorage.setItem('gentra_gemini_keys_pool', JSON.stringify(next));
-        if (index === 0) localStorage.setItem('gentra_gemini_key', value);
-        if (index === 1) localStorage.setItem('gentra_gemini_backup_key', value);
+        safeSetItem('gentra_gemini_keys_pool', JSON.stringify(next));
+        if (index === 0) safeSetItem('gentra_gemini_key', sanitized);
+        if (index === 1) safeSetItem('gentra_gemini_backup_key', sanitized);
       } catch (e) {}
       return next;
     });
@@ -915,8 +920,27 @@ export const GentraStudio = ({
     });
   };
 
-  const activeKeyPool = geminiKeys.filter(k => k && k.trim().length > 0);
-  const activeKey = activeKeyPool[0] || (typeof import.meta !== 'undefined' && import.meta.env?.VITE_GEMINI_API_KEY) || '';
+  const handleSaveAllGeminiKeys = (newKeys) => {
+    setGeminiKeys(prev => {
+      const next = [...prev];
+      if (Array.isArray(newKeys)) {
+        newKeys.forEach((k, idx) => {
+          if (idx < 8) next[idx] = sanitizeApiKey(k);
+        });
+      }
+      try {
+        safeSetItem('gentra_gemini_keys_pool', JSON.stringify(next));
+        if (next[0]) safeSetItem('gentra_gemini_key', next[0]);
+        if (next[1]) safeSetItem('gentra_gemini_backup_key', next[1]);
+      } catch (e) {}
+      return next;
+    });
+  };
+
+  const activeKeyPool = geminiKeys
+    .map(k => sanitizeApiKey(k))
+    .filter(k => k && k.length > 0);
+  const activeKey = activeKeyPool[0] || sanitizeApiKey(typeof import.meta !== 'undefined' && import.meta.env?.VITE_GEMINI_API_KEY) || '';
   const apiKey = activeKey; // Alias compatibility
 
   const [showApiKeyModal, setShowApiKeyModal] = useState(false);
@@ -1024,7 +1048,7 @@ export const GentraStudio = ({
   const [adminPinError, setAdminPinError] = useState('');
   const [masterKey, setMasterKey] = useState(() => {
     try {
-      return localStorage.getItem('gentra_master_key') || 'admin2026';
+      return safeGetItem('gentra_master_key') || 'admin2026';
     } catch (e) {
       return 'admin2026';
     }
@@ -2020,7 +2044,7 @@ ATURAN MUTLAK: Langsung bacakan teks naskah dari kata pertama tanpa intro, tanpa
               {/* Indikator Lampu API */}
               <button
                 type="button"
-                onClick={() => setShowVoiceLabModal(true)}
+                onClick={() => setShowApiKeyModal(true)}
                 className={`h-9 w-9 rounded-full border transition-all flex items-center justify-center relative shrink-0 shadow-xs ${
                   apiQuotaStatus === 'limited'
                     ? 'bg-rose-950/80 border-rose-500 text-rose-300 hover:bg-rose-900 animate-pulse'
@@ -2098,7 +2122,7 @@ ATURAN MUTLAK: Langsung bacakan teks naskah dari kata pertama tanpa intro, tanpa
                 <FlaskConical className="w-5 h-5" />
               </button>
               <button 
-                onClick={() => setShowVoiceLabModal(true)} 
+                onClick={() => setShowApiKeyModal(true)} 
                 className="relative p-2 text-zinc-400 hover:text-white"
                 title="Pengaturan API"
               >
@@ -3301,12 +3325,25 @@ ATURAN MUTLAK: Langsung bacakan teks naskah dari kata pertama tanpa intro, tanpa
         </div>
       )}
 
+      {/* MODAL CEPAT: PENGATURAN KUNCI API GEMINI (OPTIMASI IPAD & DUAL STORAGE) */}
+      <ApiKeyModal
+        isOpen={showApiKeyModal}
+        onClose={() => setShowApiKeyModal(false)}
+        isDarkTheme={isDarkTheme}
+        geminiKeys={geminiKeys}
+        onUpdateKey={handleUpdateGeminiKey}
+        onSaveAllKeys={handleSaveAllGeminiKeys}
+        onOpenVoiceLabModal={(tab) => {
+          setShowApiKeyModal(false);
+          setShowVoiceLabModal(true);
+        }}
+      />
+
       {/* MODAL: LABORATORIUM PENGEMBANGAN SUARA & BACKEND ADMIN LENGKAP */}
       <VoiceLabModal
-        isOpen={showVoiceLabModal || showApiKeyModal}
+        isOpen={showVoiceLabModal}
         onClose={() => {
           setShowVoiceLabModal(false);
-          setShowApiKeyModal(false);
         }}
         isDarkTheme={isDarkTheme}
         voices={voices}
@@ -3325,6 +3362,7 @@ ATURAN MUTLAK: Langsung bacakan teks naskah dari kata pertama tanpa intro, tanpa
         user={user}
         TTS_MODEL={TTS_MODEL}
         initialVoicesDefaults={INITIAL_VOICES}
+        initialTab="lab"
       />
 
       {/* MODAL: TRANSKRIPSI SUARA GEMINI AI (SPEECH-TO-TEXT) */}

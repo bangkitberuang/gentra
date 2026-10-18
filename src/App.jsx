@@ -3,6 +3,7 @@ import { LandingPage } from './components/LandingPage';
 import { LoginModal } from './components/LoginModal';
 import { GentraStudio } from './components/GentraStudio';
 import { EngineSelectorModal } from './components/EngineSelectorModal';
+import { safeGetItem, safeSetItem, safeRemoveItem } from './utils/safeStorage';
 
 class ErrorBoundary extends React.Component {
   constructor(props) {
@@ -89,7 +90,7 @@ function MainApp() {
       if (urlParams.get('view') === 'studio') {
         return { email: 'tim@gentra.internal', role: 'Tim Produksi', name: 'TIM PRODUKSI' };
       }
-      const saved = localStorage.getItem('gentra_auth_user');
+      const saved = safeGetItem('gentra_auth_user');
       return saved ? JSON.parse(saved) : null;
     } catch (e) {
       return null;
@@ -100,9 +101,9 @@ function MainApp() {
   const [isEngineModalOpen, setIsEngineModalOpen] = useState(false);
   const [activeEngine, setActiveEngine] = useState(() => {
     try {
-      const saved = localStorage.getItem('gentra_active_engine');
+      const saved = safeGetItem('gentra_active_engine');
       if (saved === 'elevenlabs') {
-        localStorage.setItem('gentra_active_engine', 'gemini');
+        safeSetItem('gentra_active_engine', 'gemini');
         return 'gemini';
       }
       return saved || 'gemini';
@@ -115,14 +116,14 @@ function MainApp() {
   useEffect(() => {
     const handleStorageChange = () => {
       try {
-        const saved = localStorage.getItem('gentra_auth_user');
+        const saved = safeGetItem('gentra_auth_user');
         setUser(saved ? JSON.parse(saved) : null);
-        const savedEngine = localStorage.getItem('gentra_active_engine');
+        const savedEngine = safeGetItem('gentra_active_engine');
         if (savedEngine && savedEngine !== 'elevenlabs') {
           setActiveEngine(savedEngine);
         } else if (savedEngine === 'elevenlabs') {
           setActiveEngine('gemini');
-          localStorage.setItem('gentra_active_engine', 'gemini');
+          safeSetItem('gentra_active_engine', 'gemini');
         }
       } catch (e) {}
     };
@@ -140,14 +141,14 @@ function MainApp() {
   const handleSelectEngine = (engineId) => {
     setActiveEngine(engineId);
     try {
-      localStorage.setItem('gentra_active_engine', engineId);
+      safeSetItem('gentra_active_engine', engineId);
     } catch (e) {}
     setIsEngineModalOpen(false);
   };
 
   const handleLogout = () => {
     try {
-      localStorage.removeItem('gentra_auth_user');
+      safeRemoveItem('gentra_auth_user');
     } catch (e) {}
     setUser(null);
     setIsEngineModalOpen(false);

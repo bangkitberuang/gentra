@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
 import { Lock, Mail, ArrowRight, X, Shield, Sparkles, Key } from 'lucide-react';
+import { safeGetItem, safeSetItem } from '../utils/safeStorage';
 
 export const LoginModal = ({ isOpen, onClose, onLoginSuccess }) => {
   const [email, setEmail] = useState(() => {
     try {
-      return localStorage.getItem('gentra_saved_email') || 'tim@gentra.internal';
+      return safeGetItem('gentra_saved_email') || 'tim@gentra.internal';
     } catch (e) {
       return 'tim@gentra.internal';
     }
@@ -33,7 +34,7 @@ export const LoginModal = ({ isOpen, onClose, onLoginSuccess }) => {
 
     setTimeout(() => {
       // Check stored master key (default: admin2026)
-      const currentMasterKey = localStorage.getItem('gentra_master_key') || 'admin2026';
+      const currentMasterKey = safeGetItem('gentra_master_key') || 'admin2026';
       const isMasterAdmin = password.trim() === currentMasterKey || email.toLowerCase().includes('admin');
 
       if (password.length >= 4) {
@@ -46,8 +47,8 @@ export const LoginModal = ({ isOpen, onClose, onLoginSuccess }) => {
 
         if (rememberMe) {
           try {
-            localStorage.setItem('gentra_auth_user', JSON.stringify(userData));
-            localStorage.setItem('gentra_saved_email', email.trim());
+            safeSetItem('gentra_auth_user', JSON.stringify(userData));
+            safeSetItem('gentra_saved_email', email.trim());
           } catch (e) {}
         }
 
@@ -61,7 +62,7 @@ export const LoginModal = ({ isOpen, onClose, onLoginSuccess }) => {
   };
 
   const handleQuickLogin = (asAdmin = false) => {
-    const currentMasterKey = localStorage.getItem('gentra_master_key') || 'admin2026';
+    const currentMasterKey = safeGetItem('gentra_master_key') || 'admin2026';
     const emailVal = asAdmin ? 'admin@gentra.internal' : 'tim@gentra.internal';
     const passVal = asAdmin ? currentMasterKey : 'gentra2026';
 

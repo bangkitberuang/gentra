@@ -37,6 +37,7 @@ import {
   CreditCard,
   FileSpreadsheet
 } from 'lucide-react';
+import { sanitizeApiKey, safeSetItem, safeGetItem } from '../utils/safeStorage';
 
 // 15 Base Prebuilt Voices Resmi Google Gemini TTS (v1beta)
 export const GEMINI_BASE_VOICES = [
@@ -152,12 +153,20 @@ export const VoiceLabModal = ({
   setIsAdminUnlocked,
   user,
   TTS_MODEL = 'gemini-3.8-flash-tts',
-  initialVoicesDefaults = []
+  initialVoicesDefaults = [],
+  initialTab = 'lab'
 }) => {
   if (!isOpen) return null;
 
   // Active Tab: 'lab' | 'cost' | 'api' | 'benchmark' | 'security'
-  const [activeTab, setActiveTab] = useState('lab');
+  const [activeTab, setActiveTab] = useState(initialTab);
+  const [poolSaveSuccess, setPoolSaveSuccess] = useState(false);
+
+  useEffect(() => {
+    if (isOpen && initialTab) {
+      setActiveTab(initialTab);
+    }
+  }, [isOpen, initialTab]);
 
   // Search & Filters in Voice Lab
   const [searchQuery, setSearchQuery] = useState('');
@@ -595,16 +604,95 @@ export const VoiceLabModal = ({
           </button>
         </div>
 
-        {/* KONDISI JIKA ADMIN BELUM DIBUKA */}
-        {!isAdminUnlocked ? (
+        {/* TAB NAVIGATION BAR (Selalu dapat diakses agar tab API tidak terblokir di iPad) */}
+        <div className={`px-4 sm:px-6 py-2 border-b flex items-center justify-between gap-2 overflow-x-auto ${isDarkTheme ? 'border-emerald-950/80 bg-[#0a120e]' : 'border-zinc-200 bg-zinc-50'}`}>
+          <div className="flex items-center gap-1.5 shrink-0">
+            <button
+              type="button"
+              onClick={() => setActiveTab('lab')}
+              className={`px-3.5 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-2 ${
+                activeTab === 'lab'
+                  ? 'bg-[#0C4E34] text-white shadow-xs'
+                  : isDarkTheme ? 'text-zinc-400 hover:text-white hover:bg-zinc-800/60' : 'text-zinc-600 hover:text-black hover:bg-zinc-200/60'
+              }`}
+            >
+              <FlaskConical className="w-3.5 h-3.5 text-[#F59E0B]" />
+              <span>Laboratorium Suara</span>
+              <span className="text-[10px] px-1.5 py-0.2 rounded-full bg-white/20 text-white font-mono">
+                {totalVoices}
+              </span>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => setActiveTab('api')}
+              className={`px-3.5 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-2 ${
+                activeTab === 'api'
+                  ? 'bg-[#0C4E34] text-white shadow-xs'
+                  : isDarkTheme ? 'text-zinc-400 hover:text-white hover:bg-zinc-800/60' : 'text-zinc-600 hover:text-black hover:bg-zinc-200/60'
+              }`}
+            >
+              <Key className="w-3.5 h-3.5 text-[#F59E0B]" />
+              <span>Pool Kunci API (8 Slot)</span>
+              <span className={`text-[10px] px-1.5 py-0.2 rounded-full font-mono ${
+                activeKeyPool.length > 0 ? 'bg-emerald-500/20 text-emerald-300' : 'bg-rose-500/20 text-rose-300'
+              }`}>
+                {activeKeyPool.length}/8
+              </span>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => setActiveTab('benchmark')}
+              className={`px-3.5 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-2 ${
+                activeTab === 'benchmark'
+                  ? 'bg-[#0C4E34] text-white shadow-xs'
+                  : isDarkTheme ? 'text-zinc-400 hover:text-white hover:bg-zinc-800/60' : 'text-zinc-600 hover:text-black hover:bg-zinc-200/60'
+              }`}
+            >
+              <Zap className="w-3.5 h-3.5 text-[#F59E0B]" />
+              <span>Arena Latensi</span>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => setActiveTab('security')}
+              className={`px-3.5 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-2 ${
+                activeTab === 'security'
+                  ? 'bg-[#0C4E34] text-white shadow-xs'
+                  : isDarkTheme ? 'text-zinc-400 hover:text-white hover:bg-zinc-800/60' : 'text-zinc-600 hover:text-black hover:bg-zinc-200/60'
+              }`}
+            >
+              <Shield className="w-3.5 h-3.5 text-[#F59E0B]" />
+              <span>Keamanan Admin</span>
+            </button>
+          </div>
+
+          {isAdminUnlocked ? (
+            <button
+              type="button"
+              onClick={() => setIsAdminUnlocked(false)}
+              className="text-[11px] font-bold text-rose-400 hover:text-rose-300 hover:underline px-2 py-1 shrink-0"
+            >
+              🔒 Kunci Kembali
+            </button>
+          ) : (
+            <span className="text-[10px] font-bold text-amber-400 bg-amber-500/10 border border-amber-500/30 px-2 py-0.5 rounded-full shrink-0">
+              Akses Kunci API Terbuka
+            </span>
+          )}
+        </div>
+
+        {/* KONDISI JIKA BUKAN TAB API DAN ADMIN BELUM DIBUKA */}
+        {!isAdminUnlocked && activeTab !== 'api' ? (
           <div className="p-8 sm:p-12 overflow-y-auto space-y-6 max-w-md mx-auto text-center">
             <div className="w-16 h-16 rounded-3xl bg-amber-500/10 border border-amber-500/30 text-[#F59E0B] flex items-center justify-center mx-auto shadow-inner">
               <Lock className="w-8 h-8" />
             </div>
             <div>
-              <h3 className="text-lg font-bold">Akses Laboratorium Terproteksi</h3>
+              <h3 className="text-lg font-bold">Akses Fitur Terproteksi</h3>
               <p className={`text-xs mt-1.5 leading-relaxed ${subText}`}>
-                Menu ini merupakan ruang kurasi karakter dan konfigurasi backend produksi. Masukkan Kunci Master Admin untuk melanjutkan.
+                Tab ini merupakan ruang kurasi karakter dan konfigurasi backend produksi. Masukkan Kunci Master Admin untuk melanjutkan, atau beralih ke tab <b>Pool Kunci API (8 Slot)</b> untuk memasukkan kunci tanpa sandi.
               </p>
             </div>
 
@@ -612,7 +700,7 @@ export const VoiceLabModal = ({
               onSubmit={(e) => {
                 e.preventDefault();
                 setAdminPinError('');
-                const currentMasterKey = localStorage.getItem('gentra_master_key') || 'admin2026';
+                const currentMasterKey = safeGetItem('gentra_master_key') || 'admin2026';
                 if (adminPinInput.trim() === currentMasterKey || adminPinInput.trim() === 'GENTRA-MASTER-ADMIN') {
                   setIsAdminUnlocked(true);
                   setAdminPinInput('');
@@ -642,92 +730,28 @@ export const VoiceLabModal = ({
                 </span>
               </div>
 
-              <button
-                type="submit"
-                className="w-full py-3.5 bg-[#0C4E34] hover:bg-[#0e5c3e] text-white font-bold text-xs rounded-xl flex items-center justify-center gap-2 shadow-sm transition-all"
-              >
-                <Unlock className="w-4 h-4 text-[#F59E0B]" />
-                BUKA AKSES LABORATORIUM SUARA
-              </button>
-            </form>
-          </div>
-        ) : (
-          /* KONDISI JIKA ADMIN SUDAH TERBUKA */
-          <>
-            {/* TAB NAVIGATION BAR */}
-            <div className={`px-4 sm:px-6 py-2 border-b flex items-center justify-between gap-2 overflow-x-auto ${isDarkTheme ? 'border-emerald-950/80 bg-[#0a120e]' : 'border-zinc-200 bg-zinc-50'}`}>
-              <div className="flex items-center gap-1.5 shrink-0">
-                <button
-                  type="button"
-                  onClick={() => setActiveTab('lab')}
-                  className={`px-3.5 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-2 ${
-                    activeTab === 'lab'
-                      ? 'bg-[#0C4E34] text-white shadow-xs'
-                      : isDarkTheme ? 'text-zinc-400 hover:text-white hover:bg-zinc-800/60' : 'text-zinc-600 hover:text-black hover:bg-zinc-200/60'
-                  }`}
-                >
-                  <FlaskConical className="w-3.5 h-3.5 text-[#F59E0B]" />
-                  <span>Laboratorium Suara</span>
-                  <span className="text-[10px] px-1.5 py-0.2 rounded-full bg-white/20 text-white font-mono">
-                    {totalVoices}
-                  </span>
-                </button>
-
-
+              <div className="flex flex-col sm:flex-row gap-2.5 pt-1">
                 <button
                   type="button"
                   onClick={() => setActiveTab('api')}
-                  className={`px-3.5 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-2 ${
-                    activeTab === 'api'
-                      ? 'bg-[#0C4E34] text-white shadow-xs'
-                      : isDarkTheme ? 'text-zinc-400 hover:text-white hover:bg-zinc-800/60' : 'text-zinc-600 hover:text-black hover:bg-zinc-200/60'
-                  }`}
+                  className="py-3 px-4 rounded-xl border border-amber-500/40 text-amber-300 text-xs font-bold hover:bg-amber-500/10 transition-colors flex items-center justify-center gap-1.5"
                 >
-                  <Key className="w-3.5 h-3.5 text-[#F59E0B]" />
-                  <span>Pool Kunci API (8 Slot)</span>
-                  <span className={`text-[10px] px-1.5 py-0.2 rounded-full font-mono ${
-                    activeKeyPool.length > 0 ? 'bg-emerald-500/20 text-emerald-300' : 'bg-rose-500/20 text-rose-300'
-                  }`}>
-                    {activeKeyPool.length}/8
-                  </span>
+                  <Key className="w-3.5 h-3.5" />
+                  <span>Ke Pengaturan Kunci API</span>
                 </button>
-
                 <button
-                  type="button"
-                  onClick={() => setActiveTab('benchmark')}
-                  className={`px-3.5 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-2 ${
-                    activeTab === 'benchmark'
-                      ? 'bg-[#0C4E34] text-white shadow-xs'
-                      : isDarkTheme ? 'text-zinc-400 hover:text-white hover:bg-zinc-800/60' : 'text-zinc-600 hover:text-black hover:bg-zinc-200/60'
-                  }`}
+                  type="submit"
+                  className="flex-1 py-3 px-4 bg-[#0C4E34] hover:bg-[#0e5c3e] text-white font-bold text-xs rounded-xl flex items-center justify-center gap-2 shadow-sm transition-all"
                 >
-                  <Zap className="w-3.5 h-3.5 text-[#F59E0B]" />
-                  <span>Arena Latensi</span>
-                </button>
-
-                <button
-                  type="button"
-                  onClick={() => setActiveTab('security')}
-                  className={`px-3.5 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-2 ${
-                    activeTab === 'security'
-                      ? 'bg-[#0C4E34] text-white shadow-xs'
-                      : isDarkTheme ? 'text-zinc-400 hover:text-white hover:bg-zinc-800/60' : 'text-zinc-600 hover:text-black hover:bg-zinc-200/60'
-                  }`}
-                >
-                  <Shield className="w-3.5 h-3.5 text-[#F59E0B]" />
-                  <span>Keamanan Admin</span>
+                  <Unlock className="w-4 h-4 text-[#F59E0B]" />
+                  <span>Buka Akses Admin</span>
                 </button>
               </div>
-
-              <button
-                type="button"
-                onClick={() => setIsAdminUnlocked(false)}
-                className="text-[11px] font-bold text-rose-400 hover:text-rose-300 hover:underline px-2 py-1 shrink-0"
-              >
-                🔒 Kunci Kembali
-              </button>
-            </div>
-
+            </form>
+          </div>
+        ) : (
+          /* KONDISI JIKA ADMIN SUDAH TERBUKA ATAU SEDANG DI TAB API */
+          <>
             {/* BODY MODAL CONTAINER */}
             <div className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-6">
 
@@ -1562,6 +1586,14 @@ export const VoiceLabModal = ({
               {/* TAB 3: POOL KUNCI API (FAIL-SAFE 8 SLOT) */}
               {activeTab === 'api' && (
                 <div className="space-y-6 animate-in fade-in duration-150">
+                  {/* Alert Sukses Simpan ke iPad */}
+                  {poolSaveSuccess && (
+                    <div className="p-3.5 rounded-2xl bg-[#CCFF00]/15 border border-[#CCFF00]/40 text-[#CCFF00] text-xs font-bold flex items-center gap-2.5 animate-in fade-in">
+                      <CheckCircle className="w-5 h-5 shrink-0" />
+                      <span>✅ Pool Kunci API Berhasil Disimpan Permanen ke iPad (LocalStorage + Cookie 365 Hari)!</span>
+                    </div>
+                  )}
+
                   <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b pb-3 border-zinc-800/40">
                     <div>
                       <h3 className="text-sm font-black uppercase tracking-wider flex items-center gap-2">
@@ -1573,15 +1605,35 @@ export const VoiceLabModal = ({
                       </p>
                     </div>
 
-                    <button
-                      type="button"
-                      onClick={handleTestAllKeys}
-                      disabled={isTestingAll || activeKeyPool.length === 0}
-                      className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-bold bg-[#0C4E34] hover:bg-[#0e5c3e] text-white transition-all disabled:opacity-40 shadow-sm shrink-0"
-                    >
-                      <RefreshCw className={`w-3.5 h-3.5 ${isTestingAll ? 'animate-spin' : ''}`} />
-                      <span>{isTestingAll ? 'Menguji Semua Slot...' : 'Tes Semua Kuota'}</span>
-                    </button>
+                    <div className="flex items-center gap-2 shrink-0">
+                      <button
+                        type="button"
+                        onClick={() => {
+                          const sanitized = geminiKeys.map(k => sanitizeApiKey(k));
+                          try {
+                            safeSetItem('gentra_gemini_keys_pool', JSON.stringify(sanitized));
+                            if (sanitized[0]) safeSetItem('gentra_gemini_key', sanitized[0]);
+                            if (sanitized[1]) safeSetItem('gentra_gemini_backup_key', sanitized[1]);
+                          } catch (e) {}
+                          setPoolSaveSuccess(true);
+                          setTimeout(() => setPoolSaveSuccess(false), 4000);
+                        }}
+                        className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-bold bg-[#CCFF00] hover:bg-[#b8e600] text-black transition-all shadow-sm shrink-0"
+                      >
+                        <Check className="w-3.5 h-3.5 stroke-[3]" />
+                        <span>Simpan Semua Kunci</span>
+                      </button>
+
+                      <button
+                        type="button"
+                        onClick={handleTestAllKeys}
+                        disabled={isTestingAll || activeKeyPool.length === 0}
+                        className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-bold bg-[#0C4E34] hover:bg-[#0e5c3e] text-white transition-all disabled:opacity-40 shadow-sm shrink-0"
+                      >
+                        <RefreshCw className={`w-3.5 h-3.5 ${isTestingAll ? 'animate-spin' : ''}`} />
+                        <span>{isTestingAll ? 'Menguji Semua Slot...' : 'Tes Semua Kuota'}</span>
+                      </button>
+                    </div>
                   </div>
 
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
@@ -1621,6 +1673,15 @@ export const VoiceLabModal = ({
                               placeholder={isPrimary ? "AIzaSy... (Kunci Utama)" : `AIzaSy... (Cadangan ${idx})`}
                               value={keyVal}
                               onChange={(e) => handleUpdateGeminiKey(idx, e.target.value)}
+                              onBlur={() => {
+                                const clean = sanitizeApiKey(keyVal);
+                                handleUpdateGeminiKey(idx, clean);
+                              }}
+                              autoCapitalize="none"
+                              autoCorrect="off"
+                              spellCheck={false}
+                              autoComplete="off"
+                              inputMode="text"
                               className={`w-full py-2.5 pl-3 pr-9 rounded-xl text-xs font-mono outline-none transition-colors ${inputStyle}`}
                             />
                             <button
@@ -1639,7 +1700,7 @@ export const VoiceLabModal = ({
                             </button>
                           </div>
 
-                          {/* Quota tester status */}
+                          {/* Quota tester status & Action Buttons */}
                           <div className="flex items-center justify-between mt-2.5 pt-2 border-t border-zinc-800/30">
                             <div className="text-[10px] font-medium min-h-[18px]">
                               {keyTestStatuses[idx] ? (
@@ -1655,17 +1716,36 @@ export const VoiceLabModal = ({
                                 <span className="text-zinc-500">Status: Belum diuji</span>
                               )}
                             </div>
-                            {isFilled && (
+
+                            <div className="flex items-center gap-1.5">
                               <button
                                 type="button"
-                                onClick={() => handleTestKey(idx)}
-                                disabled={keyTestStatuses[idx]?.status === 'testing'}
-                                className="text-[10px] font-bold px-2 py-0.5 rounded-lg bg-zinc-800 hover:bg-zinc-700 text-zinc-300 transition-colors flex items-center gap-1 disabled:opacity-50"
+                                onClick={() => {
+                                  const clean = sanitizeApiKey(keyVal);
+                                  handleUpdateGeminiKey(idx, clean);
+                                  setPoolSaveSuccess(true);
+                                  setTimeout(() => setPoolSaveSuccess(false), 3000);
+                                }}
+                                disabled={!isFilled}
+                                className="text-[10px] font-bold px-2 py-0.5 rounded-lg bg-emerald-950/80 border border-emerald-700/60 text-emerald-300 hover:bg-emerald-900 transition-colors flex items-center gap-1 disabled:opacity-40"
+                                title="Simpan slot ini ke memori permanen iPad"
                               >
-                                <Activity className="w-3 h-3 text-emerald-400" />
-                                <span>{keyTestStatuses[idx]?.status === 'testing' ? 'Mengecek...' : 'Tes Slot'}</span>
+                                <Check className="w-3 h-3 text-emerald-400 stroke-[3]" />
+                                <span>Simpan</span>
                               </button>
-                            )}
+
+                              {isFilled && (
+                                <button
+                                  type="button"
+                                  onClick={() => handleTestKey(idx)}
+                                  disabled={keyTestStatuses[idx]?.status === 'testing'}
+                                  className="text-[10px] font-bold px-2 py-0.5 rounded-lg bg-zinc-800 hover:bg-zinc-700 text-zinc-300 transition-colors flex items-center gap-1 disabled:opacity-50"
+                                >
+                                  <Activity className="w-3 h-3 text-emerald-400" />
+                                  <span>{keyTestStatuses[idx]?.status === 'testing' ? 'Mengecek...' : 'Tes Slot'}</span>
+                                </button>
+                              )}
+                            </div>
                           </div>
                         </div>
                       );

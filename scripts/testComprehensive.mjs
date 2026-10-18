@@ -21,7 +21,7 @@ console.log('\n--- 1. Testing Voice Registry & 3 Blocks Integrity ---');
 const gentraCode = fs.readFileSync('src/components/GentraStudio.jsx', 'utf8');
 
 // Extract INITIAL_VOICES array from source code
-const initialVoicesMatch = gentraCode.match(/const INITIAL_VOICES = \[([\s\S]*?)\];\s*\n\s*\/\/ --- Karakter Suara Khusus ElevenLabs/);
+const initialVoicesMatch = gentraCode.match(/const INITIAL_VOICES = \[([\s\S]*?)\];\s*\n\s*\/\/\s*---\s*Karakter Suara Khusus/);
 assert(!!initialVoicesMatch, 'INITIAL_VOICES is defined and can be parsed');
 
 // Extract STATIC_AUDIO_PREVIEWS
@@ -48,21 +48,19 @@ while ((match = voiceRegex.exec(voicesBlock)) !== null) {
   });
 }
 
-assert(voices.length === 35, `Total personas in INITIAL_VOICES is 35 (Found: ${voices.length})`);
+assert(voices.length === 22, `Total personas in INITIAL_VOICES is 22 (Found: ${voices.length})`);
 
 const blok1Nasional = voices.filter(v => v.category === 'Nasional');
 const blok2Sunda = voices.filter(v => v.category === 'Sunda');
-const blok3Dialek = voices.filter(v => v.category === 'Dialek Nusantara');
 
 assert(blok1Nasional.length === 14, `Blok 1 (Nusa Voice - Nasional) has exactly 14 characters (Found: ${blok1Nasional.length})`);
 assert(blok2Sunda.length === 8, `Blok 2 (Pasundan Voice - Sunda) has exactly 8 characters (Found: ${blok2Sunda.length})`);
-assert(blok3Dialek.length === 13, `Blok 3 (Logat Nusantara - Dialek) has exactly 13 characters (Found: ${blok3Dialek.length})`);
 
 // Check Nusa Voice 14 personas exact match
 const EXPECTED_NUSA_VOICE = [
   { name: 'Anita', id: 'Aoede', gender: 'Female' },
   { name: 'Siti', id: 'Leda', gender: 'Female' },
-  { name: 'Agus', id: 'Charon', gender: 'Male' },
+  { name: 'Mugi', id: 'Charon', gender: 'Male' },
   { name: 'Dewi', id: 'Despina', gender: 'Female' },
   { name: 'Tina', id: 'Callirrhoe', gender: 'Female' },
   { name: 'Maya', id: 'Autonoe', gender: 'Female' },
@@ -86,8 +84,8 @@ for (const exp of EXPECTED_NUSA_VOICE) {
 }
 assert(nusaMatched, 'All 14 Blok 1 personas match Nusa Voice 100% (Name, ID, Gender)');
 
-// 2. TEST AUDIO PREVIEW FILE INTEGRITY FOR ALL 35 PERSONAS
-console.log('\n--- 2. Testing Physical Audio Preview Files for All 35 Personas ---');
+// 2. TEST AUDIO PREVIEW FILE INTEGRITY FOR ALL 22 PERSONAS
+console.log('\n--- 2. Testing Physical Audio Preview Files for All 22 Personas ---');
 const previewsObj = {};
 const previewLines = staticPreviewsMatch[1].split('\n');
 for (const line of previewLines) {
@@ -123,7 +121,7 @@ for (const v of voices) {
   totalAudioBytes += stats.size;
 }
 
-assert(allAudioFilesExist, `All 35 personas have physical audio preview files (Total payload: ${(totalAudioBytes / 1024 / 1024).toFixed(2)} MB)`);
+assert(allAudioFilesExist, `All 22 personas have physical audio preview files (Total payload: ${(totalAudioBytes / 1024 / 1024).toFixed(2)} MB)`);
 
 // 3. TEST FAIL-SAFE 8-KEY ROTATION LOGIC
 console.log('\n--- 3. Testing 8-Slot Fail-Safe API Key Pool Rotation ---');
@@ -156,7 +154,7 @@ assert(rotResult.visitedKeys.length === 3, `Key rotation visited exactly 3 keys 
 console.log('\n--- 4. Testing Spoken Intro Elimination Rules ---');
 assert(gentraCode.includes('DILARANG KERAS mengucapkan intro, sapaan, atau basa-basi apa pun'), 'SystemInstruction explicitly forbids greetings and filler preamble in Indonesian');
 assert(gentraCode.includes('Mulai bersuara langsung dari kata pertama teks naskah tanpa jeda'), 'SystemInstruction mandates zero-delay text speech');
-assert(gentraCode.includes('userPromptText'), 'Contents payload contains persona-acting prompt without conversational filler');
+assert(gentraCode.includes('chunkText') && gentraCode.includes('contents: ['), 'Contents payload contains pure chunkText without conversational filler');
 
 // 5. TEST TEXT CHUNKING LOGIC
 console.log('\n--- 5. Testing Natural Text Splitting & Chunking ---');
@@ -243,9 +241,40 @@ assert(wavResult.byteLength === 44 + 48000, `WAV File buffer size matches expect
 
 // 7. TEST UI POLISH & ACCURACY
 console.log('\n--- 7. Testing UI Navigation & ILM Labels ---');
-assert(gentraCode.includes('>ILM<'), 'Desktop navbar button renders "ILM" succinctly');
+assert(gentraCode.includes('ADS MODE'), 'Desktop navbar renders "ADS MODE" segmented tab');
+assert(gentraCode.includes('Iklan Layanan Masyarakat (ILM)'), 'Navigation renders "Iklan Layanan Masyarakat (ILM)"');
 assert(gentraCode.includes('BUAT NASKAH ILM OTOMATIS'), 'ILM generate copywriting button has succinct text');
 assert(!gentraCode.includes('[ Audio Nuansa Sunda ]'), 'Redundant dialect toggle button has been removed');
+
+// 8. TEST IPAD PERSISTENCE & STORAGE RESILIENCE
+console.log('\n--- 8. Testing iPadOS / Safari Storage Resilience & Sanitization ---');
+const safeStorageCode = fs.readFileSync('src/utils/safeStorage.js', 'utf8');
+assert(safeStorageCode.includes('sanitizeApiKey'), 'safeStorage exports sanitizeApiKey function');
+assert(safeStorageCode.includes('setCookie') && safeStorageCode.includes('getCookie'), 'safeStorage includes cookie persistence fallback');
+assert(safeStorageCode.includes('safeGetItem') && safeStorageCode.includes('safeSetItem'), 'safeStorage provides unified dual-storage accessor');
+
+// Test sanitizeApiKey directly with dirty inputs common on iPadOS virtual keyboard
+function sanitizeApiKeyMock(key) {
+  if (!key || typeof key !== 'string') return '';
+  return key
+    .replace(/[\u200B-\u200D\uFEFF]/g, '')
+    .replace(/^["'`\s]+|["'`\s]+$/g, '')
+    .trim();
+}
+
+const dirtyIpadKey = '  \nAIzaSyTestKey1234567890\r\n\t  ';
+const cleanedKey = sanitizeApiKeyMock(dirtyIpadKey);
+assert(cleanedKey === 'AIzaSyTestKey1234567890', `Dirty iPad clipboard key correctly sanitized (Output: "${cleanedKey}")`);
+
+const quotedKey = '"AIzaSyWithQuotes"';
+assert(sanitizeApiKeyMock(quotedKey) === 'AIzaSyWithQuotes', 'Keys with copied quotes correctly stripped');
+
+// Verify GentraStudio and Modals integrate safeStorage
+assert(gentraCode.includes('safeStorage'), 'GentraStudio imports safeStorage utilities');
+assert(gentraCode.includes('ApiKeyModal'), 'GentraStudio includes dedicated ApiKeyModal');
+const apiKeyModalCode = fs.readFileSync('src/components/ApiKeyModal.jsx', 'utf8');
+assert(apiKeyModalCode.includes('autoCapitalize="none"'), 'ApiKeyModal disables iOS autoCapitalize');
+assert(apiKeyModalCode.includes('autoCorrect="off"'), 'ApiKeyModal disables iOS autoCorrect');
 
 console.log('\n======================================================');
 console.log(`TOTAL TESTS: ${passCount + failCount} | PASSED: ${passCount} | FAILED: ${failCount}`);
