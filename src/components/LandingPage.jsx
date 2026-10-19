@@ -489,17 +489,20 @@ export const LandingPage = ({ onOpenLogin }) => {
         </div>
       </header>
 
-      {/* 2. Asymmetric Hero Section (60/40 Split Bento) */}
-      <section className="relative pt-12 pb-16 sm:pt-16 sm:pb-20 md:pt-20 md:pb-24 overflow-hidden bg-gradient-to-b from-[#F8FAF9] via-white to-[#F8FAF9]">
+      {/* 2. Asymmetric Hero Section (Vivid Gedung Sate Bandung & Pegunungan Parahyangan Panorama) */}
+      <section className="relative pt-12 pb-16 sm:pt-16 sm:pb-20 md:pt-20 md:pb-24 overflow-hidden bg-[#F8FAF9]">
         
-        {/* Subtle Atmospheric Backdrop */}
-        <div className="absolute inset-0 w-full h-full pointer-events-none overflow-hidden z-0 opacity-20">
+        {/* Full Panorama: Gedung Sate Bandung & Pegunungan Parahyangan */}
+        <div className="absolute inset-0 w-full h-full pointer-events-none overflow-hidden z-0">
           <img 
             src="/hero-bg.jpg" 
-            alt="Panorama Parahyangan" 
-            className="w-full h-full object-cover object-[center_65%]" 
+            alt="Panorama Gedung Sate Bandung & Pegunungan Parahyangan" 
+            className="w-full h-full object-cover object-[center_65%] opacity-90 sm:opacity-95 select-none pointer-events-none" 
           />
-          <div className="absolute inset-0 bg-gradient-to-b from-[#F8FAF9] via-white/80 to-[#F8FAF9]" />
+          {/* Left-to-right subtle atmospheric balance: gives left text crystal clarity while keeping Gedung Sate brightly visible */}
+          <div className="absolute inset-0 bg-gradient-to-r from-[#F8FAF9]/85 via-white/50 to-transparent" />
+          <div className="absolute inset-0 bg-gradient-to-b from-[#F8FAF9]/75 via-transparent to-[#F8FAF9]/90" />
+          <div className="absolute bottom-0 inset-x-0 h-16 bg-gradient-to-t from-[#F8FAF9] to-transparent" />
         </div>
 
         <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
