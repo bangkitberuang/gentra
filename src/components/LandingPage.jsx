@@ -548,13 +548,8 @@ export const LandingPage = ({ onOpenLogin }) => {
         <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="max-w-2xl sm:max-w-3xl space-y-6 text-left">
             
-            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-emerald-50 border border-emerald-200 text-[#064E3B] text-xs font-bold">
-              <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-              <span>STANDAR PENYIARAN PEMPROV JABAR • 24.000 HZ LOSSLESS</span>
-            </div>
-
-            <div className="space-y-3">
-              <h1 className="text-4xl sm:text-5xl md:text-6xl font-black tracking-tight text-slate-950 leading-[1.08]">
+            <div className="space-y-4">
+              <h1 className="text-3xl sm:text-5xl md:text-6xl font-black tracking-tight text-slate-950 leading-[1.08]">
                 Ti Téks Jadi Sora. <br />
                 <span className="text-[#064E3B]">Otentik Tatar Pasundan.</span>
               </h1>

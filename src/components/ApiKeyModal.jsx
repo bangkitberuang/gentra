@@ -111,22 +111,22 @@ export const ApiKeyModal = ({
       );
 
       if (res.ok) {
-        setStatus({ status: 'active', message: '🟢 Kunci Aktif & Siap Digunakan!' });
+        setStatus({ status: 'active', message: 'Kunci Aktif & Siap Digunakan' });
       } else {
         const errJson = await res.json().catch(() => ({}));
         const code = res.status;
         const msg = errJson?.error?.message || '';
 
         if (code === 429) {
-          setStatus({ status: 'limited', message: '⚠️ Kuota Limit (HTTP 429). Masukkan kunci cadangan.' });
+          setStatus({ status: 'limited', message: 'Kuota Limit (HTTP 429). Masukkan kunci cadangan.' });
         } else if (code === 400 || code === 403 || msg.toLowerCase().includes('api key') || msg.toLowerCase().includes('not valid')) {
-          setStatus({ status: 'invalid', message: '🟡 Kunci Tidak Valid / Salah (Periksa kembali)' });
+          setStatus({ status: 'invalid', message: 'Kunci Tidak Valid / Salah (Periksa kembali)' });
         } else {
-          setStatus({ status: 'invalid', message: `⚠️ Kendala HTTP ${code}: ${msg.slice(0, 45)}` });
+          setStatus({ status: 'invalid', message: `Kendala HTTP ${code}: ${msg.slice(0, 45)}` });
         }
       }
     } catch (err) {
-      setStatus({ status: 'invalid', message: '⚠️ Gagal terhubung ke jaringan internet.' });
+      setStatus({ status: 'invalid', message: 'Gagal terhubung ke jaringan internet.' });
     }
   };
 
@@ -203,7 +203,7 @@ export const ApiKeyModal = ({
                 {isUnlocked ? (
                   <div className="flex items-center gap-1.5">
                     <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/30 shrink-0">
-                      👑 Master Sovereign
+                      Master Sovereign
                     </span>
                     <button
                       type="button"
@@ -330,7 +330,7 @@ export const ApiKeyModal = ({
           {saveSuccess && (
             <div className="p-3.5 rounded-2xl bg-[#CCFF00]/15 border border-[#CCFF00]/40 text-[#CCFF00] text-xs font-bold flex items-center gap-2.5 animate-in fade-in slide-in-from-top-1">
               <CheckCircle2 className="w-5 h-5 shrink-0" />
-              <span>✅ Kunci API Berhasil Disimpan Permanen di iPad & Browser Anda! Siap memproduksi audio.</span>
+              <span>Kunci API Berhasil Disimpan Permanen di iPad & Browser Anda! Siap memproduksi audio.</span>
             </div>
           )}
 

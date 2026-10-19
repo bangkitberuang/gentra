@@ -605,7 +605,7 @@ export const VoiceLabModal = ({
                   </span>
                 ) : (
                   <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-zinc-800 text-zinc-400 border border-zinc-700 shrink-0">
-                    🔒 Terkunci
+                    Terkunci
                   </span>
                 )}
               </div>
@@ -693,9 +693,10 @@ export const VoiceLabModal = ({
             <button
               type="button"
               onClick={() => setIsAdminUnlocked(false)}
-              className="text-[11px] font-bold text-rose-400 hover:text-rose-300 hover:underline px-2 py-1 shrink-0"
+              className="text-[11px] font-bold text-rose-400 hover:text-rose-300 hover:underline px-2 py-1 shrink-0 flex items-center gap-1"
             >
-              🔒 Kunci Kembali
+              <Lock className="w-3 h-3" />
+              <span>Kunci Kembali</span>
             </button>
           ) : (
             <span className="text-[10px] font-bold text-zinc-400 bg-zinc-800 border border-zinc-700 px-2 py-0.5 rounded-full shrink-0 flex items-center gap-1">
@@ -787,28 +788,28 @@ export const VoiceLabModal = ({
                       </div>
                     </div>
                     <div className={`p-3.5 rounded-2xl border ${isDarkTheme ? 'bg-emerald-950/40 border-emerald-900/60 text-emerald-300' : 'bg-emerald-50 border-emerald-200 text-[#0C4E34]'}`}>
-                      <span className="text-[10px] font-bold uppercase tracking-wider block opacity-80">🟢 Aktif di Studio</span>
+                      <span className="text-[10px] font-bold uppercase tracking-wider block opacity-80">Aktif di Studio</span>
                       <div className="text-xl font-black mt-1 flex items-center gap-1.5">
                         <Eye className="w-4 h-4" />
                         <span>{activeVoicesCount} Karakter</span>
                       </div>
                     </div>
                     <div className={`p-3.5 rounded-2xl border ${isDarkTheme ? 'bg-rose-950/30 border-rose-900/50 text-rose-300' : 'bg-rose-50 border-rose-200 text-rose-800'}`}>
-                      <span className="text-[10px] font-bold uppercase tracking-wider block opacity-80">🔴 Disembunyikan (Hide)</span>
+                      <span className="text-[10px] font-bold uppercase tracking-wider block opacity-80">Disembunyikan (Hide)</span>
                       <div className="text-xl font-black mt-1 flex items-center gap-1.5">
                         <EyeOff className="w-4 h-4" />
                         <span>{hiddenVoicesCount} Karakter</span>
                       </div>
                     </div>
                     <div className={`p-3.5 rounded-2xl border ${isDarkTheme ? 'bg-amber-950/30 border-amber-900/50 text-amber-300' : 'bg-amber-50 border-amber-200 text-amber-800'}`}>
-                      <span className="text-[10px] font-bold uppercase tracking-wider block opacity-80">🍃 Pasundan Aktif</span>
+                      <span className="text-[10px] font-bold uppercase tracking-wider block opacity-80">Pasundan Aktif</span>
                       <div className="text-xl font-black mt-1 flex items-center gap-1.5">
                         <span>{sundaVoicesCount} Persona</span>
                       </div>
                     </div>
                   </div>
 
-                  {/* 🧪 LABORATORIUM PLAYGROUND (LIVE VOICE TESTING BENCH) */}
+                  {/* LABORATORIUM PLAYGROUND (LIVE VOICE TESTING BENCH) */}
                   <div className={`p-4 sm:p-5 rounded-3xl border shadow-sm space-y-4 ${
                     isDarkTheme ? 'bg-gradient-to-br from-[#0c1812] to-[#08100c] border-emerald-800/60' : 'bg-gradient-to-br from-emerald-50/70 via-white to-zinc-50 border-emerald-200'
                   }`}>
@@ -844,21 +845,21 @@ export const VoiceLabModal = ({
                             onClick={() => setLabText("Sampurasun wargi Jawa Barat, ieu simulasi audio laboratorium vokal GENTRA.")}
                             className={`text-[10px] px-2.5 py-1 rounded-xl border font-medium ${subBg}`}
                           >
-                            🍃 Sampurasun Sunda
+                            Sampurasun Sunda
                           </button>
                           <button
                             type="button"
                             onClick={() => setLabText("Halo wargi Jawa Barat, ini adalah pengujian kualitas vokal laboratorium GENTRA.")}
                             className={`text-[10px] px-2.5 py-1 rounded-xl border font-medium ${subBg}`}
                           >
-                            🇮🇩 Nasional Formal
+                            Nasional Formal
                           </button>
                           <button
                             type="button"
                             onClick={() => setLabText("Hadirin sekalian, selamat datang di siaran informasi kebijakan terpadu pemerintah.")}
                             className={`text-[10px] px-2.5 py-1 rounded-xl border font-medium ${subBg}`}
                           >
-                            📢 Siaran Berita
+                            Siaran Berita
                           </button>
                         </div>
                       </div>
@@ -879,7 +880,7 @@ export const VoiceLabModal = ({
                           >
                             {voices.map((v, idx) => (
                               <option key={idx} value={v.name}>
-                                {v.isHidden ? '🔴 [Hide] ' : '🟢 '} {v.name} ({v.category} • Base: {v.id})
+                                {v.isHidden ? '[Hide] ' : ''}{v.name} ({v.category} • Base: {v.id})
                               </option>
                             ))}
                           </select>
@@ -926,7 +927,7 @@ export const VoiceLabModal = ({
 
                               <div className="text-[10px] font-mono text-zinc-400 truncate">
                                 {labAudioLatency && (
-                                  <span className="text-emerald-400 font-bold">⚡ {labAudioLatency} ms</span>
+                                  <span className="text-emerald-400 font-bold">{labAudioLatency} ms</span>
                                 )} • 24 kHz WAV
                               </div>
 
@@ -997,7 +998,7 @@ export const VoiceLabModal = ({
                             : isDarkTheme ? 'bg-zinc-900 border-zinc-800 text-emerald-400 hover:text-white' : 'bg-white border-zinc-200 text-emerald-700'
                         }`}
                       >
-                        🟢 Aktif ({activeVoicesCount})
+                        Aktif ({activeVoicesCount})
                       </button>
                       <button
                         type="button"
@@ -1008,7 +1009,7 @@ export const VoiceLabModal = ({
                             : isDarkTheme ? 'bg-zinc-900 border-zinc-800 text-rose-400 hover:text-white' : 'bg-white border-zinc-200 text-rose-700'
                         }`}
                       >
-                        🔴 Hide ({hiddenVoicesCount})
+                        Hide ({hiddenVoicesCount})
                       </button>
                       <button
                         type="button"
@@ -1019,7 +1020,7 @@ export const VoiceLabModal = ({
                             : isDarkTheme ? 'bg-zinc-900 border-zinc-800 text-amber-400 hover:text-white' : 'bg-white border-zinc-200 text-amber-700'
                         }`}
                       >
-                        🍃 Sunda
+                        Sunda
                       </button>
                       <button
                         type="button"
@@ -1030,7 +1031,7 @@ export const VoiceLabModal = ({
                             : isDarkTheme ? 'bg-zinc-900 border-zinc-800 text-zinc-300 hover:text-white' : 'bg-white border-zinc-200 text-zinc-700'
                         }`}
                       >
-                        🇮🇩 Nasional
+                        Nasional
                       </button>
                     </div>
 
@@ -1467,12 +1468,14 @@ export const VoiceLabModal = ({
                                     
                                     {/* Indicator Tag */}
                                     {isHidden ? (
-                                      <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-rose-500/20 text-rose-400 border border-rose-500/30 shrink-0">
-                                        🔴 Tersembunyi (Hide)
+                                      <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-rose-500/20 text-rose-400 border border-rose-500/30 shrink-0 flex items-center gap-1.5">
+                                        <span className="w-1.5 h-1.5 rounded-full bg-rose-400"></span>
+                                        Tersembunyi (Hide)
                                       </span>
                                     ) : (
-                                      <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-500/15 text-emerald-400 border border-emerald-400/30 shrink-0">
-                                        🟢 Tampil Aktif
+                                      <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-500/15 text-emerald-400 border border-emerald-400/30 shrink-0 flex items-center gap-1.5">
+                                        <span className="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
+                                        Tampil Aktif
                                       </span>
                                     )}
 
@@ -1532,7 +1535,7 @@ export const VoiceLabModal = ({
                                   ? 'bg-amber-500/10 text-amber-400 border-amber-500/20' 
                                   : (isDarkTheme ? 'bg-[#CCFF00]/10 text-[#CCFF00] border-[#CCFF00]/20' : 'bg-emerald-50 text-emerald-800 border-emerald-200')
                               }`}>
-                                {v.category === 'Sunda' ? '🍃 Pasundan' : '🇮🇩 Nasional'}
+                                {v.category === 'Sunda' ? 'Pasundan' : 'Nasional'}
                               </span>
 
                               <div className="flex items-center gap-1.5">
@@ -1606,7 +1609,7 @@ export const VoiceLabModal = ({
                   {poolSaveSuccess && (
                     <div className="p-3.5 rounded-2xl bg-[#CCFF00]/15 border border-[#CCFF00]/40 text-[#CCFF00] text-xs font-bold flex items-center gap-2.5 animate-in fade-in">
                       <CheckCircle className="w-5 h-5 shrink-0" />
-                      <span>✅ Pool Kunci API Berhasil Disimpan Permanen ke iPad (LocalStorage + Cookie 365 Hari)!</span>
+                      <span>Pool Kunci API Berhasil Disimpan Permanen ke iPad (LocalStorage + Cookie 365 Hari)!</span>
                     </div>
                   )}
 

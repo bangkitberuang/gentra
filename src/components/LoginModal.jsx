@@ -188,14 +188,16 @@ export const LoginModal = ({ isOpen, onClose, onLoginSuccess }) => {
                 onClick={() => handleQuickLogin(false)}
                 className="text-xs px-3 py-1.5 rounded-xl bg-zinc-100 hover:bg-zinc-200 text-zinc-700 font-bold flex items-center gap-1.5 transition-colors"
               >
-                👥 Tim Produksi
+                <Users className="w-3.5 h-3.5 text-zinc-500" />
+                <span>Tim Produksi</span>
               </button>
               <button
                 type="button"
                 onClick={() => handleQuickLogin(true)}
                 className="text-xs px-3 py-1.5 rounded-xl bg-amber-50 hover:bg-amber-100 text-amber-900 border border-amber-200 font-bold flex items-center gap-1.5 transition-colors"
               >
-                👑 Master Admin
+                <Shield className="w-3.5 h-3.5 text-amber-600" />
+                <span>Master Admin</span>
               </button>
             </div>
           </div>

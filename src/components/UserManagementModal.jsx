@@ -261,7 +261,7 @@ export const UserManagementModal = ({
                 {isUnlocked ? (
                   <div className="flex items-center gap-1.5">
                     <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/30 shrink-0">
-                      👑 Master Sovereign
+                      Master Sovereign
                     </span>
                     <button
                       type="button"
@@ -529,11 +529,11 @@ export const UserManagementModal = ({
                         onChange={(e) => setEditForm({ ...editForm, role: e.target.value })}
                         className={`w-full p-3 rounded-xl text-xs font-medium outline-none ${inputStyle}`}
                       >
-                        <option value="Master Admin">👑 Master Admin (Akses Penuh)</option>
-                        <option value="Tim Produksi">🎬 Tim Produksi (Audio & VO)</option>
-                        <option value="Editor Naskah Pemda">📝 Editor Naskah Pemda</option>
-                        <option value="Pengisi Suara">🎙️ Pengisi Suara (Talenta)</option>
-                        <option value="Tamu / Pemda">🏛️ Tamu / Dinas Daerah</option>
+                        <option value="Master Admin">Master Admin (Akses Penuh)</option>
+                        <option value="Tim Produksi">Tim Produksi (Audio & VO)</option>
+                        <option value="Editor Naskah Pemda">Editor Naskah Pemda</option>
+                        <option value="Pengisi Suara">Pengisi Suara (Talenta)</option>
+                        <option value="Tamu / Pemda">Tamu / Dinas Daerah</option>
                       </select>
                     </div>
 
@@ -624,7 +624,7 @@ export const UserManagementModal = ({
                                   ? 'bg-emerald-500/15 text-emerald-400 border-emerald-500/30'
                                   : 'bg-rose-500/15 text-rose-400 border-rose-500/30'
                               }`}>
-                                {u.isActive ? '🟢 Aktif' : '🔴 Nonaktif'}
+                                {u.isActive ? 'Aktif' : 'Nonaktif'}
                               </span>
                             </div>
                             <p className="text-xs font-mono text-zinc-400 truncate mt-0.5">

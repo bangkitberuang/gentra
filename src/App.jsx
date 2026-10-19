@@ -4,6 +4,7 @@ import { LoginModal } from './components/LoginModal';
 import { GentraStudio } from './components/GentraStudio';
 import { EngineSelectorModal } from './components/EngineSelectorModal';
 import { safeGetItem, safeSetItem, safeRemoveItem } from './utils/safeStorage';
+import { Mic } from 'lucide-react';
 
 class ErrorBoundary extends React.Component {
   constructor(props) {
@@ -43,7 +44,7 @@ class ErrorBoundary extends React.Component {
             <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-amber-500 via-emerald-500 to-amber-500" />
             <div className="flex items-center gap-3 mb-6">
               <div className="w-12 h-12 rounded-2xl bg-amber-500/10 border border-amber-500/30 flex items-center justify-center text-amber-400">
-                <span className="text-2xl font-black">🎙️</span>
+                <Mic className="w-6 h-6" />
               </div>
               <div>
                 <h1 className="text-xl font-black tracking-tight text-white font-sans">GENTRA AUDIO WORKSTATION</h1>

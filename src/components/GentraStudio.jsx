@@ -359,17 +359,17 @@ const ILM_TONES = [
 
 // Tag Emosi Paralinguistik Suara Alami (Standar Voicebox - 100% Bahasa Indonesia)
 const PARALINGUISTIC_EMOTION_TAGS = [
-  { label: 'Tertawa', tag: '[tertawa]', icon: '😄', desc: 'Tertawa renyah & ramah' },
-  { label: 'Berbisik', tag: '[berbisik]', icon: '🤫', desc: 'Intonasi bisikan hangat' },
-  { label: 'Jeda 1 Detik', tag: '[jeda 1 detik]', icon: '⏱️', desc: 'Jeda hening bernapas 1 detik' },
-  { label: 'Bersemangat', tag: '[bersemangat]', icon: '🔥', desc: 'Antusias & energi tinggi' },
-  { label: 'Hela Napas', tag: '[hela napas]', icon: '😮‍💨', desc: 'Hela napas lega atau empati' },
-  { label: 'Tegas', tag: '[tegas]', icon: '📢', desc: 'Artikulasi wibawa penyiaran' },
-  { label: 'Tersenyum', tag: '[tersenyum]', icon: '😊', desc: 'Nada bicara hangat sambil tersenyum' },
-  { label: 'Prihatin', tag: '[prihatin]', icon: '🥺', desc: 'Nada empati & bela rasa' },
+  { label: 'Tertawa', tag: '[tertawa]', desc: 'Tertawa renyah & ramah' },
+  { label: 'Berbisik', tag: '[berbisik]', desc: 'Intonasi bisikan hangat' },
+  { label: 'Jeda 1 Detik', tag: '[jeda 1 detik]', desc: 'Jeda hening bernapas 1 detik' },
+  { label: 'Bersemangat', tag: '[bersemangat]', desc: 'Antusias & energi tinggi' },
+  { label: 'Hela Napas', tag: '[hela napas]', desc: 'Hela napas lega atau empati' },
+  { label: 'Tegas', tag: '[tegas]', desc: 'Artikulasi wibawa penyiaran' },
+  { label: 'Tersenyum', tag: '[tersenyum]', desc: 'Nada bicara hangat sambil tersenyum' },
+  { label: 'Prihatin', tag: '[prihatin]', desc: 'Nada empati & bela rasa' },
 ];
 
-// Visual Avatar & Personality Styling Helper (Non-flat rich 3D cards)
+// Visual Avatar & Personality Styling Helper
 const getVoiceAvatarMeta = (v) => {
   const cleanName = v.name.replace(/[^a-zA-Z\s]/g, '').trim();
   const parts = cleanName.split(/\s+/);
@@ -381,90 +381,90 @@ const getVoiceAvatarMeta = (v) => {
   if (v.category === 'Sunda') {
     if (v.name.includes('Abah')) {
       return {
-        initials: '👴 AB',
+        initials: 'AB',
         gradient: 'from-amber-600 via-amber-700 to-yellow-900',
         badge: 'Sepuh Sunda',
         roleColor: 'bg-amber-100 text-amber-900 border-amber-300',
-        genderIcon: '♂ Pria',
+        genderIcon: 'Pria',
         glow: 'shadow-amber-500/20'
       };
     }
     if (v.name.includes('Nini')) {
       return {
-        initials: '👵 NI',
+        initials: 'NI',
         gradient: 'from-rose-600 via-amber-700 to-stone-900',
         badge: 'Nini Sunda',
         roleColor: 'bg-rose-100 text-rose-900 border-rose-300',
-        genderIcon: '♀ Wanita',
+        genderIcon: 'Wanita',
         glow: 'shadow-rose-500/20'
       };
     }
     if (v.name.includes('Ujang Anom') || v.name.includes('Ujang Alit')) {
       return {
-        initials: '👦 UA',
+        initials: 'UA',
         gradient: 'from-emerald-500 via-teal-600 to-slate-800',
         badge: 'Remaja Lalaki',
         roleColor: 'bg-emerald-100 text-emerald-900 border-emerald-300',
-        genderIcon: '♂ Remaja',
+        genderIcon: 'Remaja',
         glow: 'shadow-emerald-500/20'
       };
     }
     if (v.name.includes('Neng Geulis') || v.name.includes('Eneng') || v.name.includes('Budak Leutik')) {
       return {
-        initials: '👧 NG',
+        initials: 'NG',
         gradient: 'from-amber-400 via-rose-500 to-emerald-600',
         badge: 'Mojang Remaja',
         roleColor: 'bg-amber-100 text-amber-900 border-amber-300',
-        genderIcon: '♀ Remaja',
+        genderIcon: 'Remaja',
         glow: 'shadow-amber-500/20'
       };
     }
     if (v.name.includes('Ujang')) {
       return {
-        initials: '⚡ UJ',
+        initials: 'UJ',
         gradient: 'from-lime-600 via-emerald-600 to-teal-800',
         badge: 'Bujang Nyunda',
         roleColor: 'bg-lime-100 text-lime-900 border-lime-300',
-        genderIcon: '♂ Pria',
+        genderIcon: 'Pria',
         glow: 'shadow-lime-500/20'
       };
     }
     if (v.name.includes('Bibi') || v.name.includes('Edah')) {
       return {
-        initials: '🗣️ CE',
+        initials: 'CE',
         gradient: 'from-orange-500 via-pink-600 to-rose-700',
         badge: 'Ceu Heboh',
         roleColor: 'bg-orange-100 text-orange-900 border-orange-300',
-        genderIcon: '♀ Wanita',
+        genderIcon: 'Wanita',
         glow: 'shadow-orange-500/20'
       };
     }
     if (v.name.includes('Teh Neng')) {
       return {
-        initials: '🌸 TN',
+        initials: 'TN',
         gradient: 'from-teal-500 via-emerald-600 to-green-700',
         badge: 'Mojang Priangan',
         roleColor: 'bg-teal-100 text-teal-900 border-teal-300',
-        genderIcon: '♀ Wanita',
+        genderIcon: 'Wanita',
         glow: 'shadow-teal-500/20'
       };
     }
     if (v.name.includes('Kang Asep')) {
       return {
-        initials: '🌾 KA',
+        initials: 'KA',
         gradient: 'from-yellow-600 via-amber-700 to-stone-800',
         badge: 'Akang Sahaja',
         roleColor: 'bg-amber-100 text-amber-900 border-amber-300',
-        genderIcon: '♂ Pria',
+        genderIcon: 'Pria',
         glow: 'shadow-yellow-500/20'
       };
     }
     return {
-      initials: '🍃 ' + initials,
+      initials,
       gradient: 'from-emerald-600 to-teal-800',
       badge: 'Khas Sunda',
       roleColor: 'bg-emerald-100 text-emerald-900 border-emerald-300',
-      genderIcon: v.gender === 'Female' ? '♀ Wanita' : '♂ Pria',
+      genderIcon: v.gender === 'Female' ? 'Wanita' : 'Pria',
       glow: 'shadow-emerald-500/20'
     };
   }
@@ -472,11 +472,11 @@ const getVoiceAvatarMeta = (v) => {
   // Cloned Voices
   if (v.isCloned) {
     return {
-      initials: '⚡ ' + initials,
+      initials,
       gradient: 'from-amber-500 via-orange-600 to-red-600',
       badge: 'Kloning Suara',
       roleColor: 'bg-amber-100 text-amber-900 border-amber-300',
-      genderIcon: v.gender === 'Female' ? '♀ Wanita' : '♂ Pria',
+      genderIcon: v.gender === 'Female' ? 'Wanita' : 'Pria',
       glow: 'shadow-amber-500/20'
     };
   }
@@ -484,11 +484,11 @@ const getVoiceAvatarMeta = (v) => {
   // Microsoft Azure Neural
   if (v.category === 'Azure') {
     return {
-      initials: '🔷 ' + initials,
+      initials,
       gradient: v.gender === 'Female' ? 'from-teal-500 via-emerald-600 to-slate-700' : 'from-slate-600 via-slate-700 to-slate-800',
       badge: 'Azure Neural',
       roleColor: 'bg-emerald-50 text-emerald-800 border-emerald-200',
-      genderIcon: v.gender === 'Female' ? '♀ Wanita' : '♂ Pria',
+      genderIcon: v.gender === 'Female' ? 'Wanita' : 'Pria',
       glow: 'shadow-emerald-500/20'
     };
   }
@@ -496,11 +496,11 @@ const getVoiceAvatarMeta = (v) => {
   // Google Cloud Neural2
   if (v.category === 'Google Cloud') {
     return {
-      initials: '☁️ ' + initials,
+      initials,
       gradient: 'from-emerald-500 via-teal-600 to-slate-700',
       badge: 'Google Cloud',
       roleColor: 'bg-teal-50 text-teal-800 border-teal-200',
-      genderIcon: v.gender === 'Female' ? '♀ Wanita' : '♂ Pria',
+      genderIcon: v.gender === 'Female' ? 'Wanita' : 'Pria',
       glow: 'shadow-teal-500/20'
     };
   }
@@ -508,11 +508,11 @@ const getVoiceAvatarMeta = (v) => {
   // Voicebox Local
   if (v.category === 'Voicebox Local') {
     return {
-      initials: '🖥️ ' + initials,
+      initials,
       gradient: 'from-emerald-600 via-teal-700 to-cyan-800',
       badge: 'Offline 82M',
       roleColor: 'bg-emerald-50 text-emerald-700 border-emerald-200',
-      genderIcon: v.gender === 'Female' ? '♀ Wanita' : '♂ Pria',
+      genderIcon: v.gender === 'Female' ? 'Wanita' : 'Pria',
       glow: 'shadow-emerald-500/20'
     };
   }
@@ -534,7 +534,7 @@ const getVoiceAvatarMeta = (v) => {
       gradient: palette[v.name] || 'from-pink-500 to-rose-600',
       badge: 'Nasional',
       roleColor: 'bg-rose-50 text-rose-700 border-rose-200',
-      genderIcon: '♀ Wanita',
+      genderIcon: 'Wanita',
       glow: 'shadow-rose-500/20'
     };
   }
@@ -554,7 +554,7 @@ const getVoiceAvatarMeta = (v) => {
     gradient: malePalette[v.name] || 'from-slate-700 to-slate-900',
     badge: 'Nasional',
     roleColor: 'bg-emerald-50 text-emerald-800 border-emerald-200',
-    genderIcon: '♂ Pria',
+    genderIcon: 'Pria',
     glow: 'shadow-emerald-500/20'
   };
 };
@@ -610,7 +610,7 @@ const fetchWithRetry = async (url, options, retries = 5, backoff = 1000, keyPool
         const nextIdx = (keyIndex + 1) % keyPool.length;
         const nextKey = keyPool[nextIdx];
         if (nextKey && nextKey !== keyPool[keyIndex]) {
-          console.warn(`⚠️ Kunci Gemini #${keyIndex + 1} limit/error (HTTP ${res.status}). Otomatis beralih ke Kunci Fail-Safe #${nextIdx + 1}...`);
+          console.warn(`Kunci Gemini #${keyIndex + 1} limit/error (HTTP ${res.status}). Otomatis beralih ke Kunci Fail-Safe #${nextIdx + 1}...`);
           const nextUrl = url.replace(/key=[^&]+/, `key=${nextKey}`);
           return fetchWithRetry(nextUrl, options, retries, backoff, keyPool, nextIdx);
         }
@@ -885,7 +885,7 @@ export const GentraStudio = ({
         }
         setKeyTestStatuses(prev => {
           const next = [...prev];
-          next[index] = { status: 'active', message: '🟢 Kunci Aktif & Siap Digunakan' };
+          next[index] = { status: 'active', message: 'Kunci Aktif & Siap Digunakan' };
           return next;
         });
       } else {
@@ -899,7 +899,7 @@ export const GentraStudio = ({
           }
           setKeyTestStatuses(prev => {
             const next = [...prev];
-            next[index] = { status: 'quota_limit', message: `⚠️ Limit (HTTP 429): ${errMsg.slice(0, 65)}` };
+            next[index] = { status: 'quota_limit', message: `Limit Kuota (HTTP 429): ${errMsg.slice(0, 65)}` };
             return next;
           });
         } else if (code === 400 || code === 403 || errMsg.toLowerCase().includes('api key') || errMsg.toLowerCase().includes('not valid')) {
@@ -909,13 +909,13 @@ export const GentraStudio = ({
           }
           setKeyTestStatuses(prev => {
             const next = [...prev];
-            next[index] = { status: 'invalid', message: '🟡 Kunci Tidak Valid / Salah' };
+            next[index] = { status: 'invalid', message: 'Kunci Tidak Valid / Salah' };
             return next;
           });
         } else {
           setKeyTestStatuses(prev => {
             const next = [...prev];
-            next[index] = { status: 'error', message: `⚠️ HTTP ${code}: ${errMsg.slice(0, 50)}` };
+            next[index] = { status: 'error', message: `HTTP ${code}: ${errMsg.slice(0, 50)}` };
             return next;
           });
         }
@@ -923,7 +923,7 @@ export const GentraStudio = ({
     } catch (netErr) {
       setKeyTestStatuses(prev => {
         const next = [...prev];
-        next[index] = { status: 'error', message: '⚠️ Gagal terhubung ke jaringan' };
+        next[index] = { status: 'error', message: 'Gagal terhubung ke jaringan' };
         return next;
       });
     }
@@ -2520,7 +2520,7 @@ ATURAN WAJIB & MUTLAK:
                             : isDarkTheme ? 'bg-[#0E1014] border-[#20232B] text-zinc-300 hover:border-[#3a3f4d]' : 'bg-zinc-50 border-zinc-200 text-zinc-600 hover:border-zinc-300'
                         }`}
                       >
-                        <span>🇮🇩 Indonesia</span>
+                        <span>Indonesia</span>
                       </button>
                       <button
                         type="button"
@@ -2531,7 +2531,7 @@ ATURAN WAJIB & MUTLAK:
                             : isDarkTheme ? 'bg-[#0E1014] border-[#20232B] text-zinc-300 hover:border-[#3a3f4d]' : 'bg-zinc-50 border-zinc-200 text-zinc-600 hover:border-zinc-300'
                         }`}
                       >
-                        <span>🌿 Basa Sunda</span>
+                        <span>Basa Sunda</span>
                       </button>
                     </div>
                   </div>
@@ -2550,7 +2550,7 @@ ATURAN WAJIB & MUTLAK:
                               : 'bg-zinc-50 border-zinc-200 text-zinc-600 hover:border-zinc-300'
                         }`}
                       >
-                        ⏱️ Spot 30 Detik (Padat)
+                        Spot 30 Detik (Padat)
                       </button>
                       <button
                         type="button"
@@ -2563,7 +2563,7 @@ ATURAN WAJIB & MUTLAK:
                               : 'bg-zinc-50 border-zinc-200 text-zinc-600 hover:border-zinc-300'
                         }`}
                       >
-                        ⏱️ Spot 60 Detik (Lengkap)
+                        Spot 60 Detik (Lengkap)
                       </button>
                     </div>
                   </div>
@@ -2766,14 +2766,14 @@ ATURAN WAJIB & MUTLAK:
                         key={item.tag}
                         type="button"
                         onClick={() => insertEmotionTag(item.tag)}
-                        className={`px-2.5 py-1 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 border active:scale-95 group ${
+                        className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 border active:scale-95 group ${
                           isDarkTheme 
                             ? 'border-[#282D3D] bg-[#141620] hover:bg-[#1E2230] hover:border-[#383E54] text-zinc-200' 
                             : 'border-slate-200 bg-white hover:bg-slate-100 hover:border-slate-300 text-slate-700 shadow-2xs'
                         }`}
                         title={`${item.label} — ${item.desc}`}
                       >
-                        <span className="text-sm">{item.icon}</span>
+                        <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 opacity-60 group-hover:opacity-100 transition-opacity" />
                         <span>{item.label}</span>
                       </button>
                     ))}
