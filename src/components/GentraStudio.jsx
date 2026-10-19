@@ -1882,26 +1882,26 @@ ATURAN WAJIB & MUTLAK:
     }
   };
 
-  // Dynamic Broadcast Studio Styling Tokens (Volt Lime & Deep Obsidian in Dark, 50% Darker Slate in Light)
+  // Dynamic Broadcast Studio Styling Tokens (Sovereign Emerald in Dark, Crisp Off-White in Light)
   const cardBg = isDarkTheme 
-    ? 'bg-[#12141D] border border-[#222634] shadow-xl text-zinc-100' 
-    : 'bg-white border border-slate-300 shadow-[0_4px_24px_rgba(0,0,0,0.12)] text-slate-900';
+    ? 'bg-[#101522] border border-slate-800/80 shadow-2xl text-slate-100' 
+    : 'bg-white border border-slate-200/80 shadow-[0_20px_40px_-15px_rgba(0,0,0,0.05)] text-slate-900';
 
   const subCardBg = isDarkTheme
-    ? 'bg-[#181B26] border border-[#282D3D] text-zinc-200'
-    : 'bg-slate-50 border border-slate-200 text-slate-800';
+    ? 'bg-[#141A29] border border-slate-800/60 text-slate-200'
+    : 'bg-slate-50/80 border border-slate-200/70 text-slate-800';
 
   const inputBg = isDarkTheme
-    ? 'bg-[#0E1017] border border-[#262B3A] text-white placeholder-zinc-500 focus:border-[#CCFF00] focus:ring-1 focus:ring-[#CCFF00]/30'
-    : 'bg-white border border-slate-300 text-slate-900 placeholder-slate-400 focus:border-slate-800 focus:ring-1 focus:ring-slate-800/20';
+    ? 'bg-[#0B0F19] border border-slate-800 text-white placeholder-slate-500 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20'
+    : 'bg-white border border-slate-200 text-slate-900 placeholder-slate-400 focus:border-[#064E3B] focus:ring-2 focus:ring-[#064E3B]/10';
 
   const headingColor = isDarkTheme ? 'text-white' : 'text-slate-900';
-  const subTextColor = isDarkTheme ? 'text-zinc-400' : 'text-slate-600';
+  const subTextColor = isDarkTheme ? 'text-slate-400' : 'text-slate-600';
 
   return (
-    <div className={`min-h-screen transition-colors duration-300 font-sans selection:bg-[#CCFF00] selection:text-black ${isDarkTheme ? 'bg-[#0A0B10] text-zinc-100' : 'bg-[#717686] text-slate-900'}`}>
+    <div className={`min-h-[100dvh] transition-colors duration-300 font-sans selection:bg-[#064E3B] selection:text-white ${isDarkTheme ? 'bg-[#090D14] text-slate-100' : 'bg-[#F8FAF9] text-slate-900'}`}>
       {/* Top Navigation Bar */}
-      <nav className={`sticky top-0 z-50 backdrop-blur-md transition-colors duration-300 ${isDarkTheme ? 'bg-[#0A0B10]/95 border-b border-[#1A1D27] text-white' : 'bg-white/95 border-b border-slate-300 shadow-sm text-slate-900'}`}>
+      <nav className={`sticky top-0 z-50 backdrop-blur-md transition-colors duration-300 ${isDarkTheme ? 'bg-[#0D131F]/95 border-b border-slate-800 text-white' : 'bg-white/95 border-b border-slate-200/80 shadow-xs text-slate-900'}`}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-20 gap-4">
             
@@ -1911,7 +1911,7 @@ ATURAN WAJIB & MUTLAK:
                 src="/logo.png" 
                 alt="GENTRA" 
                 className={`w-11 h-11 rounded-2xl object-cover shadow-xs transition-transform group-hover:scale-105 shrink-0 border ${
-                  isDarkTheme ? 'border-[#222634] shadow-black/40' : 'border-slate-200'
+                  isDarkTheme ? 'border-slate-800 shadow-black/40' : 'border-slate-200'
                 }`}
               />
               <div className="flex flex-col justify-center">
@@ -1929,7 +1929,7 @@ ATURAN WAJIB & MUTLAK:
                   </span>
                 </div>
                 <span className={`text-[12px] font-semibold mt-1 whitespace-nowrap leading-tight ${
-                  isDarkTheme ? 'text-zinc-400' : 'text-[#526170]'
+                  isDarkTheme ? 'text-slate-400' : 'text-[#526170]'
                 }`}>
                   Ti Téks Jadi Sora
                 </span>
@@ -1938,16 +1938,16 @@ ATURAN WAJIB & MUTLAK:
 
             {/* Desktop Menu (Segmented Pill Bar) */}
             <div className="hidden md:flex items-center justify-center shrink-0">
-              <div className={`flex items-center gap-1 p-1 rounded-full border shadow-2xs ${isDarkTheme ? 'bg-[#141620] border-[#222634]' : 'bg-slate-100 border-slate-200'}`}>
+              <div className={`flex items-center gap-1 p-1 rounded-full border shadow-2xs ${isDarkTheme ? 'bg-[#141A29] border-slate-800' : 'bg-slate-100 border-slate-200'}`}>
                 {/* Posisi 1: STUDIO */}
                 <button 
                   onClick={() => setView('studio')} 
-                  className={`h-9 px-4 sm:px-5 rounded-full text-xs font-black transition-all flex items-center gap-2 whitespace-nowrap shrink-0 ${
+                  className={`h-9 px-4 sm:px-5 rounded-full text-xs font-bold transition-all flex items-center gap-2 whitespace-nowrap shrink-0 active:scale-[0.98] ${
                     view === 'studio' 
                       ? isDarkTheme
-                        ? 'bg-[#CCFF00] text-black font-black shadow-[0_0_15px_rgba(204,255,0,0.25)]'
-                        : 'bg-white text-slate-950 shadow-sm border border-slate-200/80' 
-                      : isDarkTheme ? 'text-zinc-400 hover:text-white hover:bg-zinc-800/60' : 'text-slate-600 hover:text-slate-950 hover:bg-slate-200/60'
+                        ? 'bg-emerald-500 text-slate-950 font-black shadow-sm'
+                        : 'bg-[#064E3B] text-white shadow-sm' 
+                      : isDarkTheme ? 'text-slate-400 hover:text-white hover:bg-slate-800/60' : 'text-slate-600 hover:text-slate-950 hover:bg-slate-200/60'
                   }`}
                 >
                   <Mic className="w-3.5 h-3.5 stroke-[2.5]" />
@@ -1957,12 +1957,12 @@ ATURAN WAJIB & MUTLAK:
                 {/* Posisi 2: ILM MODE */}
                 <button 
                   onClick={() => setView('ads')} 
-                  className={`h-9 px-4 sm:px-5 rounded-full text-xs font-black transition-all flex items-center gap-2 whitespace-nowrap shrink-0 ${
+                  className={`h-9 px-4 sm:px-5 rounded-full text-xs font-bold transition-all flex items-center gap-2 whitespace-nowrap shrink-0 active:scale-[0.98] ${
                     view === 'ads' 
                       ? isDarkTheme
-                        ? 'bg-[#CCFF00] text-black font-black shadow-[0_0_15px_rgba(204,255,0,0.25)]'
-                        : 'bg-white text-slate-950 shadow-sm border border-slate-200/80' 
-                      : isDarkTheme ? 'text-zinc-400 hover:text-white hover:bg-zinc-800/60' : 'text-slate-600 hover:text-slate-950 hover:bg-slate-200/60'
+                        ? 'bg-emerald-500 text-slate-950 font-black shadow-sm'
+                        : 'bg-[#064E3B] text-white shadow-sm' 
+                      : isDarkTheme ? 'text-slate-400 hover:text-white hover:bg-slate-800/60' : 'text-slate-600 hover:text-slate-950 hover:bg-slate-200/60'
                   }`}
                   title="Mode Iklan Layanan Masyarakat (ILM)"
                 >
@@ -1973,20 +1973,20 @@ ATURAN WAJIB & MUTLAK:
                 {/* Posisi 3: RIWAYAT */}
                 <button 
                   onClick={() => setView('history')} 
-                  className={`h-9 px-4 sm:px-5 rounded-full text-xs font-black transition-all flex items-center gap-2 whitespace-nowrap shrink-0 ${
+                  className={`h-9 px-4 sm:px-5 rounded-full text-xs font-bold transition-all flex items-center gap-2 whitespace-nowrap shrink-0 active:scale-[0.98] ${
                     view === 'history' 
                       ? isDarkTheme
-                        ? 'bg-[#CCFF00] text-black font-black shadow-[0_0_15px_rgba(204,255,0,0.25)]'
-                        : 'bg-white text-slate-950 shadow-sm border border-slate-200/80' 
-                      : isDarkTheme ? 'text-zinc-400 hover:text-white hover:bg-zinc-800/60' : 'text-slate-600 hover:text-slate-950 hover:bg-slate-200/60'
+                        ? 'bg-emerald-500 text-slate-950 font-black shadow-sm'
+                        : 'bg-[#064E3B] text-white shadow-sm' 
+                      : isDarkTheme ? 'text-slate-400 hover:text-white hover:bg-slate-800/60' : 'text-slate-600 hover:text-slate-950 hover:bg-slate-200/60'
                   }`}
                 >
                   <History className="w-3.5 h-3.5" />
                   <span>RIWAYAT</span>
                   <span className={`text-[10px] px-1.5 py-0.2 rounded-full font-bold shrink-0 ${
                     view === 'history' 
-                      ? isDarkTheme ? 'bg-black text-[#CCFF00]' : 'bg-slate-100 text-slate-800' 
-                      : isDarkTheme ? 'bg-zinc-800 text-zinc-300' : 'bg-slate-200 text-slate-700'
+                      ? isDarkTheme ? 'bg-slate-950 text-emerald-400' : 'bg-emerald-950 text-emerald-200' 
+                      : isDarkTheme ? 'bg-slate-800 text-slate-300' : 'bg-slate-200 text-slate-700'
                   }`}>
                     {history.length}
                   </span>
@@ -2124,18 +2124,18 @@ ATURAN WAJIB & MUTLAK:
                 {isDarkTheme ? <Moon className="w-4 h-4 fill-current text-[#CCFF00]" /> : <Sun className="w-4 h-4 fill-current text-amber-500" />}
               </button>
 
-              {/* Indikator Lampu API */}
+              {/* Indikator Lampu Status API (Hijau: Siap, Kuning: Belum Konfigurasi, Merah: Limit) */}
               <button
                 type="button"
                 onClick={() => setShowApiKeyModal(true)}
-                className={`h-9 w-9 rounded-full border transition-all flex items-center justify-center relative shrink-0 shadow-xs ${
+                className={`h-9 px-3 rounded-full border transition-all flex items-center gap-2 shrink-0 shadow-xs font-bold text-xs active:scale-[0.98] ${
                   apiQuotaStatus === 'limited'
-                    ? 'bg-rose-950/80 border-rose-500 text-rose-300 hover:bg-rose-900 animate-pulse'
+                    ? 'bg-rose-950/80 border-rose-500 text-rose-300 hover:bg-rose-900 animate-pulse ring-2 ring-rose-500/50'
                     : apiQuotaStatus === 'active'
-                    ? isDarkTheme ? 'bg-[#14161B] border-[#20232B] hover:bg-[#181A20]' : 'bg-emerald-50 border-emerald-200 hover:bg-emerald-100'
+                    ? isDarkTheme ? 'bg-[#141A29] border-emerald-500/30 text-emerald-400 hover:border-emerald-500' : 'bg-emerald-50 border-emerald-200 text-[#064E3B] hover:bg-emerald-100'
                     : apiQuotaStatus === 'unconfigured'
-                    ? 'bg-amber-950/40 border-amber-500/60 hover:bg-amber-900/40'
-                    : 'bg-zinc-800 border-zinc-700'
+                    ? 'bg-amber-950/40 border-amber-500/60 text-amber-300 hover:bg-amber-900/40'
+                    : 'bg-slate-800 border-slate-700 text-slate-300'
                 }`}
                 title={
                   apiQuotaStatus === 'limited' ? "PERINGATAN: Kuota API Limit (Klik untuk kelola kunci)" :
@@ -2143,18 +2143,21 @@ ATURAN WAJIB & MUTLAK:
                   apiQuotaStatus === 'unconfigured' ? "Kunci API Belum Dikonfigurasi" : "Status API Key"
                 }
               >
-                <span className="relative flex h-3 w-3 items-center justify-center">
+                <span className="relative flex h-2.5 w-2.5 items-center justify-center">
                   {apiQuotaStatus === 'limited' && (
                     <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-rose-400 opacity-75"></span>
                   )}
                   {apiQuotaStatus === 'active' && (
-                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#CCFF00] opacity-75"></span>
+                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
                   )}
-                  <span className={`relative inline-flex rounded-full h-2.5 w-2.5 ${
+                  <span className={`relative inline-flex rounded-full h-2 w-2 ${
                     apiQuotaStatus === 'limited' ? 'bg-rose-500 shadow-[0_0_8px_rgba(244,63,94,0.9)]' :
-                    apiQuotaStatus === 'active' ? 'bg-[#CCFF00] shadow-[0_0_8px_#CCFF00]' :
-                    apiQuotaStatus === 'unconfigured' ? 'bg-amber-400' : 'bg-zinc-400'
+                    apiQuotaStatus === 'active' ? 'bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.8)]' :
+                    apiQuotaStatus === 'unconfigured' ? 'bg-amber-400' : 'bg-slate-400'
                   }`}></span>
+                </span>
+                <span className="hidden sm:inline">
+                  {apiQuotaStatus === 'limited' ? 'API Limit (429)' : apiQuotaStatus === 'active' ? 'API Siap' : 'Set Key'}
                 </span>
               </button>
 
@@ -2867,13 +2870,13 @@ ATURAN WAJIB & MUTLAK:
                           handlePreviewVoice(v, e);
                         }
                       }}
-                      className={`p-3.5 sm:p-4 rounded-2xl border transition-all duration-150 flex items-center justify-between cursor-pointer select-none group ${
+                      className={`p-3.5 sm:p-4 rounded-2xl border transition-all duration-150 flex items-center justify-between cursor-pointer select-none group active:scale-[0.99] ${
                         isSelected
                           ? isDarkTheme 
-                            ? 'border-2 border-[#CCFF00] bg-[#CCFF00]/10 shadow-[0_0_20px_rgba(204,255,0,0.18)]' 
-                            : 'border-2 border-slate-900 bg-slate-50/80 shadow-sm'
+                            ? 'border-2 border-emerald-500 bg-emerald-500/10 shadow-[0_0_20px_rgba(16,185,129,0.18)]' 
+                            : 'border-2 border-[#064E3B] bg-emerald-50/70 shadow-sm'
                           : isDarkTheme 
-                            ? 'border border-[#222634] bg-[#141620] hover:border-[#33384A] hover:bg-[#1A1D2B]' 
+                            ? 'border border-slate-800 bg-[#141A29] hover:border-slate-700 hover:bg-[#1A2236]' 
                             : 'border border-slate-200 bg-white hover:border-slate-300 hover:bg-slate-50/70 shadow-2xs'
                       }`}
                     >
@@ -2881,14 +2884,14 @@ ATURAN WAJIB & MUTLAK:
                         {/* Avatar Icon */}
                         <div className={`w-11 h-11 rounded-full flex items-center justify-center shrink-0 transition-transform ${
                           isSelected
-                            ? isDarkTheme ? 'bg-[#CCFF00] text-black font-bold shadow-sm' : 'bg-slate-900 text-white shadow-sm'
-                            : isDarkTheme ? 'bg-[#222636] text-zinc-400 group-hover:text-zinc-200' : 'bg-slate-100 text-slate-600 group-hover:text-slate-900'
+                            ? isDarkTheme ? 'bg-emerald-500 text-slate-950 font-bold shadow-sm' : 'bg-[#064E3B] text-white shadow-sm'
+                            : isDarkTheme ? 'bg-slate-800 text-slate-400 group-hover:text-slate-200' : 'bg-slate-100 text-slate-600 group-hover:text-slate-900'
                         }`}>
                           {isPlaying ? (
                             <div className="flex items-center gap-0.5 h-3.5">
-                              <span className={`w-1 h-2.5 rounded-full animate-bounce ${isDarkTheme ? 'bg-black' : 'bg-white'}`} />
-                              <span className={`w-1 h-4 rounded-full animate-bounce [animation-delay:0.15s] ${isDarkTheme ? 'bg-black' : 'bg-white'}`} />
-                              <span className={`w-1 h-3 rounded-full animate-bounce [animation-delay:0.3s] ${isDarkTheme ? 'bg-black' : 'bg-white'}`} />
+                              <span className={`w-1 h-2.5 rounded-full animate-bounce ${isDarkTheme ? 'bg-slate-950' : 'bg-white'}`} />
+                              <span className={`w-1 h-4 rounded-full animate-bounce [animation-delay:0.15s] ${isDarkTheme ? 'bg-slate-950' : 'bg-white'}`} />
+                              <span className={`w-1 h-3 rounded-full animate-bounce [animation-delay:0.3s] ${isDarkTheme ? 'bg-slate-950' : 'bg-white'}`} />
                             </div>
                           ) : (
                             <User className="w-5 h-5 stroke-[2.2]" />
@@ -2899,7 +2902,7 @@ ATURAN WAJIB & MUTLAK:
                         <div className="min-w-0">
                           <h4 className={`font-bold text-sm truncate flex items-center gap-1.5 ${
                             isSelected 
-                              ? isDarkTheme ? 'text-[#CCFF00] font-black' : 'text-slate-950 font-black' 
+                              ? isDarkTheme ? 'text-emerald-400 font-black' : 'text-[#064E3B] font-black' 
                               : isDarkTheme ? 'text-zinc-100' : 'text-slate-900'
                           }`}>
                             <span>{v.name}</span>
@@ -3052,22 +3055,22 @@ ATURAN WAJIB & MUTLAK:
               <button
                 disabled={isGenerating || !text.trim()}
                 onClick={handleGenerateAudio}
-                className={`w-full flex items-center justify-center gap-3 py-4 rounded-2xl font-black text-base transition-all ${
+                className={`w-full flex items-center justify-center gap-3 py-4 rounded-2xl font-black text-base transition-all active:scale-[0.98] ${
                   isGenerating || !text.trim() 
-                    ? isDarkTheme ? 'bg-zinc-800/80 text-zinc-500 border border-zinc-700/60 cursor-not-allowed' : 'bg-slate-100 text-slate-400 border border-slate-200 cursor-not-allowed'
+                    ? isDarkTheme ? 'bg-slate-800/80 text-slate-500 border border-slate-700/60 cursor-not-allowed' : 'bg-slate-100 text-slate-400 border border-slate-200 cursor-not-allowed'
                     : isDarkTheme 
-                      ? 'bg-[#CCFF00] hover:bg-[#b8e600] text-black shadow-lg shadow-[#CCFF00]/20 active:scale-[0.99] cursor-pointer' 
-                      : 'bg-slate-950 text-white hover:bg-slate-800 shadow-lg shadow-slate-950/15 active:scale-[0.99] cursor-pointer'
+                      ? 'bg-emerald-500 hover:bg-emerald-400 text-slate-950 shadow-lg shadow-emerald-500/20 cursor-pointer' 
+                      : 'bg-[#064E3B] text-white hover:bg-[#043A2C] shadow-lg shadow-emerald-950/15 cursor-pointer'
                 }`}
               >
                 {isGenerating ? (
                   <>
-                    <Loader2 className={`animate-spin w-5 h-5 ${isDarkTheme ? 'text-black' : 'text-white'}`} />
+                    <Loader2 className={`animate-spin w-5 h-5 ${isDarkTheme ? 'text-slate-950' : 'text-white'}`} />
                     <span>{progressStatus || "Menyintesis suara..."}</span>
                   </>
                 ) : (
                   <>
-                    <Play className={`fill-current w-5 h-5 ${isDarkTheme ? 'text-black' : 'text-white'}`} />
+                    <Play className={`fill-current w-5 h-5 ${isDarkTheme ? 'text-slate-950' : 'text-white'}`} />
                     <span>HASILKAN SUARA</span>
                   </>
                 )}
@@ -3085,17 +3088,17 @@ ATURAN WAJIB & MUTLAK:
                         {progressStatus || "Menyintesis suara..."}
                       </span>
                     </div>
-                    <span className={`font-mono font-black text-sm shrink-0 ${isDarkTheme ? 'text-[#CCFF00]' : 'text-slate-800'}`}>
+                    <span className={`font-mono font-black text-sm shrink-0 ${isDarkTheme ? 'text-emerald-400' : 'text-[#064E3B]'}`}>
                       {generationProgress}%
                     </span>
                   </div>
 
                   <div className={`w-full h-3 rounded-full overflow-hidden p-0.5 border ${
-                    isDarkTheme ? 'bg-[#0E1017] border-[#262B3A]' : 'bg-slate-100 border-slate-200'
+                    isDarkTheme ? 'bg-[#0E1017] border-slate-800' : 'bg-slate-100 border-slate-200'
                   }`}>
                     <div 
                       className={`h-full rounded-full transition-all duration-300 ease-out relative overflow-hidden shadow-xs ${
-                        isDarkTheme ? 'bg-[#CCFF00]' : 'bg-slate-900'
+                        isDarkTheme ? 'bg-emerald-500' : 'bg-[#064E3B]'
                       }`}
                       style={{ width: `${Math.max(6, Math.min(100, generationProgress))}%` }}
                     >
@@ -3104,7 +3107,7 @@ ATURAN WAJIB & MUTLAK:
                   </div>
 
                   <div className={`flex items-center justify-between text-[11px] ${subTextColor}`}>
-                    <span>Karakter: <strong className={isDarkTheme ? 'text-zinc-200' : 'text-slate-800'}>{selectedVoice.name}</strong> • Vokal: <strong className={isDarkTheme ? 'text-zinc-200' : 'text-slate-800'}>{selectedVoice.desc || selectedVoice.accent || 'Alami'}</strong></span>
+                    <span>Karakter: <strong className={isDarkTheme ? 'text-slate-200' : 'text-slate-800'}>{selectedVoice.name}</strong> • Vokal: <strong className={isDarkTheme ? 'text-slate-200' : 'text-slate-800'}>{selectedVoice.desc || selectedVoice.accent || 'Alami'}</strong></span>
                     <span>{totalChunksCount > 1 ? `Segmen ${currentChunkIndex} dari ${totalChunksCount}` : 'Sintesis Akustik Alami'}</span>
                   </div>
                 </div>
@@ -3113,16 +3116,16 @@ ATURAN WAJIB & MUTLAK:
               {/* Player Output with Studio Resampling Master Selector */}
               {audioUrl && (
                 <div className={`rounded-3xl p-6 border shadow-2xl animate-in slide-in-from-bottom-4 space-y-4 transition-colors ${
-                  isDarkTheme ? 'border-[#282D3D] bg-[#141620] text-zinc-100' : 'border-slate-200 bg-white text-slate-900'
+                  isDarkTheme ? 'border-slate-800 bg-[#141A29] text-slate-100' : 'border-slate-200 bg-white text-slate-900'
                 }`}>
                   <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                     <div>
                       <div className="flex items-center gap-2">
                         <span className={`text-sm font-bold flex items-center gap-2 uppercase tracking-wide ${headingColor}`}>
-                          <CheckCircle className={`w-5 h-5 ${isDarkTheme ? 'text-[#CCFF00]' : 'text-emerald-600'}`} /> Audio Selesai Diproses
+                          <CheckCircle className="w-5 h-5 text-emerald-600" /> Audio Selesai Diproses
                         </span>
                         <span className={`text-[10px] font-mono font-bold px-2 py-0.5 rounded border ${
-                          isDarkTheme ? 'border-[#282D3D] bg-[#181B26] text-[#CCFF00]' : 'border-slate-200 bg-slate-100 text-slate-800'
+                          isDarkTheme ? 'border-slate-800 bg-[#181B26] text-emerald-400' : 'border-slate-200 bg-emerald-50 text-[#064E3B]'
                         }`}>
                           {audioSampleRate === 48000 ? 'WAV 48 kHz (Broadcast)' : audioSampleRate === 44100 ? 'WAV 44.1 kHz (CD Studio)' : 'WAV 24 kHz (Vocoder)'}
                         </span>
@@ -3135,8 +3138,8 @@ ATURAN WAJIB & MUTLAK:
                     <a 
                       href={audioUrl} 
                       download={`gentra-${selectedVoice.name.toLowerCase().replace(/\s+/g, '-')}-${audioSampleRate / 1000}khz.wav`} 
-                      className={`px-5 py-2.5 font-extrabold rounded-xl transition-all flex items-center justify-center gap-2 text-xs shadow-md shrink-0 ${
-                        isDarkTheme ? 'bg-[#CCFF00] hover:bg-[#b8e600] text-black font-black shadow-lg shadow-[#CCFF00]/25' : 'bg-slate-950 hover:bg-slate-800 text-white shadow-slate-950/20'
+                      className={`px-5 py-2.5 font-bold rounded-xl transition-all flex items-center justify-center gap-2 text-xs shadow-md shrink-0 active:scale-[0.98] ${
+                        isDarkTheme ? 'bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black shadow-lg shadow-emerald-500/25' : 'bg-[#064E3B] hover:bg-[#043A2C] text-white shadow-emerald-950/20'
                       }`}
                     >
                       <Download className="w-4 h-4 stroke-[2.5]" /> UNDUH WAV ({audioSampleRate / 1000} kHz)
@@ -3145,22 +3148,22 @@ ATURAN WAJIB & MUTLAK:
 
                   {/* Resampling Format Quick Selector */}
                   <div className={`p-3 rounded-2xl border flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 transition-colors ${
-                    isDarkTheme ? 'border-[#222634] bg-[#0E1017]' : 'border-slate-200 bg-slate-50'
+                    isDarkTheme ? 'border-slate-800 bg-[#0E1017]' : 'border-slate-200 bg-slate-50'
                   }`}>
                     <div className="flex items-center gap-2">
-                      <Sliders className={`w-4 h-4 ${isDarkTheme ? 'text-[#CCFF00]' : 'text-slate-700'}`} />
-                      <span className={`text-xs font-bold ${isDarkTheme ? 'text-zinc-200' : 'text-slate-800'}`}>Standar Format Master Audio:</span>
+                      <Sliders className={`w-4 h-4 ${isDarkTheme ? 'text-emerald-400' : 'text-[#064E3B]'}`} />
+                      <span className={`text-xs font-bold ${isDarkTheme ? 'text-slate-200' : 'text-slate-800'}`}>Standar Format Master Audio:</span>
                     </div>
 
                     <div className={`flex items-center gap-1.5 p-1 rounded-xl border text-xs font-bold ${
-                      isDarkTheme ? 'border-[#222634] bg-[#12141D]' : 'border-slate-200 bg-white'
+                      isDarkTheme ? 'border-slate-800 bg-[#12141D]' : 'border-slate-200 bg-white'
                     }`}>
                       <button
                         onClick={() => handleChangeSampleRate(48000)}
                         className={`px-3 py-1 rounded-lg transition-all ${
                           audioSampleRate === 48000 
-                            ? (isDarkTheme ? 'bg-[#CCFF00] text-black shadow-xs font-black' : 'bg-slate-900 text-white shadow-xs font-bold') 
-                            : (isDarkTheme ? 'text-zinc-400 hover:text-white' : 'text-slate-600 hover:text-slate-900')
+                            ? (isDarkTheme ? 'bg-emerald-500 text-slate-950 shadow-xs font-black' : 'bg-[#064E3B] text-white shadow-xs font-bold') 
+                            : (isDarkTheme ? 'text-slate-400 hover:text-white' : 'text-slate-600 hover:text-slate-900')
                         }`}
                         title="Standar Video Editing: Premiere Pro, DaVinci Resolve, Final Cut Pro"
                       >
