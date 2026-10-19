@@ -364,7 +364,6 @@ export const LandingPage = ({ onOpenLogin }) => {
   const [personaFilter, setPersonaFilter] = useState('Semua');
   const [searchQuery, setSearchQuery] = useState('');
   const [unavailableVoiceToast, setUnavailableVoiceToast] = useState(null);
-  const [heroFeaturedVoice, setHeroFeaturedVoice] = useState('Abah');
   const landingAudioRef = useRef(null);
   const landingAudioCache = useRef({});
 
@@ -439,7 +438,6 @@ export const LandingPage = ({ onOpenLogin }) => {
   };
 
   const currentPlayingPersona = personas.find(p => p.name === playingVoice) || null;
-  const heroVoiceObj = personas.find(p => p.name === heroFeaturedVoice) || FULL_PERSONAS.find(p => p.name === 'Abah');
 
   return (
     <div className="min-h-[100dvh] bg-[#F8FAF9] text-slate-900 font-sans selection:bg-[#064E3B] selection:text-white">
@@ -506,182 +504,60 @@ export const LandingPage = ({ onOpenLogin }) => {
         </div>
 
         <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-center">
+          <div className="max-w-2xl sm:max-w-3xl space-y-6 text-left">
             
-            {/* Left Column (60%): Headline, Subtitle, and CTAs */}
-            <div className="lg:col-span-7 space-y-6 text-left">
-              
-              <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-emerald-50 border border-emerald-200 text-[#064E3B] text-xs font-bold">
-                <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-                <span>STANDAR PENYIARAN PEMPROV JABAR • 24.000 HZ LOSSLESS</span>
-              </div>
-
-              <div className="space-y-3">
-                <h1 className="text-4xl sm:text-5xl md:text-6xl font-black tracking-tight text-slate-950 leading-[1.08]">
-                  Ti Téks Jadi Sora. <br />
-                  <span className="text-[#064E3B]">Otentik Tatar Pasundan.</span>
-                </h1>
-                <p className="text-base sm:text-lg text-slate-600 font-medium leading-relaxed max-w-2xl">
-                  Platform sintesis vokal natural berstandar studio untuk Tim Komunikasi Publik Pemprov Jawa Barat. Menghadirkan 22 persona otentik <strong className="text-slate-900 font-bold">Khas Sunda & Nasional</strong>, mesin vokal <strong className="text-slate-900 font-bold">Broadcast 48kHz / 44.1kHz</strong>, dan generator naskah <strong className="text-slate-900 font-bold">Iklan Layanan Masyarakat (ILM)</strong>.
-                </p>
-              </div>
-
-              {/* Action Buttons */}
-              <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 pt-2">
-                <button
-                  onClick={onOpenLogin}
-                  className="px-7 py-3.5 rounded-xl bg-[#064E3B] hover:bg-[#043A2C] text-white text-sm font-bold shadow-lg shadow-emerald-900/15 hover:shadow-xl transition-all flex items-center justify-center gap-2.5 group active:scale-[0.98]"
-                >
-                  <Mic className="w-4 h-4 text-emerald-300" />
-                  <span>BUKA STUDIO VOICE OVER</span>
-                  <ArrowRight className="w-4 h-4 text-emerald-300 group-hover:translate-x-1 transition-transform" />
-                </button>
-
-                <a
-                  href="#persona"
-                  className="px-6 py-3.5 rounded-xl bg-white hover:bg-slate-50 border border-slate-200 text-slate-700 hover:text-slate-950 text-sm font-semibold shadow-xs hover:shadow-sm transition-all flex items-center justify-center gap-2 active:scale-[0.98]"
-                >
-                  <Headphones className="w-4 h-4 text-[#064E3B]" />
-                  <span>Dengarkan 22 Persona</span>
-                </a>
-              </div>
-
-              {/* Metric Strip (Divided hairline architecture) */}
-              <div className="pt-6 border-t border-slate-200 grid grid-cols-2 sm:grid-cols-4 gap-4 text-left">
-                <div>
-                  <span className="text-2xl font-black tracking-tight text-[#064E3B] block">22 Suara</span>
-                  <span className="text-xs text-slate-500 font-medium mt-0.5 block">8 Sunda + 14 Nasional</span>
-                </div>
-                <div>
-                  <span className="text-2xl font-black tracking-tight text-[#064E3B] block">48 & 44.1k</span>
-                  <span className="text-xs text-slate-500 font-medium mt-0.5 block">Broadcast WAV Standar</span>
-                </div>
-                <div>
-                  <span className="text-2xl font-black tracking-tight text-[#064E3B] block">Mode ILM</span>
-                  <span className="text-xs text-slate-500 font-medium mt-0.5 block">Naskah 30s & 60s Siap Siar</span>
-                </div>
-                <div>
-                  <span className="text-2xl font-black tracking-tight text-[#064E3B] block">Zero-Drift</span>
-                  <span className="text-xs text-slate-500 font-medium mt-0.5 block">Lossless PCM 24.000 Hz</span>
-                </div>
-              </div>
-
+            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-emerald-50 border border-emerald-200 text-[#064E3B] text-xs font-bold">
+              <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+              <span>STANDAR PENYIARAN PEMPROV JABAR • 24.000 HZ LOSSLESS</span>
             </div>
 
-            {/* Right Column (40%): Live Interactive Audio Preview Card */}
-            <div className="lg:col-span-5">
-              <div className="bg-white rounded-3xl p-6 sm:p-7 border border-slate-200/80 shadow-[0_20px_50px_-15px_rgba(6,78,59,0.12)] space-y-5 relative overflow-hidden">
-                
-                {/* Top Pill Bar: Persona Selector */}
-                <div className="flex items-center justify-between gap-3 border-b border-slate-100 pb-4">
-                  <div className="flex items-center gap-2">
-                    <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-ping" />
-                    <span className="text-xs font-black uppercase tracking-wider text-[#064E3B]">Audisi Cepat Persona</span>
-                  </div>
-                  <span className="text-[11px] font-mono px-2 py-0.5 rounded-full bg-slate-100 text-slate-600 font-bold border border-slate-200">
-                    Lossless PCM
-                  </span>
-                </div>
+            <div className="space-y-3">
+              <h1 className="text-4xl sm:text-5xl md:text-6xl font-black tracking-tight text-slate-950 leading-[1.08]">
+                Ti Téks Jadi Sora. <br />
+                <span className="text-[#064E3B]">Otentik Tatar Pasundan.</span>
+              </h1>
+              <p className="text-base sm:text-lg text-slate-700 font-medium leading-relaxed max-w-2xl bg-white/70 backdrop-blur-xs p-4 sm:p-5 rounded-2xl border border-white/80 shadow-2xs">
+                Platform sintesis vokal natural berstandar studio untuk Tim Komunikasi Publik Pemprov Jawa Barat. Menghadirkan 22 persona otentik <strong className="text-slate-900 font-bold">Khas Sunda & Nasional</strong>, mesin vokal <strong className="text-slate-900 font-bold">Broadcast 48kHz / 44.1kHz</strong>, dan generator naskah <strong className="text-slate-900 font-bold">Iklan Layanan Masyarakat (ILM)</strong>.
+              </p>
+            </div>
 
-                {/* Persona Selector Carousel Pills */}
-                <div className="flex items-center gap-1.5 overflow-x-auto pb-1 no-scrollbar">
-                  {[
-                    { name: 'Abah', tag: 'Sepuh Sunda' },
-                    { name: 'Anita', tag: 'Presenter Berita' },
-                    { name: 'Kang Asep', tag: 'Komunikatif' },
-                    { name: 'Maya', tag: 'Inspiratif' }
-                  ].map(item => (
-                    <button
-                      key={item.name}
-                      onClick={() => setHeroFeaturedVoice(item.name)}
-                      className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all whitespace-nowrap shrink-0 ${
-                        heroFeaturedVoice === item.name
-                          ? 'bg-[#064E3B] text-white shadow-sm'
-                          : 'bg-slate-100 hover:bg-slate-200 text-slate-600'
-                      }`}
-                    >
-                      {item.name}
-                    </button>
-                  ))}
-                </div>
+            {/* Action Buttons */}
+            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 pt-2">
+              <button
+                onClick={onOpenLogin}
+                className="px-7 py-3.5 rounded-xl bg-[#064E3B] hover:bg-[#043A2C] text-white text-sm font-bold shadow-lg shadow-emerald-900/15 hover:shadow-xl transition-all flex items-center justify-center gap-2.5 group active:scale-[0.98]"
+              >
+                <Mic className="w-4 h-4 text-emerald-300" />
+                <span>BUKA STUDIO VOICE OVER</span>
+                <ArrowRight className="w-4 h-4 text-emerald-300 group-hover:translate-x-1 transition-transform" />
+              </button>
 
-                {/* Main Featured Voice Display */}
-                <div className="bg-slate-50 rounded-2xl p-4 border border-slate-200/70 space-y-3">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-3">
-                      <div className="w-12 h-12 rounded-xl bg-emerald-100/80 text-[#064E3B] flex items-center justify-center font-black text-sm border border-emerald-200">
-                        {heroVoiceObj?.initials || heroVoiceObj?.name?.slice(0, 2).toUpperCase()}
-                      </div>
-                      <div>
-                        <h4 className="text-base font-black text-slate-900 leading-tight">
-                          {heroVoiceObj?.name}
-                        </h4>
-                        <span className="text-xs font-semibold text-slate-500 block">
-                          {heroVoiceObj?.role || heroVoiceObj?.desc}
-                        </span>
-                      </div>
-                    </div>
-                    <span className="text-[11px] font-bold px-2.5 py-1 rounded-full bg-white border border-slate-200 text-slate-700">
-                      {heroVoiceObj?.category}
-                    </span>
-                  </div>
+              <a
+                href="#persona"
+                className="px-6 py-3.5 rounded-xl bg-white/95 hover:bg-white backdrop-blur-md border border-slate-200 text-slate-700 hover:text-slate-950 text-sm font-semibold shadow-xs hover:shadow-sm transition-all flex items-center justify-center gap-2 active:scale-[0.98]"
+              >
+                <Headphones className="w-4 h-4 text-[#064E3B]" />
+                <span>Dengarkan 22 Persona</span>
+              </a>
+            </div>
 
-                  {/* Naskah Preview Quote */}
-                  <div className="p-3 rounded-xl bg-white border border-slate-200/80 text-xs text-slate-700 italic leading-relaxed">
-                    "{heroVoiceObj?.sampleText}"
-                  </div>
-
-                  {/* Waveform Equalizer Simulation */}
-                  <div className="pt-2 flex items-center justify-between gap-3">
-                    <div className="flex items-center gap-1.5 h-6 flex-1 bg-slate-100 px-3 rounded-lg border border-slate-200">
-                      {[40, 70, 90, 50, 30, 80, 100, 60, 45, 85, 95, 40, 75, 60, 35, 90, 70, 50].map((height, i) => (
-                        <span
-                          key={i}
-                          className={`w-1 rounded-full transition-all duration-300 ${
-                            playingVoice === heroVoiceObj?.name
-                              ? 'bg-emerald-600 animate-pulse'
-                              : 'bg-slate-300'
-                          }`}
-                          style={{ 
-                            height: playingVoice === heroVoiceObj?.name ? `${height}%` : '25%',
-                            animationDelay: `${i * 60}ms`
-                          }}
-                        />
-                      ))}
-                    </div>
-
-                    <button
-                      onClick={() => handlePlayVoicePreview(heroVoiceObj)}
-                      className={`h-10 px-4 rounded-xl font-bold text-xs flex items-center gap-2 transition-all active:scale-[0.98] ${
-                        playingVoice === heroVoiceObj?.name
-                          ? 'bg-slate-900 text-white'
-                          : 'bg-[#064E3B] hover:bg-[#043A2C] text-white shadow-sm'
-                      }`}
-                    >
-                      {playingVoice === heroVoiceObj?.name ? (
-                        <>
-                          <Pause className="w-3.5 h-3.5 fill-current" />
-                          <span>Jeda</span>
-                        </>
-                      ) : (
-                        <>
-                          <Play className="w-3.5 h-3.5 fill-current" />
-                          <span>Dengar</span>
-                        </>
-                      )}
-                    </button>
-                  </div>
-                </div>
-
-                {/* Bottom Card Action */}
-                <button
-                  onClick={onOpenLogin}
-                  className="w-full py-3 rounded-xl bg-slate-100 hover:bg-emerald-50 hover:text-[#064E3B] text-slate-700 text-xs font-bold transition-all border border-slate-200 flex items-center justify-center gap-2 group active:scale-[0.98]"
-                >
-                  <span>Gunakan {heroVoiceObj?.name} di Studio Voice Over</span>
-                  <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
-                </button>
-
+            {/* Metric Strip */}
+            <div className="pt-6 border-t border-slate-200/90 grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4 text-left max-w-2xl">
+              <div className="bg-white/80 backdrop-blur-md p-3.5 rounded-xl border border-white/90 shadow-2xs">
+                <span className="text-2xl font-black tracking-tight text-[#064E3B] block">22 Suara</span>
+                <span className="text-xs text-slate-500 font-medium mt-0.5 block leading-tight">8 Sunda + 14 Nasional</span>
+              </div>
+              <div className="bg-white/80 backdrop-blur-md p-3.5 rounded-xl border border-white/90 shadow-2xs">
+                <span className="text-2xl font-black tracking-tight text-[#064E3B] block">48 & 44.1k</span>
+                <span className="text-xs text-slate-500 font-medium mt-0.5 block leading-tight">Broadcast WAV Standar</span>
+              </div>
+              <div className="bg-white/80 backdrop-blur-md p-3.5 rounded-xl border border-white/90 shadow-2xs">
+                <span className="text-2xl font-black tracking-tight text-[#064E3B] block">Mode ILM</span>
+                <span className="text-xs text-slate-500 font-medium mt-0.5 block leading-tight">Naskah 30s & 60s Siap Siar</span>
+              </div>
+              <div className="bg-white/80 backdrop-blur-md p-3.5 rounded-xl border border-white/90 shadow-2xs">
+                <span className="text-2xl font-black tracking-tight text-[#064E3B] block">Zero-Drift</span>
+                <span className="text-xs text-slate-500 font-medium mt-0.5 block leading-tight">Lossless PCM 24.000 Hz</span>
               </div>
             </div>
 
