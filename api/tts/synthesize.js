@@ -21,13 +21,15 @@ export default async function handler(req, res) {
 
   try {
     const body = parseBody(req);
-    const { engine = 'gemini', text, voice, personaPrompt, speed, pitch, dialect } = body;
+    const { engine = 'gemini', text, voice, personaPrompt, speed, pitch, dialect, apiKey: clientApiKey } = body;
 
     if (!text || !text.trim()) {
       return res.status(400).json({ error: 'Parameter text tidak boleh kosong.' });
     }
 
     const envKeys = getEnvKeys();
+    const effectiveGeminiKey = clientApiKey || req.headers['x-api-key'] || req.headers['x-gemini-key'] || envKeys.GEMINI_API_KEY;
+
     let result;
 
     if (engine === 'gemini') {
@@ -37,7 +39,7 @@ export default async function handler(req, res) {
         personaPrompt,
         speed,
         dialect,
-        apiKey: envKeys.GEMINI_API_KEY
+        apiKey: effectiveGeminiKey
       });
     } else if (engine === 'elevenlabs') {
       result = await synthesizeElevenLabs({

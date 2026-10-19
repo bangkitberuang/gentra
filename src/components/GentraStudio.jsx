@@ -59,12 +59,12 @@ import { getUnifiedVoices, saveUnifiedVoices, GENTRA_VOICES_EVENT } from '../uti
 import { logAccountActivity } from '../utils/userManagement.js';
 
 // --- Konfigurasi Model (Google Gemini AI v1beta) ---
-const TTS_MODELS = ["gemini-3.8-flash-tts", "gemini-3.8-flash-lite-tts", "gemini-3.1-flash-tts-preview"];
-const TTS_MODEL = "gemini-3.8-flash-tts";
-const TTS_FALLBACK_MODEL = "gemini-3.8-flash-lite-tts";
-const TEXT_MODELS = ["gemini-3.8-flash", "gemini-3.7-flash", "gemini-3.6-flash"];
-const TEXT_MODEL = "gemini-3.8-flash";
-const TEXT_FALLBACK_MODEL = "gemini-3.7-flash";
+const TTS_MODELS = ["gemini-2.5-flash-preview-tts", "gemini-2.0-flash"];
+const TTS_MODEL = "gemini-2.5-flash-preview-tts";
+const TTS_FALLBACK_MODEL = "gemini-2.0-flash";
+const TEXT_MODELS = ["gemini-2.0-flash", "gemini-1.5-flash"];
+const TEXT_MODEL = "gemini-2.0-flash";
+const TEXT_FALLBACK_MODEL = "gemini-1.5-flash";
 
 // --- Karakter Suara Bawaan GENTRA (14 Persona Awal + 8 Persona Khas Sunda) ---
 const INITIAL_VOICES = [
@@ -867,7 +867,7 @@ export const GentraStudio = ({
 
     try {
       const res = await fetch(
-        `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.8-flash:generateContent?key=${targetKey}`,
+        `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${targetKey}`,
         {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },

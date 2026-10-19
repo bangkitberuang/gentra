@@ -126,7 +126,7 @@ async function generatePreview(item) {
 
   console.log(`[GENERATING] ${item.fileName} (${item.voice})...`);
 
-  const models = ['gemini-3.8-flash-tts', 'gemini-3.8-flash-lite-tts'];
+  const models = ['gemini-2.5-flash-preview-tts', 'gemini-2.0-flash'];
   let success = false;
 
   for (const model of models) {

@@ -81,7 +81,7 @@ export async function synthesizeGemini({ text, voice = 'Aoede', personaPrompt = 
   const systemInstructionText = `Karakter vokal: ${voice} (Base Voice ID: ${geminiPrebuiltVoice}). ${personaPrompt ? personaPrompt + ' ' : ''}${dialectDesc} Karakteristik vokal: ${speedDesc}.
 ATURAN MUTLAK: Langsung bacakan teks naskah dari kata pertama tanpa kalimat pengantar, tanpa sapaan, tanpa memperkenalkan diri, dan tanpa basa-basi apa pun.`;
 
-  const models = ['gemini-3.8-flash-tts', 'gemini-3.8-flash-lite-tts'];
+  const models = ['gemini-2.5-flash-preview-tts', 'gemini-2.0-flash'];
   let lastErr = null;
 
   for (const model of models) {

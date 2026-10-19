@@ -153,7 +153,7 @@ export const VoiceLabModal = ({
   isAdminUnlocked,
   setIsAdminUnlocked,
   user,
-  TTS_MODEL = 'gemini-3.8-flash-tts',
+  TTS_MODEL = 'gemini-2.5-flash-preview-tts',
   initialVoicesDefaults = [],
   initialTab = 'lab'
 }) => {

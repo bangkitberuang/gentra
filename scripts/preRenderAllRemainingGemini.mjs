@@ -40,7 +40,7 @@ const ITEMS = [
   { fileName: 'kang_asep.wav', voice: 'Orus', text: 'Hayu wargi sadaya, urang silih rojong ngawangun tatar Pasundan anu maju tur berakhlak.' }
 ];
 
-const MODELS = ['gemini-3.8-flash-tts', 'gemini-3.8-flash-lite-tts'];
+const MODELS = ['gemini-2.5-flash-preview-tts', 'gemini-2.0-flash'];
 
 async function renderItem(item) {
   const outDir = path.resolve('public/audio/previews');
