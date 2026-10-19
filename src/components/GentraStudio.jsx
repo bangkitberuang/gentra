@@ -58,7 +58,7 @@ import { safeGetItem, safeSetItem, sanitizeApiKey } from '../utils/safeStorage.j
 import { getUnifiedVoices, saveUnifiedVoices, GENTRA_VOICES_EVENT } from '../utils/voiceRegistry.js';
 import { logAccountActivity } from '../utils/userManagement.js';
 
-// --- Konfigurasi Model (Google Gemini AI v1beta) ---
+// Model configuration for Gemini TTS and text generation
 const TTS_MODELS = ["gemini-2.5-flash-preview-tts", "gemini-2.0-flash"];
 const TTS_MODEL = "gemini-2.5-flash-preview-tts";
 const TTS_FALLBACK_MODEL = "gemini-2.0-flash";
@@ -66,9 +66,9 @@ const TEXT_MODELS = ["gemini-2.0-flash", "gemini-1.5-flash"];
 const TEXT_MODEL = "gemini-2.0-flash";
 const TEXT_FALLBACK_MODEL = "gemini-1.5-flash";
 
-// --- Karakter Suara Bawaan GENTRA (14 Persona Awal + 8 Persona Khas Sunda) ---
+// Default personas (14 national + 8 Sundanese voices)
 const INITIAL_VOICES = [
-  // --- 14 Persona Bawaan Awal (Nasional) ---
+  // 14 national voices
   { id: 'Aoede', name: 'Anita', desc: 'Ramah & Ceria (Wanita)', gender: 'Female', category: 'Nasional', originalName: 'Anita', backendVoiceId: 'Aoede', geminiVoiceId: 'Aoede', accent: 'Nasional (Ramah)', isCustom: false },
   { id: 'Leda', name: 'Siti', desc: 'Lembut & Sopan (Wanita)', gender: 'Female', category: 'Nasional', originalName: 'Siti', backendVoiceId: 'Leda', geminiVoiceId: 'Leda', accent: 'Nasional (Lembut)', isCustom: false },
   { id: 'Charon', name: 'Mugi', desc: 'Deep & Naratif (Pria)', gender: 'Male', category: 'Nasional', originalName: 'Agus', backendVoiceId: 'Charon', geminiVoiceId: 'Charon', accent: 'Nasional (Naratif)', isCustom: false },
@@ -84,7 +84,7 @@ const INITIAL_VOICES = [
   { id: 'Iapetus', name: 'Eko', desc: 'Serius & Edukatif (Pria)', gender: 'Male', category: 'Nasional', originalName: 'Eko', backendVoiceId: 'Iapetus', geminiVoiceId: 'Iapetus', accent: 'Nasional (Edukatif)', isCustom: false },
   { id: 'Achernar', name: 'Laras', desc: 'Anggun & Elegan (Wanita)', gender: 'Female', category: 'Nasional', originalName: 'Laras', backendVoiceId: 'Achernar', geminiVoiceId: 'Achernar', accent: 'Nasional (Elegan)', isCustom: false },
 
-  // --- 8 Persona Khusus Khas Sunda ---
+  // 8 Sundanese voices
   { 
     id: 'Fenrir', 
     name: 'Abah', 
@@ -559,7 +559,7 @@ const getVoiceAvatarMeta = (v) => {
   };
 };
 
-// Smart Sentence Chunking (Mencegah Penurunan Kualitas Audio & Hemat Kuota API)
+// Splits text into natural sentence chunks within model character limits.
 const splitTextIntoNaturalChunks = (text, maxChars = 800) => {
   if (!text || !text.trim()) return [];
   const rawSentences = text
@@ -599,13 +599,13 @@ const splitTextIntoNaturalChunks = (text, maxChars = 800) => {
   return chunks;
 };
 
-// Exponential Backoff Fetch with Multi-Key Pool (Up to 8 Keys) Fail-Safe
+// Exponential backoff fetch supporting failover across configured keys.
 const fetchWithRetry = async (url, options, retries = 5, backoff = 1000, keyPool = [], keyIndex = 0) => {
   try {
     const res = await fetch(url, options);
     if (!res.ok) {
       const errBody = await res.text();
-      // Fail-Safe: Jika terkena HTTP 429 (quota limit) atau 503, dan ada kunci lain di keyPool
+      // Failover to next key in pool on 429 quota exhaustion or 503 unavailability.
       if ((res.status === 429 || res.status === 503) && keyPool.length > 1 && url.includes('key=')) {
         const nextIdx = (keyIndex + 1) % keyPool.length;
         const nextKey = keyPool[nextIdx];
@@ -1466,7 +1466,7 @@ export const GentraStudio = ({
     }
   };
 
-  // --- Whisper Speech-to-Text Transcription Handler ---
+  // Transcribes user-provided audio via Gemini speech-to-text.
   const handleTranscribeAudio = async () => {
     if (!whisperFile) {
       alert("Silakan pilih file audio terlebih dahulu.");
@@ -1545,7 +1545,7 @@ export const GentraStudio = ({
     }
   };
 
-  // Terapkan hasil transkripsi ke editor utama
+  // Appends transcription output to the main script editor.
   const handleApplyTranscribedText = () => {
     if (!transcribedText.trim()) return;
     setText(prev => (prev ? prev + "\n\n" + transcribedText : transcribedText));
@@ -2028,7 +2028,7 @@ ATURAN WAJIB & MUTLAK:
                       </span>
                     </div>
 
-                    {/* 1. Gatot Kaca (Utama) */}
+                    {/* Gatot Kaca engine */}
                     <button
                       type="button"
                       onClick={() => {
@@ -2058,7 +2058,7 @@ ATURAN WAJIB & MUTLAK:
                       )}
                     </button>
 
-                    {/* 2. Kian Santang (Protokoler) */}
+                    {/* Kian Santang engine */}
                     <button
                       type="button"
                       onClick={() => {
@@ -2089,7 +2089,7 @@ ATURAN WAJIB & MUTLAK:
                     </button>
 
                     
-                    {/* Footer: Detail Server Modal trigger */}
+                    {/* Server details modal trigger */}
                     <div className="mt-2 pt-1.5 border-t border-zinc-100 dark:border-zinc-800">
                       <button
                         type="button"
@@ -2110,7 +2110,7 @@ ATURAN WAJIB & MUTLAK:
                 )}
               </div>
 
-              {/* Tombol Switch Tema Gelap/Terang */}
+              {/* Theme toggle */}
               <button 
                 type="button"
                 onClick={toggleTheme}
@@ -2124,7 +2124,7 @@ ATURAN WAJIB & MUTLAK:
                 {isDarkTheme ? <Moon className="w-4 h-4 fill-current text-[#CCFF00]" /> : <Sun className="w-4 h-4 fill-current text-amber-500" />}
               </button>
 
-              {/* Indikator Lampu Status API (Hijau: Siap, Kuning: Belum Konfigurasi, Merah: Limit) */}
+              {/* API status indicator */}
               <button
                 type="button"
                 onClick={() => setShowApiKeyModal(true)}
@@ -2213,31 +2213,37 @@ ATURAN WAJIB & MUTLAK:
               </button>
             </div>
 
-            {/* Mobile Toggle */}
             <div className="flex md:hidden items-center gap-2 z-20">
               <button 
                 onClick={() => setShowVoiceLabModal(true)} 
-                className="relative p-2 text-amber-400 hover:text-amber-300"
+                className="relative min-w-[44px] min-h-[44px] rounded-xl flex items-center justify-center text-amber-500 hover:text-amber-400 active:scale-95 transition-all"
                 title="Lab Suara & Backend (Kurasi & Hide/Unhide)"
+                aria-label="Buka Lab Suara"
               >
                 <FlaskConical className="w-5 h-5" />
               </button>
               <button 
                 onClick={() => setShowApiKeyModal(true)} 
-                className="relative p-2 text-zinc-400 hover:text-white"
+                className="relative min-w-[44px] min-h-[44px] rounded-xl flex items-center justify-center text-zinc-500 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-white active:scale-95 transition-all"
                 title="Pengaturan API"
+                aria-label="Pengaturan API"
               >
                 <Key className="w-5 h-5" />
-                <span className={`absolute top-1 right-1 w-2.5 h-2.5 rounded-full ${
+                <span className={`absolute top-2 right-2 w-2.5 h-2.5 rounded-full ${
                   apiQuotaStatus === 'limited' ? 'bg-rose-500 animate-ping' :
                   apiQuotaStatus === 'active' ? 'bg-emerald-400' : 'bg-amber-400'
                 }`}></span>
-                <span className={`absolute top-1 right-1 w-2.5 h-2.5 rounded-full ${
+                <span className={`absolute top-2 right-2 w-2.5 h-2.5 rounded-full ${
                   apiQuotaStatus === 'limited' ? 'bg-rose-500' :
                   apiQuotaStatus === 'active' ? 'bg-emerald-400' : 'bg-amber-400'
                 }`}></span>
               </button>
-              <button onClick={() => setIsMenuOpen(!isMenuOpen)} className="p-2 text-zinc-600">
+              <button 
+                onClick={() => setIsMenuOpen(!isMenuOpen)} 
+                className="min-w-[44px] min-h-[44px] rounded-xl flex items-center justify-center text-zinc-700 dark:text-zinc-300 active:scale-95 transition-all"
+                aria-label={isMenuOpen ? "Tutup menu studio" : "Buka menu studio"}
+                aria-expanded={isMenuOpen}
+              >
                 {isMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
               </button>
             </div>
@@ -2245,39 +2251,44 @@ ATURAN WAJIB & MUTLAK:
           </div>
         </div>
 
-        {/* Mobile Dropdown */}
         {isMenuOpen && (
           <div className={`md:hidden border-b px-4 py-4 flex flex-col gap-2 transition-colors ${
             isDarkTheme ? 'bg-[#14161B] border-[#20232B] text-white' : 'bg-white border-zinc-200 text-zinc-700'
           }`}>
-            <button onClick={() => handleSwitchView('studio')} className={`w-full px-4 py-3 rounded-2xl text-sm font-bold flex items-center gap-3 ${view === 'studio' ? (isDarkTheme ? 'bg-[#CCFF00] text-black' : 'bg-[#0C4E34] text-white') : isDarkTheme ? 'text-zinc-300 hover:bg-[#181A20]' : 'text-zinc-700 hover:bg-zinc-100'}`}>
+            <button onClick={() => handleSwitchView('studio')} className={`w-full min-h-[44px] px-4 py-3 rounded-2xl text-sm font-bold flex items-center gap-3 ${view === 'studio' ? (isDarkTheme ? 'bg-[#064E3B] text-emerald-300' : 'bg-[#064E3B] text-white') : isDarkTheme ? 'text-zinc-300 hover:bg-[#181A20]' : 'text-zinc-700 hover:bg-zinc-100'}`}>
               <Mic className="w-4 h-4" /> Studio
             </button>
-            <button onClick={() => handleSwitchView('ads')} className={`w-full px-4 py-3 rounded-2xl text-sm font-bold flex items-center gap-3 ${view === 'ads' ? (isDarkTheme ? 'bg-[#CCFF00] text-black' : 'bg-[#0C4E34] text-white') : isDarkTheme ? 'text-zinc-300 hover:bg-[#181A20]' : 'text-zinc-700 hover:bg-zinc-100'}`}>
+            <button onClick={() => handleSwitchView('ads')} className={`w-full min-h-[44px] px-4 py-3 rounded-2xl text-sm font-bold flex items-center gap-3 ${view === 'ads' ? (isDarkTheme ? 'bg-[#064E3B] text-emerald-300' : 'bg-[#064E3B] text-white') : isDarkTheme ? 'text-zinc-300 hover:bg-[#181A20]' : 'text-zinc-700 hover:bg-zinc-100'}`}>
               <Megaphone className="w-4 h-4" /> Iklan Layanan Masyarakat (ILM)
             </button>
-            <button onClick={() => { setIsMenuOpen(false); if (onOpenEngineModal) onOpenEngineModal(); }} className={`w-full px-4 py-3 rounded-2xl text-sm font-bold flex items-center gap-3 ${isDarkTheme ? 'text-zinc-200 hover:bg-[#181A20]' : 'text-emerald-700 hover:bg-zinc-100'}`}>
-              <Server className={`w-4 h-4 ${isDarkTheme ? 'text-[#CCFF00]' : 'text-[#F59E0B]'}`} /> Server: {activeEngine === 'azure' ? 'Kian Santang' : 'Gatot Kaca'} (Ganti)
+            <button onClick={() => { setIsMenuOpen(false); if (onOpenEngineModal) onOpenEngineModal(); }} className={`w-full min-h-[44px] px-4 py-3 rounded-2xl text-sm font-bold flex items-center gap-3 ${isDarkTheme ? 'text-zinc-200 hover:bg-[#181A20]' : 'text-emerald-700 hover:bg-zinc-100'}`}>
+              <Server className={`w-4 h-4 ${isDarkTheme ? 'text-emerald-400' : 'text-[#F59E0B]'}`} /> Server: {activeEngine === 'azure' ? 'Kian Santang' : 'Gatot Kaca'} (Ganti)
             </button>
-            <button onClick={() => { setIsMenuOpen(false); setShowVoiceLabModal(true); }} className={`w-full px-4 py-3 rounded-2xl text-sm font-bold flex items-center gap-3 ${isDarkTheme ? 'text-zinc-200 hover:bg-[#181A20]' : 'text-amber-700 hover:bg-zinc-100'}`}>
-              <FlaskConical className={`w-4 h-4 ${isDarkTheme ? 'text-[#CCFF00]' : 'text-[#F59E0B]'}`} />
+            <button onClick={() => { setIsMenuOpen(false); setShowVoiceLabModal(true); }} className={`w-full min-h-[44px] px-4 py-3 rounded-2xl text-sm font-bold flex items-center gap-3 ${isDarkTheme ? 'text-zinc-200 hover:bg-[#181A20]' : 'text-amber-700 hover:bg-zinc-100'}`}>
+              <FlaskConical className={`w-4 h-4 ${isDarkTheme ? 'text-amber-400' : 'text-[#F59E0B]'}`} />
               <span>Lab Suara & Backend</span>
             </button>
-            <button onClick={() => { setIsMenuOpen(false); setShowUserManagementModal(true); }} className={`w-full px-4 py-3 rounded-2xl text-sm font-bold flex items-center gap-3 ${isDarkTheme ? 'text-zinc-200 hover:bg-[#181A20]' : 'text-emerald-800 hover:bg-zinc-100'}`}>
-              <Users className={`w-4 h-4 ${isDarkTheme ? 'text-[#CCFF00]' : 'text-emerald-700'}`} />
+            <button onClick={() => { setIsMenuOpen(false); setShowUserManagementModal(true); }} className={`w-full min-h-[44px] px-4 py-3 rounded-2xl text-sm font-bold flex items-center gap-3 ${isDarkTheme ? 'text-zinc-200 hover:bg-[#181A20]' : 'text-emerald-800 hover:bg-zinc-100'}`}>
+              <Users className={`w-4 h-4 ${isDarkTheme ? 'text-emerald-400' : 'text-emerald-700'}`} />
               <span>Manajemen Akun & Riwayat Naskah</span>
             </button>
-            <button onClick={() => handleSwitchView('history')} className={`w-full px-4 py-3 rounded-2xl text-sm font-bold flex items-center gap-3 ${view === 'history' ? (isDarkTheme ? 'bg-[#CCFF00] text-black' : 'bg-[#0C4E34] text-white') : isDarkTheme ? 'text-zinc-300 hover:bg-[#181A20]' : 'text-zinc-700 hover:bg-zinc-100'}`}>
+            <button onClick={() => handleSwitchView('history')} className={`w-full min-h-[44px] px-4 py-3 rounded-2xl text-sm font-bold flex items-center gap-3 ${view === 'history' ? (isDarkTheme ? 'bg-[#064E3B] text-emerald-300' : 'bg-[#064E3B] text-white') : isDarkTheme ? 'text-zinc-300 hover:bg-[#181A20]' : 'text-zinc-700 hover:bg-zinc-100'}`}>
               <History className="w-4 h-4" /> Riwayat ({history.length})
             </button>
-            <button onClick={onLogout} className={`w-full px-4 py-3 rounded-2xl text-sm font-bold flex items-center gap-3 text-red-500 border-t mt-1 ${isDarkTheme ? 'border-[#20232B] hover:bg-red-950/20' : 'border-zinc-100 hover:bg-red-50'}`}>
+            <button onClick={() => { toggleTheme(); }} className={`w-full min-h-[44px] px-4 py-3 rounded-2xl text-sm font-bold flex items-center justify-between gap-3 border-t ${isDarkTheme ? 'border-[#20232B] text-zinc-200 hover:bg-[#181A20]' : 'border-zinc-100 text-zinc-800 hover:bg-zinc-100'}`}>
+              <span className="flex items-center gap-3">
+                {isDarkTheme ? <Moon className="w-4 h-4 text-emerald-400" /> : <Sun className="w-4 h-4 text-amber-500" />}
+                <span>{isDarkTheme ? 'Mode Gelap (Aktif)' : 'Mode Terang (Aktif)'}</span>
+              </span>
+              <span className="text-xs text-slate-400 font-normal">Ganti Tema</span>
+            </button>
+            <button onClick={onLogout} className={`w-full min-h-[44px] px-4 py-3 rounded-2xl text-sm font-bold flex items-center gap-3 text-red-500 border-t mt-1 ${isDarkTheme ? 'border-[#20232B] hover:bg-red-950/20' : 'border-zinc-100 hover:bg-red-50'}`}>
               Keluar ke Landing Page
             </button>
           </div>
         )}
       </nav>
 
-      {/* Main Container */}
       <main className="max-w-5xl mx-auto px-4 py-8">
         
         {/* VIEW: KLONING SUARA */}

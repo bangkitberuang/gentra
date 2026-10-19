@@ -32,11 +32,12 @@ import {
   Search,
   Flame,
   AudioWaveform,
+  Menu,
   Disc3
 } from 'lucide-react';
 
 const FULL_PERSONAS = [
-  // BLOK 1 — 14 Karakter Vokal Nasional (NUSA VOICE)
+  // 14 personas for national broadcaster voices
   { 
     id: 'Aoede', 
     name: 'Anita', 
@@ -220,7 +221,7 @@ const FULL_PERSONAS = [
     sampleText: 'Dengan rasa bangga dan penghormatan setinggi-tingginya, marilah kita saksikan pembukaan acara resmi ini.'
   },
 
-  // BLOK 2 — 8 Karakter Khas Sunda (PASUNDAN VOICE)
+  // 8 personas for authentic Sundanese voices
   { 
     id: 'sunda_abah', 
     name: 'Abah', 
@@ -327,9 +328,9 @@ const FULL_PERSONAS = [
   }
 ];
 
-// Peta File Audio Preview Terkonfirmasi di Landing Page
+// Static preview audio mappings
 export const LANDING_STATIC_PREVIEWS = {
-  // 8 Persona Khas Sunda
+  // Sundanese personas
   'Abah': '/audio/previews/abah.wav',
   'Nini': '/audio/previews/nini.wav',
   'Ujang': '/audio/previews/ujang.wav',
@@ -341,7 +342,7 @@ export const LANDING_STATIC_PREVIEWS = {
   'Teh Neng': '/audio/previews/teh_neng.wav',
   'Kang Asep': '/audio/previews/kang_asep.wav',
 
-  // 14 Persona Nasional
+  // National personas
   'Anita': '/audio/previews/anita.wav',
   'Siti': '/audio/previews/siti.wav',
   'Mugi': '/audio/previews/mugi.wav',
@@ -364,6 +365,7 @@ export const LandingPage = ({ onOpenLogin }) => {
   const [personaFilter, setPersonaFilter] = useState('Semua');
   const [searchQuery, setSearchQuery] = useState('');
   const [unavailableVoiceToast, setUnavailableVoiceToast] = useState(null);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const landingAudioRef = useRef(null);
   const landingAudioCache = useRef({});
 
@@ -442,11 +444,9 @@ export const LandingPage = ({ onOpenLogin }) => {
   return (
     <div className="min-h-[100dvh] bg-[#F8FAF9] text-slate-900 font-sans selection:bg-[#064E3B] selection:text-white">
       
-      {/* 1. Header / Navbar */}
-      <header className="sticky top-0 z-40 bg-white/90 backdrop-blur-md border-b border-slate-200/80 shadow-[0_2px_10px_rgba(0,0,0,0.03)]">
+      <header className="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-slate-200/80 shadow-[0_2px_10px_rgba(0,0,0,0.03)]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
           
-          {/* Logo Brand Lockup */}
           <div className="flex items-center gap-3 cursor-pointer shrink-0" onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}>
             <div className="relative">
               <img 
@@ -468,26 +468,68 @@ export const LandingPage = ({ onOpenLogin }) => {
             </div>
           </div>
 
-          {/* Navigation Links */}
           <nav className="hidden lg:flex items-center space-x-8 text-xs font-bold text-slate-600">
-            <a href="#fitur" className="hover:text-[#064E3B] transition-colors">Fitur Unggulan</a>
-            <a href="#ekosistem" className="hover:text-[#064E3B] transition-colors">Bagan Ekosistem</a>
-            <a href="#persona" className="hover:text-[#064E3B] transition-colors">22 Karakter Vokal</a>
-            <a href="#ilm" className="hover:text-[#064E3B] transition-colors">Mode ILM</a>
+            <a href="#fitur" className="hover:text-[#064E3B] transition-colors py-2">Fitur Unggulan</a>
+            <a href="#ekosistem" className="hover:text-[#064E3B] transition-colors py-2">Bagan Ekosistem</a>
+            <a href="#persona" className="hover:text-[#064E3B] transition-colors py-2">22 Karakter Vokal</a>
+            <a href="#ilm" className="hover:text-[#064E3B] transition-colors py-2">Mode ILM</a>
           </nav>
 
-          {/* Login CTA */}
-          <button 
-            onClick={onOpenLogin}
-            className="px-5 sm:px-6 py-2.5 rounded-full bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold shadow-md hover:shadow-lg transition-all flex items-center gap-2 group ring-1 ring-slate-800/20 shrink-0 active:scale-[0.98]"
-          >
-            <span>Masuk ke Studio</span>
-            <ArrowRight className="w-3.5 h-3.5 text-emerald-400 group-hover:translate-x-0.5 transition-transform" />
-          </button>
+          <div className="flex items-center gap-2">
+            <button 
+              onClick={onOpenLogin}
+              className="px-4 sm:px-6 py-2.5 min-h-[44px] rounded-full bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold shadow-md hover:shadow-lg transition-all flex items-center gap-2 group ring-1 ring-slate-800/20 shrink-0 active:scale-[0.98]"
+            >
+              <span>Masuk ke Studio</span>
+              <ArrowRight className="w-3.5 h-3.5 text-emerald-400 group-hover:translate-x-0.5 transition-transform" />
+            </button>
+
+            <button
+              type="button"
+              onClick={() => setIsMobileMenuOpen(prev => !prev)}
+              aria-label={isMobileMenuOpen ? "Tutup menu navigasi" : "Buka menu navigasi"}
+              aria-expanded={isMobileMenuOpen}
+              className="lg:hidden min-w-[44px] min-h-[44px] rounded-xl border border-slate-200 bg-white hover:bg-slate-100 flex items-center justify-center text-slate-700 transition-colors"
+            >
+              {isMobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+            </button>
+          </div>
         </div>
+
+        {isMobileMenuOpen && (
+          <div className="lg:hidden border-t border-slate-200 bg-white px-4 py-3 space-y-1 shadow-lg animate-in slide-in-from-top-2 duration-150">
+            <a 
+              href="#fitur" 
+              onClick={() => setIsMobileMenuOpen(false)}
+              className="flex items-center min-h-[44px] px-3 rounded-xl text-xs font-bold text-slate-700 hover:bg-slate-100 hover:text-[#064E3B] transition-colors"
+            >
+              Fitur Unggulan
+            </a>
+            <a 
+              href="#ekosistem" 
+              onClick={() => setIsMobileMenuOpen(false)}
+              className="flex items-center min-h-[44px] px-3 rounded-xl text-xs font-bold text-slate-700 hover:bg-slate-100 hover:text-[#064E3B] transition-colors"
+            >
+              Bagan Ekosistem
+            </a>
+            <a 
+              href="#persona" 
+              onClick={() => setIsMobileMenuOpen(false)}
+              className="flex items-center min-h-[44px] px-3 rounded-xl text-xs font-bold text-slate-700 hover:bg-slate-100 hover:text-[#064E3B] transition-colors"
+            >
+              22 Karakter Vokal
+            </a>
+            <a 
+              href="#ilm" 
+              onClick={() => setIsMobileMenuOpen(false)}
+              className="flex items-center min-h-[44px] px-3 rounded-xl text-xs font-bold text-slate-700 hover:bg-slate-100 hover:text-[#064E3B] transition-colors"
+            >
+              Mode ILM
+            </a>
+          </div>
+        )}
       </header>
 
-      {/* 2. Asymmetric Hero Section (Vivid Gedung Sate Bandung & Pegunungan Parahyangan Panorama) */}
       <section className="relative pt-12 pb-16 sm:pt-16 sm:pb-20 md:pt-20 md:pb-24 overflow-hidden bg-[#F8FAF9]">
         
         {/* Full Panorama: Gedung Sate Bandung & Pegunungan Parahyangan */}
@@ -814,14 +856,14 @@ export const LandingPage = ({ onOpenLogin }) => {
             {/* Search and Category Filter Deck */}
             <div className="pt-4 flex flex-col sm:flex-row items-center justify-center gap-3">
               {/* Search Bar */}
-              <div className="relative w-full sm:w-64">
+              <div className="relative w-full sm:w-72">
                 <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
                 <input 
                   type="text"
                   placeholder="Cari persona..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full pl-9 pr-4 py-2 rounded-full border border-slate-200 text-xs focus:outline-hidden focus:ring-2 focus:ring-[#064E3B]/20 bg-slate-50"
+                  className="w-full h-11 pl-10 pr-4 py-2 rounded-full border border-slate-200 text-xs focus:outline-hidden focus:ring-2 focus:ring-[#064E3B]/20 bg-slate-50"
                 />
               </div>
 
@@ -837,7 +879,7 @@ export const LandingPage = ({ onOpenLogin }) => {
                   <button
                     key={tab.id}
                     onClick={() => setPersonaFilter(tab.id)}
-                    className={`px-3.5 py-1.5 rounded-full text-xs font-bold transition-all ${
+                    className={`min-h-[44px] px-4 py-2.5 rounded-full text-xs font-bold transition-all flex items-center justify-center active:scale-[0.98] ${
                       personaFilter === tab.id
                         ? 'bg-[#064E3B] text-white shadow-xs'
                         : 'bg-slate-100 hover:bg-slate-200/80 text-slate-600'
@@ -930,7 +972,6 @@ export const LandingPage = ({ onOpenLogin }) => {
                         WAV 48kHz
                       </span>
 
-                      {/* Equalizer animation when playing */}
                       {isPlaying && (
                         <div className="flex items-center gap-1 h-3 pl-1">
                           <span className="w-1 bg-[#064E3B] rounded-full animate-bounce h-3" style={{ animationDelay: '0ms' }} />
@@ -942,12 +983,13 @@ export const LandingPage = ({ onOpenLogin }) => {
 
                     <button 
                       onClick={() => handlePlayVoicePreview(persona)}
-                      className={`px-3 py-1.5 rounded-xl transition-all flex items-center justify-center gap-1.5 text-xs font-bold active:scale-[0.98] ${
+                      className={`min-h-[44px] min-w-[44px] px-3.5 py-2 rounded-xl transition-all flex items-center justify-center gap-1.5 text-xs font-bold active:scale-[0.98] ${
                         isPlaying 
                           ? 'bg-[#064E3B] text-white shadow-sm' 
                           : 'bg-slate-100 hover:bg-[#064E3B] text-slate-700 hover:text-white border border-slate-200'
                       }`}
                       title={isPlaying ? "Hentikan Sampel" : "Dengarkan Sampel Suara"}
+                      aria-label={isPlaying ? `Hentikan sampel ${persona.name}` : `Dengarkan sampel ${persona.name}`}
                     >
                       {isPlaying ? (
                         <>
@@ -971,7 +1013,6 @@ export const LandingPage = ({ onOpenLogin }) => {
         </div>
       </section>
 
-      {/* 6. Mode Iklan Layanan Masyarakat Teaser */}
       <section id="ilm" className="py-14 sm:py-18 bg-gradient-to-br from-[#064E3B] via-[#043A2C] to-[#02241B] text-white relative overflow-hidden">
         <div className="max-w-4xl mx-auto px-4 text-center space-y-5 relative z-10">
           <div className="w-14 h-14 rounded-2xl bg-amber-400 text-slate-950 flex items-center justify-center mx-auto shadow-lg shadow-amber-400/20">
@@ -994,7 +1035,7 @@ export const LandingPage = ({ onOpenLogin }) => {
           <div className="pt-2 flex items-center justify-center">
             <button
               onClick={onOpenLogin}
-              className="px-8 py-3.5 rounded-xl bg-amber-400 hover:bg-amber-300 text-slate-950 text-sm font-black shadow-lg shadow-amber-500/20 transition-all inline-flex items-center justify-center gap-2 group active:scale-[0.98]"
+              className="px-8 py-3.5 min-h-[48px] rounded-xl bg-amber-400 hover:bg-amber-300 text-slate-950 text-sm font-black shadow-lg shadow-amber-500/20 transition-all inline-flex items-center justify-center gap-2 group active:scale-[0.98]"
             >
               <span>BUKA GENERATOR NASKAH ILM DI STUDIO</span>
               <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
@@ -1003,8 +1044,7 @@ export const LandingPage = ({ onOpenLogin }) => {
         </div>
       </section>
 
-      {/* 7. Footer */}
-      <footer className="py-8 bg-white border-t border-slate-200/80 text-center">
+      <footer className="py-8 bg-white border-t border-slate-200/80 text-center pb-[max(2rem,env(safe-area-inset-bottom,0px))]">
         <div className="max-w-7xl mx-auto px-4 flex flex-col items-center gap-2">
           <div className="flex items-center gap-2">
             <span className="text-lg font-black text-[#064E3B]">GENTRA</span>
@@ -1021,9 +1061,8 @@ export const LandingPage = ({ onOpenLogin }) => {
         </div>
       </footer>
 
-      {/* Floating Audio Controller Dock (When playing voice preview) */}
       {currentPlayingPersona && (
-        <div className="fixed bottom-6 inset-x-0 z-50 flex justify-center px-4 pointer-events-none">
+        <div className="fixed bottom-4 sm:bottom-6 pb-[env(safe-area-inset-bottom,0px)] inset-x-0 z-50 flex justify-center px-4 pointer-events-none">
           <div className="bg-slate-900/95 text-white px-5 py-3 rounded-2xl shadow-2xl border border-slate-700/80 backdrop-blur-md flex items-center gap-4 max-w-md w-full pointer-events-auto animate-in slide-in-from-bottom-4 duration-200">
             <div className="w-10 h-10 rounded-xl bg-[#064E3B] text-emerald-300 flex items-center justify-center font-black text-xs shrink-0 border border-emerald-500/30">
               {currentPlayingPersona.initials || currentPlayingPersona.name.slice(0, 2).toUpperCase()}
@@ -1039,14 +1078,15 @@ export const LandingPage = ({ onOpenLogin }) => {
             </div>
             <button
               onClick={() => handlePlayVoicePreview(currentPlayingPersona)}
-              className="p-2 rounded-xl bg-white text-slate-950 hover:bg-slate-100 transition-colors shrink-0"
+              className="min-w-[44px] min-h-[44px] p-2.5 rounded-xl bg-white text-slate-950 hover:bg-slate-100 transition-colors shrink-0 flex items-center justify-center"
               title="Hentikan audio"
+              aria-label="Hentikan audio"
             >
               <Pause className="w-4 h-4 fill-current" />
             </button>
             <button
               onClick={onOpenLogin}
-              className="px-3 py-1.5 rounded-xl bg-[#064E3B] hover:bg-[#043A2C] text-white text-xs font-bold shrink-0 transition-colors"
+              className="min-h-[44px] px-4 py-2 rounded-xl bg-[#064E3B] hover:bg-[#043A2C] text-white text-xs font-bold shrink-0 transition-colors flex items-center justify-center"
             >
               Pakai di Studio
             </button>
@@ -1054,9 +1094,8 @@ export const LandingPage = ({ onOpenLogin }) => {
         </div>
       )}
 
-      {/* Floating Unavailable Toast */}
       {unavailableVoiceToast && (
-        <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 px-5 py-3.5 rounded-2xl bg-slate-900/95 text-slate-200 border border-slate-700 shadow-2xl backdrop-blur-md flex items-center gap-3.5 text-xs font-semibold max-w-md w-[92vw] sm:w-auto">
+        <div className="fixed bottom-4 sm:bottom-6 pb-[env(safe-area-inset-bottom,0px)] left-1/2 -translate-x-1/2 z-50 px-5 py-3.5 rounded-2xl bg-slate-900/95 text-slate-200 border border-slate-700 shadow-2xl backdrop-blur-md flex items-center gap-3.5 text-xs font-semibold max-w-md w-[92vw] sm:w-auto">
           <div className="w-2.5 h-2.5 rounded-full bg-slate-400 animate-pulse shrink-0" />
           <div className="flex-1">
             <p className="leading-snug">
@@ -1066,7 +1105,8 @@ export const LandingPage = ({ onOpenLogin }) => {
           <button 
             type="button"
             onClick={() => setUnavailableVoiceToast(null)} 
-            className="p-1 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-colors shrink-0"
+            className="min-w-[44px] min-h-[44px] p-2 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-colors shrink-0 flex items-center justify-center"
+            aria-label="Tutup notifikasi"
           >
             <X className="w-4 h-4" />
           </button>
