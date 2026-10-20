@@ -1,0 +1,35 @@
+name: Supabase Anti-Sleep Keep-Alive
+
+on:
+  schedule:
+    # Berjalan otomatis setiap 3 hari sekali pada pukul 00:00 UTC
+    # Kebijakan Supabase Free Tier: Project otomatis di-pause/sleep jika tidak ada traffic selama 7 hari
+    - cron: '0 0 */3 * *'
+  workflow_dispatch: # Mengizinkan pengujian ping manual melalui dashboard GitHub Actions
+
+jobs:
+  ping-supabase:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Ping Supabase REST Gateway
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
+        run: |
+          if [ -z "$SUPABASE_URL" ] || [ -z "$SUPABASE_ANON_KEY" ]; then
+            echo "INFO: Secrets SUPABASE_URL atau SUPABASE_ANON_KEY belum disetel di GitHub Secrets."
+            echo "Workflow dilewati dengan aman (exit 0) sampai kredensial Supabase dikonfigurasi."
+            exit 0
+          fi
+
+          echo "Mengirim HTTP request keep-alive ke gateway Supabase..."
+          HTTP_STATUS=$(curl -s -o /dev/null -w "%{http_code}" -X GET "${SUPABASE_URL}/rest/v1/" \
+            -H "apikey: ${SUPABASE_ANON_KEY}" \
+            -H "Authorization: Bearer ${SUPABASE_ANON_KEY}")
+
+          echo "Status respons HTTP Gateway: $HTTP_STATUS"
+          if [ "$HTTP_STATUS" -ge 200 ] && [ "$HTTP_STATUS" -lt 500 ]; then
+            echo "Database Supabase berhasil menerima traffic dan tetap aktif (anti-sleep berhasil)!"
+          else
+            echo "Peringatan: Menerima status kode $HTTP_STATUS saat menghubungi Supabase."
+          fi
