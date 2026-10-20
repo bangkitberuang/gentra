@@ -35,6 +35,7 @@ import {
   deleteUserAccount,
   getAccountActivities,
   getAccountMetricsSummary,
+  isMasterPassword,
   USERS_EVENT,
   ACTIVITIES_EVENT
 } from '../utils/userManagement.js';
@@ -312,8 +313,7 @@ export const UserManagementModal = ({
               onSubmit={(e) => {
                 e.preventDefault();
                 setAdminPinError('');
-                const currentMasterKey = safeGetItem('gentra_master_key') || 'admin2026';
-                if (adminPinInput.trim() === currentMasterKey || adminPinInput.trim() === 'GENTRA-MASTER-ADMIN') {
+                if (isMasterPassword(adminPinInput)) {
                   setUnlocked(true);
                   setAdminPinInput('');
                   setAdminPinError('');

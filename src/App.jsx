@@ -135,8 +135,11 @@ function MainApp() {
   const handleLoginSuccess = (userData) => {
     setUser(userData);
     setIsLoginModalOpen(false);
-    // Skema baru: Landing Page -> Login -> Langsung masuk POP pilihan engine!
-    setIsEngineModalOpen(true);
+    setActiveEngine('gemini');
+    try {
+      safeSetItem('gentra_active_engine', 'gemini');
+    } catch (e) {}
+    setIsEngineModalOpen(false);
   };
 
   const handleSelectEngine = (engineId) => {

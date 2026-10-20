@@ -2058,37 +2058,6 @@ ATURAN WAJIB & MUTLAK:
                       )}
                     </button>
 
-                    {/* Kian Santang engine */}
-                    <button
-                      type="button"
-                      onClick={() => {
-                        if (onSelectEngine) onSelectEngine('azure');
-                        setIsServerDropdownOpen(false);
-                      }}
-                      className={`w-full text-left px-3 py-2.5 rounded-xl transition-all flex items-center justify-between gap-2.5 mt-1 ${
-                        activeEngine === 'azure'
-                          ? isDarkTheme ? 'bg-[#181A20] border border-sky-500/50 text-sky-300' : 'bg-sky-50 border border-sky-300 text-sky-900'
-                          : isDarkTheme ? 'hover:bg-[#181A20] text-zinc-300 hover:text-white' : 'hover:bg-zinc-100 text-zinc-700'
-                      }`}
-                    >
-                      <div className="flex items-center gap-2.5 min-w-0">
-                        <div className="w-7 h-7 rounded-lg bg-sky-500/20 flex items-center justify-center shrink-0">
-                          <Radio className="w-4 h-4 text-sky-400" />
-                        </div>
-                        <div className="min-w-0">
-                          <div className="text-xs font-bold flex items-center gap-1.5">
-                            <span className="truncate">Kian Santang Server</span>
-                            <span className="text-[9px] px-1 py-0.2 rounded font-black bg-sky-500/20 text-sky-400 shrink-0">Protokol</span>
-                          </div>
-                          <div className="text-[10px] text-zinc-400 truncate">Neural Broadcast Speech</div>
-                        </div>
-                      </div>
-                      {activeEngine === 'azure' && (
-                        <Check className="w-4 h-4 text-sky-400 shrink-0" />
-                      )}
-                    </button>
-
-                    
                     {/* Server details modal trigger */}
                     <div className="mt-2 pt-1.5 border-t border-zinc-100 dark:border-zinc-800">
                       <button
@@ -2262,7 +2231,7 @@ ATURAN WAJIB & MUTLAK:
               <Megaphone className="w-4 h-4" /> Iklan Layanan Masyarakat (ILM)
             </button>
             <button onClick={() => { setIsMenuOpen(false); if (onOpenEngineModal) onOpenEngineModal(); }} className={`w-full min-h-[44px] px-4 py-3 rounded-2xl text-sm font-bold flex items-center gap-3 ${isDarkTheme ? 'text-zinc-200 hover:bg-[#181A20]' : 'text-emerald-700 hover:bg-zinc-100'}`}>
-              <Server className={`w-4 h-4 ${isDarkTheme ? 'text-emerald-400' : 'text-[#F59E0B]'}`} /> Server: {activeEngine === 'azure' ? 'Kian Santang' : 'Gatot Kaca'} (Ganti)
+              <Server className={`w-4 h-4 ${isDarkTheme ? 'text-emerald-400' : 'text-[#F59E0B]'}`} /> Server: Gatot Kaca (Utama)
             </button>
             <button onClick={() => { setIsMenuOpen(false); setShowVoiceLabModal(true); }} className={`w-full min-h-[44px] px-4 py-3 rounded-2xl text-sm font-bold flex items-center gap-3 ${isDarkTheme ? 'text-zinc-200 hover:bg-[#181A20]' : 'text-amber-700 hover:bg-zinc-100'}`}>
               <FlaskConical className={`w-4 h-4 ${isDarkTheme ? 'text-amber-400' : 'text-[#F59E0B]'}`} />

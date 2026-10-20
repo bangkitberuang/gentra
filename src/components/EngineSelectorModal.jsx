@@ -40,31 +40,8 @@ export const ENGINE_SERVERS = [
       { label: 'Keamanan Kuota', value: 'Dual-Key Fail-Safe Auto Rotation' }
     ],
     sampleVoices: ['Anita (Sunda Halus)', 'Mugi (Naratif)', 'Abah (Sesepuh)', 'Teh Neng (Ceria)']
-  },
-  {
-    id: 'azure',
-    code: 'ENGINE B',
-    name: 'Kian Santang Server',
-    engineLabel: 'Neural Broadcast Speech Engine',
-    provider: 'Cognitive Broadcast Service',
-    status: 'testing',
-    statusText: 'Dapur Pengujian Backend',
-    recommended: false,
-    badges: ['Dapur Pengujian', 'Siaran Berita', 'Standard Protokoler'],
-    accentColor: 'sky',
-    gradientBg: 'from-zinc-900/90 via-[#14161B] to-[#0B0C0E]',
-    borderColor: 'border-sky-500/50',
-    selectedRing: 'ring-sky-400 border-sky-400 shadow-sky-950/80',
-    activeTagColor: 'bg-sky-500/20 text-sky-300 border-sky-500/30',
-    description: 'Server presisi artikulasi formal untuk siaran berita resmi dan keprotokoleran kedinasan. Siap diuji coba di dapur backend.',
-    features: [
-      { label: 'Karakter Utama', value: 'Gadis (id-ID) & Ardi (id-ID)' },
-      { label: 'Dialek & Gaya', value: 'Diksi Protokoler & Siaran Berita Nasional' },
-      { label: 'Kecepatan Latensi', value: 'Stabil (~1.8 detik)' },
-      { label: 'Arsitektur', value: 'SSML Compliant & Cognitive Speech' }
-    ],
-    sampleVoices: ['Gadis Sunda (id-ID)', 'Ardi Priangan (id-ID)']
   }
+  /* ENGINE B (Kian Santang Server) disembunyikan sementara karena hanya 1 server operasional penuh */
 ];
 
 export const EngineSelectorModal = ({ 
@@ -122,8 +99,8 @@ export const EngineSelectorModal = ({
           </p>
         </div>
 
-        {/* Cards Grid: 2 Active Engines (A: Gatot Kaca, B: Kian Santang) */}
-        <div className="p-5 sm:p-7 grid grid-cols-1 md:grid-cols-2 gap-5">
+        {/* Cards Grid: Server Produksi Aktif */}
+        <div className="p-5 sm:p-7 max-w-xl mx-auto w-full">
           {ENGINE_SERVERS.map((srv) => {
             const isSelected = currentChoice === srv.id;
 

@@ -19,6 +19,7 @@ import {
   Copy
 } from 'lucide-react';
 import { sanitizeApiKey, isIpadOrSafari, safeSetItem, safeGetItem } from '../utils/safeStorage';
+import { isMasterPassword } from '../utils/userManagement';
 
 export const ApiKeyModal = ({
   isOpen,
@@ -253,8 +254,7 @@ export const ApiKeyModal = ({
               onSubmit={(e) => {
                 e.preventDefault();
                 setAdminPinError('');
-                const currentMasterKey = safeGetItem('gentra_master_key') || 'admin2026';
-                if (adminPinInput.trim() === currentMasterKey || adminPinInput.trim() === 'GENTRA-MASTER-ADMIN') {
+                if (isMasterPassword(adminPinInput)) {
                   setUnlocked(true);
                   setAdminPinInput('');
                   setAdminPinError('');

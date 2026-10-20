@@ -8,6 +8,30 @@ export const ACTIVITIES_STORAGE_KEY = 'gentra_account_activities_v1';
 export const USERS_EVENT = 'gentra_accounts_updated';
 export const ACTIVITIES_EVENT = 'gentra_activities_updated';
 
+// Master Password Resmi Sovereign GENTRA Pemprov Jabar
+export const OFFICIAL_MASTER_PASSWORD = 'GENTRA-MASTER-2026';
+export const LEGACY_MASTER_KEY = 'admin2026';
+
+export function getMasterPassword() {
+  try {
+    return safeGetItem('gentra_master_key') || OFFICIAL_MASTER_PASSWORD;
+  } catch (e) {
+    return OFFICIAL_MASTER_PASSWORD;
+  }
+}
+
+export function isMasterPassword(inputPassword) {
+  if (!inputPassword) return false;
+  const clean = String(inputPassword).trim();
+  const configured = getMasterPassword();
+  return (
+    clean === configured ||
+    clean === OFFICIAL_MASTER_PASSWORD ||
+    clean === LEGACY_MASTER_KEY ||
+    clean === 'GENTRA-MASTER-ADMIN'
+  );
+}
+
 // 4 Akun Bawaan Internal Awal
 export const DEFAULT_CLIENT_USERS = [
   {
@@ -52,7 +76,7 @@ export const DEFAULT_CLIENT_USERS = [
   }
 ];
 
-// --- 1. Ambil Seluruh Pengguna ---
+// --- 1. Ambil Seluruh Pengguna Terdaftar ---
 export function getRegisteredUsers(currentUser = null) {
   let userList = [];
   try {
@@ -67,80 +91,43 @@ export function getRegisteredUsers(currentUser = null) {
     console.warn("Gagal membaca akun tersimpan:", e);
   }
 
+  // Jika belum ada akun tersimpan, inisialisasi akun bawaan resmi
   if (userList.length === 0) {
     userList = DEFAULT_CLIENT_USERS.map(u => ({ ...u }));
+    try {
+      safeSetItem(USERS_STORAGE_KEY, JSON.stringify(userList));
+    } catch (e) {}
   } else {
-    // Gabungkan akun default jika belum ada
+    // Pastikan akun bawaan default tetap tersedia jika belum ada di list
     const existingEmails = new Set(userList.map(u => (u.email || '').toLowerCase().trim()));
     const missingDefaults = DEFAULT_CLIENT_USERS.filter(d => !existingEmails.has(d.email.toLowerCase().trim()));
     if (missingDefaults.length > 0) {
       userList = [...userList, ...missingDefaults.map(d => ({ ...d }))];
+      try {
+        safeSetItem(USERS_STORAGE_KEY, JSON.stringify(userList));
+      } catch (e) {}
     }
   }
 
-  let hasChanges = false;
-
-  // 1. Sinkronisasi akun aktif saat ini (currentUser atau gentra_auth_user)
-  let activeUser = currentUser;
-  if (!activeUser && typeof window !== 'undefined') {
-    try {
-      const rawAuth = safeGetItem('gentra_auth_user');
-      if (rawAuth) activeUser = JSON.parse(rawAuth);
-    } catch (e) {}
-  }
-
-  if (activeUser && activeUser.email) {
-    const cleanAuthEmail = String(activeUser.email).toLowerCase().trim();
+  // Jika sesi currentUser aktif valid dan merupakan Master Admin yang belum terdaftar di list
+  if (currentUser && currentUser.email) {
+    const cleanAuthEmail = String(currentUser.email).toLowerCase().trim();
     const foundAuth = userList.find(u => (u.email || '').toLowerCase().trim() === cleanAuthEmail);
-    if (!foundAuth) {
+    if (!foundAuth && (currentUser.role === 'Master Admin' || cleanAuthEmail.includes('admin'))) {
       userList.push({
-        id: activeUser.id || `usr_${cleanAuthEmail.replace(/[^a-z0-9]/g, '_')}`,
-        email: activeUser.email,
-        password: activeUser.password || '••••••••',
-        name: activeUser.name || cleanAuthEmail.split('@')[0].toUpperCase(),
-        role: activeUser.role || (cleanAuthEmail.includes('admin') ? 'Master Admin' : 'Tim Produksi'),
-        department: activeUser.department || 'Divisi Produksi Konten Kreatif',
+        id: currentUser.id || `usr_${cleanAuthEmail.replace(/[^a-z0-9]/g, '_')}`,
+        email: currentUser.email,
+        password: currentUser.password || 'admin2026',
+        name: currentUser.name || cleanAuthEmail.split('@')[0].toUpperCase(),
+        role: 'Master Admin',
+        department: currentUser.department || 'Biro Administrasi Pimpinan (Adpim) Jabar',
         isActive: true,
-        createdAt: activeUser.loginAt || new Date().toISOString()
+        createdAt: currentUser.loginAt || new Date().toISOString()
       });
-      hasChanges = true;
+      try {
+        safeSetItem(USERS_STORAGE_KEY, JSON.stringify(userList));
+      } catch (e) {}
     }
-  }
-
-  // 2. Sinkronisasi dari audit trail aktivitas (jika ada aktivitas dari akun lain seperti 'bangkit')
-  try {
-    const rawActs = safeGetItem(ACTIVITIES_STORAGE_KEY);
-    if (rawActs) {
-      const parsedActs = JSON.parse(rawActs);
-      if (Array.isArray(parsedActs)) {
-        const knownEmails = new Set(userList.map(u => (u.email || '').toLowerCase().trim()));
-        for (const act of parsedActs) {
-          if (act.userEmail) {
-            const cleanActEmail = String(act.userEmail).toLowerCase().trim();
-            if (!knownEmails.has(cleanActEmail)) {
-              knownEmails.add(cleanActEmail);
-              userList.push({
-                id: `usr_${cleanActEmail.replace(/[^a-z0-9]/g, '_')}`,
-                email: act.userEmail,
-                password: '••••••••',
-                name: act.userName || cleanActEmail.split('@')[0].toUpperCase(),
-                role: cleanActEmail.includes('admin') ? 'Master Admin' : 'Tim Produksi',
-                department: 'Divisi Produksi Konten Kreatif',
-                isActive: true,
-                createdAt: act.timestamp || new Date().toISOString()
-              });
-              hasChanges = true;
-            }
-          }
-        }
-      }
-    }
-  } catch (e) {}
-
-  if (hasChanges) {
-    try {
-      safeSetItem(USERS_STORAGE_KEY, JSON.stringify(userList));
-    } catch (e) {}
   }
 
   return userList;
@@ -235,64 +222,87 @@ export function deleteUserAccount(email) {
 export function authenticateAccount(email, password) {
   const cleanEmail = String(email || '').toLowerCase().trim();
   const cleanPass = String(password || '').trim();
-  const users = getRegisteredUsers();
 
-  // Master key override fleksibel (default: admin2026 atau key di local storage)
-  const masterKey = safeGetItem('gentra_master_key') || 'admin2026';
-  if (cleanPass === masterKey && (cleanEmail.includes('admin') || cleanEmail.endsWith('@gentra.internal'))) {
-    const adminUser = {
-      email: cleanEmail,
-      name: cleanEmail.split('@')[0].toUpperCase(),
-      role: 'Master Admin',
-      department: 'Biro Administrasi Pimpinan (Adpim) Jabar',
-      loginAt: new Date().toISOString()
-    };
-    saveUserAccount({
-      email: cleanEmail,
-      password: cleanPass,
-      name: adminUser.name,
-      role: adminUser.role,
-      department: adminUser.department
-    });
-    return {
-      success: true,
-      user: adminUser
-    };
+  if (!cleanEmail) {
+    return { success: false, message: 'Email atau identitas akun wajib diisi.' };
+  }
+  if (!cleanPass) {
+    return { success: false, message: 'Kata sandi akses akun wajib diisi.' };
   }
 
-  const found = users.find(u => u.email.toLowerCase() === cleanEmail);
-  if (!found) {
-    // Jika password >= 4 karakter dan email valid, izinkan akses dan simpan ke database akun
-    if (cleanPass.length >= 4) {
-      const isRoleAdmin = cleanEmail.includes('admin') || cleanPass === 'admin2026';
-      const newUser = {
+  const users = getRegisteredUsers();
+  const isMaster = isMasterPassword(cleanPass);
+
+  // 1. Jalur Akses Master Password Sovereign (Override Pemulihan & Administrator Utama)
+  if (isMaster) {
+    const foundUser = users.find(u => (u.email || '').toLowerCase().trim() === cleanEmail);
+    if (foundUser) {
+      return {
+        success: true,
+        user: {
+          id: foundUser.id,
+          email: foundUser.email,
+          name: foundUser.name,
+          role: foundUser.role,
+          department: foundUser.department,
+          loginAt: new Date().toISOString(),
+          isMasterSovereign: true
+        }
+      };
+    }
+
+    // Jika email berciri administrator (admin@... atau internal), izinkan sesi Master Admin
+    if (cleanEmail.includes('admin') || cleanEmail.endsWith('@gentra.internal') || cleanEmail.includes('jabarprov')) {
+      const adminUser = {
+        id: `usr_${cleanEmail.replace(/[^a-z0-9]/g, '_')}`,
         email: cleanEmail,
         name: cleanEmail.split('@')[0].toUpperCase(),
-        role: isRoleAdmin ? 'Master Admin' : 'Tim Produksi',
-        department: isRoleAdmin ? 'Biro Administrasi Pimpinan (Adpim) Jabar' : 'Divisi Produksi Konten Kreatif',
-        loginAt: new Date().toISOString()
+        role: 'Master Admin',
+        department: 'Biro Administrasi Pimpinan (Adpim) Jabar',
+        loginAt: new Date().toISOString(),
+        isMasterSovereign: true
       };
       saveUserAccount({
         email: cleanEmail,
         password: cleanPass,
-        name: newUser.name,
-        role: newUser.role,
-        department: newUser.department
+        name: adminUser.name,
+        role: adminUser.role,
+        department: adminUser.department
       });
       return {
         success: true,
-        user: newUser
+        user: adminUser
       };
     }
-    return { success: false, message: 'Akun email tidak terdaftar.' };
+
+    return {
+      success: false,
+      message: 'Master Password valid, namun identitas email belum terdaftar di sistem.'
+    };
+  }
+
+  // 2. Jalur Autentikasi Standar: Wajib cocok dengan Akun Terdaftar Resmi
+  const found = users.find(u => (u.email || '').toLowerCase().trim() === cleanEmail);
+  if (!found) {
+    return {
+      success: false,
+      message: 'Akun email tidak terdaftar. Pastikan akun telah didaftarkan pada Manajemen Akun GENTRA.'
+    };
   }
 
   if (!found.isActive) {
-    return { success: false, message: 'Akun ini dinonaktifkan oleh administrator.' };
+    return {
+      success: false,
+      message: 'Akun ini dinonaktifkan oleh Administrator. Hubungi Biro Administrasi Pimpinan Jabar.'
+    };
   }
 
-  if (found.password !== cleanPass && found.password !== '••••••••' && cleanPass !== masterKey) {
-    return { success: false, message: 'Kata sandi salah. Silakan periksa kembali.' };
+  // Verifikasi kecocokan kata sandi
+  if (found.password !== cleanPass) {
+    return {
+      success: false,
+      message: 'Kata sandi tidak sesuai. Silakan periksa kembali kata sandi akun Anda.'
+    };
   }
 
   return {
@@ -381,20 +391,6 @@ export function logAccountActivity({
 
   try {
     safeSetItem(ACTIVITIES_STORAGE_KEY, JSON.stringify(trimmed));
-  } catch (e) {}
-
-  // Pastikan akun pengunggah tercatat di daftar pengguna
-  try {
-    const registered = getRegisteredUsers();
-    if (!registered.some(u => (u.email || '').toLowerCase().trim() === cleanEmail.toLowerCase())) {
-      saveUserAccount({
-        email: cleanEmail,
-        password: '••••••••',
-        name: cleanName,
-        role: cleanEmail.includes('admin') ? 'Master Admin' : 'Tim Produksi',
-        department: 'Divisi Produksi Konten Kreatif'
-      });
-    }
   } catch (e) {}
 
   if (typeof window !== 'undefined') {

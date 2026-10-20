@@ -39,6 +39,7 @@ import {
   Copy
 } from 'lucide-react';
 import { sanitizeApiKey, safeSetItem, safeGetItem } from '../utils/safeStorage';
+import { isMasterPassword } from '../utils/userManagement';
 
 // 15 Base Prebuilt Voices Resmi Google Gemini TTS (v1beta)
 export const GEMINI_BASE_VOICES = [
@@ -723,8 +724,7 @@ export const VoiceLabModal = ({
               onSubmit={(e) => {
                 e.preventDefault();
                 setAdminPinError('');
-                const currentMasterKey = safeGetItem('gentra_master_key') || 'admin2026';
-                if (adminPinInput.trim() === currentMasterKey || adminPinInput.trim() === 'GENTRA-MASTER-ADMIN') {
+                if (isMasterPassword(adminPinInput)) {
                   setIsAdminUnlocked(true);
                   setAdminPinInput('');
                 } else {
