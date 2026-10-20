@@ -32,8 +32,18 @@ export function isMasterPassword(inputPassword) {
   );
 }
 
-// 4 Akun Bawaan Internal Awal
+// 5 Akun Bawaan Internal Awal
 export const DEFAULT_CLIENT_USERS = [
+  {
+    id: 'usr_ikp',
+    email: 'ikp@jabarprov.go.id',
+    password: 'jabaristimewa',
+    name: 'IKP DISKOMINFO JABAR',
+    role: 'Tim Produksi',
+    department: 'Bidang Informasi dan Komunikasi Publik (IKP) Diskominfo Jabar',
+    isActive: true,
+    createdAt: '2026-01-15T00:00:00.000Z'
+  },
   {
     id: 'usr_admin',
     email: 'admin@gentra.internal',
@@ -103,6 +113,17 @@ export function getRegisteredUsers(currentUser = null) {
     const missingDefaults = DEFAULT_CLIENT_USERS.filter(d => !existingEmails.has(d.email.toLowerCase().trim()));
     if (missingDefaults.length > 0) {
       userList = [...userList, ...missingDefaults.map(d => ({ ...d }))];
+      try {
+        safeSetItem(USERS_STORAGE_KEY, JSON.stringify(userList));
+      } catch (e) {}
+    }
+
+    // Pastikan akun resmi IKP Diskominfo Jabar selalu tersinkronisasi password & status user biasa (Tim Produksi)
+    const ikpUser = userList.find(u => (u.email || '').toLowerCase().trim() === 'ikp@jabarprov.go.id');
+    if (ikpUser && (ikpUser.password !== 'jabaristimewa' || ikpUser.role !== 'Tim Produksi')) {
+      ikpUser.password = 'jabaristimewa';
+      ikpUser.role = 'Tim Produksi';
+      ikpUser.isActive = true;
       try {
         safeSetItem(USERS_STORAGE_KEY, JSON.stringify(userList));
       } catch (e) {}
