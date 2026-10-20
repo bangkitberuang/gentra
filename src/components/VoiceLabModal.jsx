@@ -60,6 +60,15 @@ export const GEMINI_BASE_VOICES = [
   { id: 'Achernar', name: 'Achernar', gender: 'Female', desc: 'Anggun, Elegan, Puitis' }
 ];
 
+// Multi-Model TTS Backup Cascade untuk 24/7 Zero-Failure
+export const LAB_TTS_MODELS = [
+  "gemini-2.5-flash-preview-tts",
+  "gemini-3.8-flash-tts",
+  "gemini-3.1-flash-tts-preview",
+  "gemini-2.5-pro-preview-tts",
+  "gemini-3.8-flash-lite-tts"
+];
+
 // Audio Decoder Helper
 const base64ToPCM16 = (base64String) => {
   let binaryString = atob(base64String);
@@ -453,28 +462,44 @@ export const VoiceLabModal = ({
         }
       };
 
-      const res = await fetch(
-        `https://generativelanguage.googleapis.com/v1beta/models/${TTS_MODEL}:generateContent?key=${key}`,
-        {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(payload)
+      let data = null;
+      let lastErr = null;
+      const modelsToTry = [TTS_MODEL, ...LAB_TTS_MODELS.filter(m => m !== TTS_MODEL)];
+
+      for (const mName of modelsToTry) {
+        try {
+          const res = await fetch(
+            `https://generativelanguage.googleapis.com/v1beta/models/${mName}:generateContent?key=${key}`,
+            {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify(payload)
+            }
+          );
+
+          if (res.ok) {
+            const resData = await res.json();
+            const rawInline = resData?.candidates?.[0]?.content?.parts?.[0]?.inlineData;
+            if (rawInline?.data) {
+              data = resData;
+              break;
+            }
+          } else {
+            const errJson = await res.json().catch(() => ({}));
+            lastErr = new Error(errJson?.error?.message || `HTTP ${res.status}: Gagal generate suara pada model ${mName}.`);
+          }
+        } catch (fetchErr) {
+          lastErr = fetchErr;
         }
-      );
+      }
 
       const endTime = performance.now();
       const latency = Math.round(endTime - startTime);
       setLabAudioLatency(latency);
 
-      if (!res.ok) {
-        const errJson = await res.json().catch(() => ({}));
-        throw new Error(errJson?.error?.message || `HTTP ${res.status}: Gagal generate suara.`);
-      }
-
-      const data = await res.json();
       const inlineData = data?.candidates?.[0]?.content?.parts?.[0]?.inlineData;
       if (!inlineData?.data) {
-        throw new Error("Respon audio kosong dari server Gemini.");
+        throw new Error(lastErr?.message || "Respon audio kosong dari server Gemini setelah mencoba seluruh model cadangan.");
       }
 
       const pcm16 = base64ToPCM16(inlineData.data);
@@ -1830,34 +1855,41 @@ export const VoiceLabModal = ({
 
                         for (const targetV of testList) {
                           const t0 = performance.now();
-                          try {
-                            const res = await fetch(
-                              `https://generativelanguage.googleapis.com/v1beta/models/${TTS_MODEL}:generateContent?key=${key}`,
-                              {
-                                method: 'POST',
-                                headers: { 'Content-Type': 'application/json' },
-                                body: JSON.stringify({
-                                  contents: [{ parts: [{ text: benchmarkPrompt }] }],
-                                  generationConfig: {
-                                    responseModalities: ['AUDIO'],
-                                    speechConfig: { voiceConfig: { prebuiltVoiceConfig: { voiceName: targetV.id } } }
-                                  }
-                                })
+                          let success = false;
+                          let url = null;
+                          const modelsToTry = [TTS_MODEL, ...LAB_TTS_MODELS.filter(m => m !== TTS_MODEL)];
+
+                          for (const mName of modelsToTry) {
+                            try {
+                              const res = await fetch(
+                                `https://generativelanguage.googleapis.com/v1beta/models/${mName}:generateContent?key=${key}`,
+                                {
+                                  method: 'POST',
+                                  headers: { 'Content-Type': 'application/json' },
+                                  body: JSON.stringify({
+                                    contents: [{ parts: [{ text: benchmarkPrompt }] }],
+                                    generationConfig: {
+                                      responseModalities: ['AUDIO'],
+                                      speechConfig: { voiceConfig: { prebuiltVoiceConfig: { voiceName: targetV.id } } }
+                                    }
+                                  })
+                                }
+                              );
+                              if (res.ok) {
+                                const d = await res.json();
+                                const raw = d?.candidates?.[0]?.content?.parts?.[0]?.inlineData?.data;
+                                if (raw) {
+                                  url = URL.createObjectURL(buildWavBlobFromPCM(base64ToPCM16(raw), 24000));
+                                  success = true;
+                                  break;
+                                }
                               }
-                            );
-                            const t1 = performance.now();
-                            const duration = Math.round(t1 - t0);
-                            if (res.ok) {
-                              const d = await res.json();
-                              const raw = d?.candidates?.[0]?.content?.parts?.[0]?.inlineData?.data;
-                              const url = raw ? URL.createObjectURL(buildWavBlobFromPCM(base64ToPCM16(raw), 24000)) : null;
-                              results.push({ name: targetV.name, base: targetV.id, duration, success: true, url });
-                            } else {
-                              results.push({ name: targetV.name, base: targetV.id, duration, success: false, url: null });
-                            }
-                          } catch (e) {
-                            results.push({ name: targetV.name, base: targetV.id, duration, 0: 0, success: false, url: null });
+                            } catch (e) {}
                           }
+
+                          const t1 = performance.now();
+                          const duration = Math.round(t1 - t0);
+                          results.push({ name: targetV.name, base: targetV.id, duration, success, url });
                           setBenchmarkResults([...results]);
                         }
                         setIsBenchmarking(false);

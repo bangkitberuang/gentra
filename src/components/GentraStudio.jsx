@@ -58,13 +58,19 @@ import { safeGetItem, safeSetItem, sanitizeApiKey } from '../utils/safeStorage.j
 import { getUnifiedVoices, saveUnifiedVoices, GENTRA_VOICES_EVENT } from '../utils/voiceRegistry.js';
 import { logAccountActivity } from '../utils/userManagement.js';
 
-// Model configuration for Gemini TTS and text generation
-const TTS_MODELS = ["gemini-2.5-flash-preview-tts", "gemini-2.0-flash"];
+// Model configuration for Gemini TTS and text generation with 24/7 multi-model backup
+const TTS_MODELS = [
+  "gemini-2.5-flash-preview-tts",
+  "gemini-3.8-flash-tts",
+  "gemini-3.1-flash-tts-preview",
+  "gemini-2.5-pro-preview-tts",
+  "gemini-3.8-flash-lite-tts"
+];
 const TTS_MODEL = "gemini-2.5-flash-preview-tts";
-const TTS_FALLBACK_MODEL = "gemini-2.0-flash";
-const TEXT_MODELS = ["gemini-2.0-flash", "gemini-1.5-flash"];
-const TEXT_MODEL = "gemini-2.0-flash";
-const TEXT_FALLBACK_MODEL = "gemini-1.5-flash";
+const TTS_FALLBACK_MODEL = "gemini-3.8-flash-tts";
+const TEXT_MODELS = ["gemini-3.8-flash", "gemini-flash-latest", "gemini-3.5-flash", "gemini-3.7-flash"];
+const TEXT_MODEL = "gemini-3.8-flash";
+const TEXT_FALLBACK_MODEL = "gemini-flash-latest";
 
 // Default personas (14 national + 8 Sundanese voices)
 const INITIAL_VOICES = [
@@ -615,10 +621,16 @@ const fetchWithRetry = async (url, options, retries = 5, backoff = 1000, keyPool
           return fetchWithRetry(nextUrl, options, retries, backoff, keyPool, nextIdx);
         }
       }
-      throw new Error(`HTTP ${res.status}: ${errBody}`);
+      const httpErr = new Error(`HTTP ${res.status}: ${errBody}`);
+      httpErr.status = res.status;
+      throw httpErr;
     }
     return await res.json();
   } catch (err) {
+    // Segera throw jika model tidak ditemukan (404 deprecated) atau bad request (400) agar langsung failover ke model cadangan
+    if (err.status === 404 || err.status === 400) {
+      throw err;
+    }
     if (retries > 0) {
       await new Promise(r => setTimeout(r, backoff));
       return fetchWithRetry(url, options, retries - 1, backoff * 2, keyPool, keyIndex);
@@ -861,69 +873,74 @@ export const GentraStudio = ({
 
     setKeyTestStatuses(prev => {
       const next = [...prev];
-      next[index] = { status: 'testing', message: 'Memeriksa koneksi & kuota Gemini 3.8...' };
+      next[index] = { status: 'testing', message: 'Memeriksa koneksi & kuota Gemini 24/7...' };
       return next;
     });
 
-    try {
-      const res = await fetch(
-        `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${targetKey}`,
-        {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            contents: [{ parts: [{ text: 'ping' }] }],
-            generationConfig: { maxOutputTokens: 5 }
-          })
-        }
-      );
+    let success = false;
+    let lastError = null;
 
-      if (res.ok) {
-        if (index === 0) {
-          setApiQuotaStatus('active');
-          try { localStorage.setItem('gentra_api_quota_status', 'active'); } catch(e){}
+    for (const testModel of TEXT_MODELS) {
+      try {
+        const res = await fetch(
+          `https://generativelanguage.googleapis.com/v1beta/models/${testModel}:generateContent?key=${targetKey}`,
+          {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              contents: [{ parts: [{ text: 'ping' }] }],
+              generationConfig: { maxOutputTokens: 2 }
+            })
+          }
+        );
+
+        if (res.ok) {
+          success = true;
+          if (index === 0) {
+            setApiQuotaStatus('active');
+            try { localStorage.setItem('gentra_api_quota_status', 'active'); } catch(e){}
+          }
+          setKeyTestStatuses(prev => {
+            const next = [...prev];
+            next[index] = { status: 'active', message: 'Kunci Aktif & Siap Digunakan' };
+            return next;
+          });
+          break;
         }
-        setKeyTestStatuses(prev => {
-          const next = [...prev];
-          next[index] = { status: 'active', message: 'Kunci Aktif & Siap Digunakan' };
-          return next;
-        });
-      } else {
+
         const errJson = await res.json().catch(() => ({}));
         const code = res.status;
         const errMsg = errJson?.error?.message || '';
+
         if (code === 429) {
           if (index === 0) {
             setApiQuotaStatus('limited');
             try { localStorage.setItem('gentra_api_quota_status', 'limited'); } catch(e){}
           }
-          setKeyTestStatuses(prev => {
-            const next = [...prev];
-            next[index] = { status: 'quota_limit', message: `Limit Kuota (HTTP 429): ${errMsg.slice(0, 65)}` };
-            return next;
-          });
+          lastError = { status: 'quota_limit', message: `Limit Kuota (HTTP 429): ${errMsg.slice(0, 65)}` };
+          break; // Quota issue means key is valid but limited
         } else if (code === 400 || code === 403 || errMsg.toLowerCase().includes('api key') || errMsg.toLowerCase().includes('not valid')) {
           if (index === 0) {
             setApiQuotaStatus('invalid');
             try { localStorage.setItem('gentra_api_quota_status', 'invalid'); } catch(e){}
           }
-          setKeyTestStatuses(prev => {
-            const next = [...prev];
-            next[index] = { status: 'invalid', message: 'Kunci Tidak Valid / Salah' };
-            return next;
-          });
+          lastError = { status: 'invalid', message: 'Kunci Tidak Valid / Salah' };
+          break;
+        } else if (code === 404) {
+          // Model sunset/unavailable, cascade to next backup model
+          continue;
         } else {
-          setKeyTestStatuses(prev => {
-            const next = [...prev];
-            next[index] = { status: 'error', message: `HTTP ${code}: ${errMsg.slice(0, 50)}` };
-            return next;
-          });
+          lastError = { status: 'error', message: `HTTP ${code}: ${errMsg.slice(0, 50)}` };
         }
+      } catch (netErr) {
+        lastError = { status: 'error', message: 'Gagal terhubung ke jaringan' };
       }
-    } catch (netErr) {
+    }
+
+    if (!success && lastError) {
       setKeyTestStatuses(prev => {
         const next = [...prev];
-        next[index] = { status: 'error', message: 'Gagal terhubung ke jaringan' };
+        next[index] = lastError;
         return next;
       });
     }
@@ -1005,23 +1022,26 @@ export const GentraStudio = ({
       let anyActive = false;
       for (const k of activeKeyPool) {
         if (!k) continue;
-        try {
-          const res = await fetch(
-            `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${k}`,
-            {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({
-                contents: [{ parts: [{ text: 'p' }] }],
-                generationConfig: { maxOutputTokens: 2 }
-              })
+        for (const testModel of TEXT_MODELS) {
+          try {
+            const res = await fetch(
+              `https://generativelanguage.googleapis.com/v1beta/models/${testModel}:generateContent?key=${k}`,
+              {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                  contents: [{ parts: [{ text: 'p' }] }],
+                  generationConfig: { maxOutputTokens: 2 }
+                })
+              }
+            );
+            if (res.ok) {
+              anyActive = true;
+              break;
             }
-          );
-          if (res.ok) {
-            anyActive = true;
-            break;
-          }
-        } catch (e) {}
+          } catch (e) {}
+        }
+        if (anyActive) break;
       }
       if (anyActive) {
         setApiQuotaStatus('active');
@@ -1035,22 +1055,26 @@ export const GentraStudio = ({
     let found = false;
     for (let idx = 0; idx < activeKeyPool.length; idx++) {
       const k = activeKeyPool[idx];
-      try {
-        const res = await fetch(
-          `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${k}`,
-          {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ contents: [{ parts: [{ text: 'p' }] }], generationConfig: { maxOutputTokens: 2 } })
+      if (!k) continue;
+      for (const testModel of TEXT_MODELS) {
+        try {
+          const res = await fetch(
+            `https://generativelanguage.googleapis.com/v1beta/models/${testModel}:generateContent?key=${k}`,
+            {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ contents: [{ parts: [{ text: 'p' }] }], generationConfig: { maxOutputTokens: 2 } })
+            }
+          );
+          if (res.ok) {
+            found = true;
+            setApiQuotaStatus('active');
+            setIsQuotaBannerDismissed(true);
+            break;
           }
-        );
-        if (res.ok) {
-          found = true;
-          setApiQuotaStatus('active');
-          setIsQuotaBannerDismissed(true);
-          break;
-        }
-      } catch (e) {}
+        } catch (e) {}
+      }
+      if (found) break;
     }
     if (!found) {
       setApiQuotaStatus('limited');
@@ -1769,39 +1793,39 @@ ATURAN WAJIB & MUTLAK:
           }
         };
 
-        let response;
-        try {
-          response = await fetchWithRetry(
-            `https://generativelanguage.googleapis.com/v1beta/models/${TTS_MODEL}:generateContent?key=${activeKey}`,
-            {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify(payload)
-            },
-            5,
-            1000,
-            activeKeyPool,
-            0
-          );
-        } catch (priErr) {
-          console.warn(`Model ${TTS_MODEL} limit tercapai, mencoba fallback ke ${TTS_FALLBACK_MODEL}:`, priErr);
-          response = await fetchWithRetry(
-            `https://generativelanguage.googleapis.com/v1beta/models/${TTS_FALLBACK_MODEL}:generateContent?key=${activeKey}`,
-            {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify(payload)
-            },
-            5,
-            1000,
-            activeKeyPool,
-            0
-          );
+        let response = null;
+        let lastTtsErr = null;
+
+        // 24/7 Zero-Failure Cascade: Mencoba seluruh model TTS cadangan secara berurutan
+        for (let mIdx = 0; mIdx < TTS_MODELS.length; mIdx++) {
+          const ttsModelCandidate = TTS_MODELS[mIdx];
+          try {
+            response = await fetchWithRetry(
+              `https://generativelanguage.googleapis.com/v1beta/models/${ttsModelCandidate}:generateContent?key=${activeKey}`,
+              {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+              },
+              3,
+              800,
+              activeKeyPool,
+              0
+            );
+
+            const inlineData = response?.candidates?.[0]?.content?.parts?.[0]?.inlineData;
+            if (inlineData && inlineData.data) {
+              break;
+            }
+          } catch (modelErr) {
+            console.warn(`[GENTRA 24/7 Failover] Sintesis model ${ttsModelCandidate} segmen ${i + 1} dialihkan ke cadangan:`, modelErr?.message || modelErr);
+            lastTtsErr = modelErr;
+          }
         }
 
         const inlineData = response?.candidates?.[0]?.content?.parts?.[0]?.inlineData;
         if (!inlineData || !inlineData.data) {
-          throw new Error(`Gagal menghasilkan suara pada bagian ke-${i + 1}`);
+          throw new Error(lastTtsErr?.message || `Gagal menghasilkan suara pada bagian ke-${i + 1} setelah mencoba seluruh model TTS cadangan.`);
         }
 
         const pcm16 = base64ToPCM16(inlineData.data);

@@ -88,7 +88,7 @@ export const ApiKeyModal = ({
     setKey2(geminiKeys[1] || '');
   }, [geminiKeys[0], geminiKeys[1]]);
 
-  // Test individual key against Google Gemini API
+  // Test individual key against Google Gemini API with multi-model failover
   const testApiKey = async (rawKey, setStatus) => {
     const cleanKey = sanitizeApiKey(rawKey);
     if (!cleanKey) {
@@ -96,35 +96,56 @@ export const ApiKeyModal = ({
       return;
     }
 
-    setStatus({ status: 'testing', message: 'Memeriksa koneksi ke Google Gemini AI...' });
+    setStatus({ status: 'testing', message: 'Memeriksa koneksi & kuota Google Gemini...' });
+
+    const TEST_MODELS = ['gemini-3.8-flash', 'gemini-flash-latest', 'gemini-3.5-flash'];
+    let lastErrorStatus = null;
 
     try {
-      const res = await fetch(
-        `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${cleanKey}`,
-        {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            contents: [{ parts: [{ text: 'ping' }] }],
-            generationConfig: { maxOutputTokens: 2 }
-          })
-        }
-      );
+      for (const modelName of TEST_MODELS) {
+        try {
+          const res = await fetch(
+            `https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent?key=${cleanKey}`,
+            {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                contents: [{ parts: [{ text: 'ping' }] }],
+                generationConfig: { maxOutputTokens: 2 }
+              })
+            }
+          );
 
-      if (res.ok) {
-        setStatus({ status: 'active', message: 'Kunci Aktif & Siap Digunakan' });
+          if (res.ok) {
+            setStatus({ status: 'active', message: 'Kunci Aktif & Siap Digunakan' });
+            return;
+          }
+
+          const errJson = await res.json().catch(() => ({}));
+          const code = res.status;
+          const msg = errJson?.error?.message || '';
+
+          if (code === 429) {
+            lastErrorStatus = { status: 'limited', message: 'Kuota Limit (HTTP 429). Kunci cadangan siap.' };
+            break; // Quota limit means key is recognized, no need to spam other models
+          } else if (code === 400 || code === 403 || msg.toLowerCase().includes('api key') || msg.toLowerCase().includes('not valid')) {
+            lastErrorStatus = { status: 'invalid', message: 'Kunci Tidak Valid / Salah (Periksa kembali)' };
+            break; // Bad key means key is invalid
+          } else if (code === 404) {
+            // Model deprecated or not found on this tier, continue to next backup model
+            continue;
+          } else {
+            lastErrorStatus = { status: 'invalid', message: `Kendala HTTP ${code}: ${msg.slice(0, 45)}` };
+          }
+        } catch (fetchErr) {
+          console.warn(`Pengujian model ${modelName} gagal:`, fetchErr);
+        }
+      }
+
+      if (lastErrorStatus) {
+        setStatus(lastErrorStatus);
       } else {
-        const errJson = await res.json().catch(() => ({}));
-        const code = res.status;
-        const msg = errJson?.error?.message || '';
-
-        if (code === 429) {
-          setStatus({ status: 'limited', message: 'Kuota Limit (HTTP 429). Masukkan kunci cadangan.' });
-        } else if (code === 400 || code === 403 || msg.toLowerCase().includes('api key') || msg.toLowerCase().includes('not valid')) {
-          setStatus({ status: 'invalid', message: 'Kunci Tidak Valid / Salah (Periksa kembali)' });
-        } else {
-          setStatus({ status: 'invalid', message: `Kendala HTTP ${code}: ${msg.slice(0, 45)}` });
-        }
+        setStatus({ status: 'invalid', message: 'Kendala verifikasi model Gemini.' });
       }
     } catch (err) {
       setStatus({ status: 'invalid', message: 'Gagal terhubung ke jaringan internet.' });
